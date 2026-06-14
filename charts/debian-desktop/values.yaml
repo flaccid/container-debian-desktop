@@ -1,0 +1,49 @@
+image:
+  repository: flaccid/debian-desktop
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+nginx:
+  image:
+    repository: nginx
+    tag: alpine
+
+env:
+  tz: "Australia/Sydney"
+  # User should be "admin" to match the Dockerfile
+  user: "admin"
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "500m"
+  limits:
+    memory: "4Gi"
+    cpu: "2000m"
+
+persistence:
+  enabled: true
+  size: 5Gi
+  # storageClass: ""
+  accessMode: ReadWriteOnce
+
+service:
+  clusterIP:
+    port: 8080
+  loadBalancer:
+    enabled: true
+    port: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  host: desktop.domain.com
+  # The internal URL to your oauth2-proxy service
+  authUrl: "http://oauth2-proxy.{{ .Release.Namespace }}.svc.cluster.local/oauth2/auth"
+  authSignin: "https://desktop.domain.com/oauth2/start?rd=$escaped_request_uri"
+
+oauth2Proxy:
+  ingress:
+    enabled: true
+    host: desktop.domain.com
+    path: /oauth2

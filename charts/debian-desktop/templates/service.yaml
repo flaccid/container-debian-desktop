@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "debian-desktop.fullname" . }}
+  labels:
+    {{- include "debian-desktop.labels" . | nindent 4 }}
+spec:
+  ports:
+  - port: {{ .Values.service.clusterIP.port }}
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "debian-desktop.selectorLabels" . | nindent 4 }}
+  type: ClusterIP
+---
+{{- if .Values.service.loadBalancer.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "debian-desktop.fullname" . }}-lb
+  labels:
+    {{- include "debian-desktop.labels" . | nindent 4 }}
+spec:
+  ports:
+  - name: http
+    port: {{ .Values.service.loadBalancer.port }}
+    targetPort: 8080
+    protocol: TCP
+  - name: https
+    port: 6901
+    targetPort: 6901
+    protocol: TCP
+  selector:
+    {{- include "debian-desktop.selectorLabels" . | nindent 4 }}
+  type: LoadBalancer
+{{- end }}

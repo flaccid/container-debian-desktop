@@ -1,0 +1,52 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "debian-desktop.fullname" . }}
+  labels:
+    {{- include "debian-desktop.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.className | quote }}
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/ssl-verify: "false"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/auth-url: {{ .Values.ingress.authUrl | quote }}
+    nginx.ingress.kubernetes.io/auth-signin: {{ .Values.ingress.authSignin | quote }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.host | quote }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "debian-desktop.fullname" . }}
+            port:
+              number: {{ .Values.service.clusterIP.port }}
+{{- end }}
+---
+{{- if .Values.oauth2Proxy.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "debian-desktop.fullname" . }}-oauth2
+  labels:
+    {{- include "debian-desktop.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.className | quote }}
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+spec:
+  rules:
+  - host: {{ .Values.oauth2Proxy.ingress.host | quote }}
+    http:
+      paths:
+      - path: {{ .Values.oauth2Proxy.ingress.path | quote }}
+        pathType: Prefix
+        backend:
+          service:
+            name: oauth2-proxy
+            port:
+              number: 80
+{{- end }}

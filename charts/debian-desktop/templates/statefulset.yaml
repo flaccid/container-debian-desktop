@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "debian-desktop.fullname" . }}
+  labels:
+    {{- include "debian-desktop.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "debian-desktop.fullname" . }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "debian-desktop.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "debian-desktop.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: desktop
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        env:
+        - name: TZ
+          value: {{ .Values.env.tz | quote }}
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 6901
+          name: https
+        volumeMounts:
+        - name: config
+          mountPath: /home/{{ .Values.env.user }}
+        - name: shm
+          mountPath: /dev/shm
+      volumes:
+      - name: config
+        {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "debian-desktop.fullname" . }}-config
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      - name: shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 1Gi
