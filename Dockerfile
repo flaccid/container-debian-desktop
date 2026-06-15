@@ -6,6 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Add third-party apt repos (VS Code, Google Chrome, Signal)
 RUN apt-get update     && apt-get install -y --no-install-recommends \
         curl \
+        ca-certificates \
         gpg \
         apt-transport-https \
     && rm -rf /var/lib/apt/lists/* \
