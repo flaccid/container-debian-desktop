@@ -72,8 +72,24 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 
-# Create a default index.html to redirect to vnc_auto.html
-RUN echo '<meta http-equiv="refresh" content="0; url=vnc_auto.html?resize=remote">' > /usr/share/novnc/index.html
+# Create a default index.html that sets noVNC remote resizing before redirecting
+RUN { \
+      echo '<!DOCTYPE html>'; \
+      echo '<html>'; \
+      echo '<head>'; \
+      echo '<meta charset="utf-8">'; \
+      echo '<script>'; \
+      echo 'try {'; \
+      echo '  var s = JSON.parse(localStorage.getItem("noVNC_state") || "{}");'; \
+      echo '  s.resize = "remote";'; \
+      echo '  localStorage.setItem("noVNC_state", JSON.stringify(s));'; \
+      echo '} catch(e) {}'; \
+      echo 'window.location.replace("vnc_auto.html");'; \
+      echo '</script>'; \
+      echo '</head>'; \
+      echo '<body><p>Loading...</p></body>'; \
+      echo '</html>'; \
+    } > /usr/share/novnc/index.html
 
 USER $USERNAME
 WORKDIR /home/$USERNAME
@@ -86,38 +102,8 @@ RUN mkdir -p /home/$USERNAME/.config/tigervnc
 
 RUN touch /home/$USERNAME/.Xauthority
 
-# Configure XFCE: single panel (no Panel 2), Adwaita-dark theme
+# Configure XFCE defaults: Adwaita-dark theme
 RUN mkdir -p /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml \
-    && { \
-         echo '<?xml version="1.0" encoding="UTF-8"?>'; \
-         echo ''; \
-         echo '<channel name="xfce4-panel" version="1.0">'; \
-         echo '  <property name="configver" type="int" value="2"/>'; \
-         echo '  <property name="panels" type="array">'; \
-         echo '    <value type="int" value="1"/>'; \
-         echo '    <property name="panel-0" type="array">'; \
-         echo '      <property name="position" type="string" value="p=6;x=0;y=0"/>'; \
-         echo '      <property name="length" type="uint" value="100"/>'; \
-         echo '      <property name="position-locked" type="bool" value="true"/>'; \
-         echo '      <property name="size" type="uint" value="30"/>'; \
-         echo '      <property name="plugin-ids" type="array">'; \
-         echo '        <value type="int" value="1"/>'; \
-         echo '        <value type="int" value="2"/>'; \
-         echo '        <value type="int" value="3"/>'; \
-         echo '        <value type="int" value="4"/>'; \
-         echo '        <value type="int" value="5"/>'; \
-         echo '        <value type="int" value="6"/>'; \
-         echo '      </property>'; \
-         echo '    </property>'; \
-         echo '    <property name="plugin-1" type="string" value="applicationsmenu"/>'; \
-         echo '    <property name="plugin-2" type="string" value="tasklist"/>'; \
-         echo '    <property name="plugin-3" type="string" value="separator"/>'; \
-         echo '    <property name="plugin-4" type="string" value="pager"/>'; \
-         echo '    <property name="plugin-5" type="string" value="systray"/>'; \
-         echo '    <property name="plugin-6" type="string" value="clock"/>'; \
-         echo '  </property>'; \
-         echo '</channel>'; \
-       } > /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml \
     && { \
          echo '<?xml version="1.0" encoding="UTF-8"?>'; \
          echo ''; \
@@ -129,11 +115,39 @@ RUN mkdir -p /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml \
          echo '</channel>'; \
        } > /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 
-# Provide a simple xstartup script to launch XFCE
-RUN echo '#!/bin/bash\n\n\
-xrdb $HOME/.Xresources\n\
-startxfce4 &\n\
-' > /home/$USERNAME/.vnc/xstartup && chmod +x /home/$USERNAME/.vnc/xstartup
+# Provide an xstartup script that launches XFCE and removes extra panels at startup
+RUN cat > /home/$USERNAME/.vnc/xstartup << 'XSTARTUP'
+#!/bin/bash
+xrdb $HOME/.Xresources
+startxfce4 &
+
+# Wait for XFCE to create default panel config, then remove any panel beyond panel-0
+sleep 4
+python3 << 'PYEOF'
+import os, xml.etree.ElementTree as ET
+
+path = os.path.expanduser("~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml")
+if os.path.exists(path):
+    ET.register_namespace("", "")
+    tree = ET.parse(path)
+    root = tree.getroot()
+    panels = root.find(".//property[@name='panels']")
+    if panels is not None:
+        to_remove = []
+        for child in panels:
+            if child.tag == "property" and child.attrib.get("name", "").startswith("panel-"):
+                idx = int(child.attrib["name"].split("-")[1])
+                if idx >= 1:
+                    to_remove.append(child)
+        for child in to_remove:
+            panels.remove(child)
+        count = panels.find("value")
+        if count is not None:
+            count.set("value", "1")
+        tree.write(path)
+PYEOF
+XSTARTUP
+RUN chmod +x /home/$USERNAME/.vnc/xstartup
 
 # Expose the noVNC port
 EXPOSE 6901
