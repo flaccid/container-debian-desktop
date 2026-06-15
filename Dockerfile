@@ -107,7 +107,7 @@ RUN mkdir -p /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml \
 <channel name="xfce4-desktop" version="1.0">
   <property name="backdrop" type="empty">
     <property name="screen0" type="empty">
-      <property name="monitor0" type="empty">
+      <property name="monitorVNC-0" type="empty">
         <property name="workspace0" type="empty">
           <property name="color-style" type="int" value="0"/>
           <property name="image-style" type="int" value="5"/>
