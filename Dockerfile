@@ -73,7 +73,7 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 
 # Create a default index.html to redirect to vnc_auto.html
-RUN echo '<meta http-equiv="refresh" content="0; url=vnc_auto.html">' > /usr/share/novnc/index.html
+RUN echo '<meta http-equiv="refresh" content="0; url=vnc_auto.html?resize=remote">' > /usr/share/novnc/index.html
 
 USER $USERNAME
 WORKDIR /home/$USERNAME
@@ -85,6 +85,49 @@ RUN mkdir -p /home/$USERNAME/.vnc \
 RUN mkdir -p /home/$USERNAME/.config/tigervnc
 
 RUN touch /home/$USERNAME/.Xauthority
+
+# Configure XFCE: single panel (no Panel 2), Adwaita-dark theme
+RUN mkdir -p /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml \
+    && { \
+         echo '<?xml version="1.0" encoding="UTF-8"?>'; \
+         echo ''; \
+         echo '<channel name="xfce4-panel" version="1.0">'; \
+         echo '  <property name="configver" type="int" value="2"/>'; \
+         echo '  <property name="panels" type="array">'; \
+         echo '    <value type="int" value="1"/>'; \
+         echo '    <property name="panel-0" type="array">'; \
+         echo '      <property name="position" type="string" value="p=6;x=0;y=0"/>'; \
+         echo '      <property name="length" type="uint" value="100"/>'; \
+         echo '      <property name="position-locked" type="bool" value="true"/>'; \
+         echo '      <property name="size" type="uint" value="30"/>'; \
+         echo '      <property name="plugin-ids" type="array">'; \
+         echo '        <value type="int" value="1"/>'; \
+         echo '        <value type="int" value="2"/>'; \
+         echo '        <value type="int" value="3"/>'; \
+         echo '        <value type="int" value="4"/>'; \
+         echo '        <value type="int" value="5"/>'; \
+         echo '        <value type="int" value="6"/>'; \
+         echo '      </property>'; \
+         echo '    </property>'; \
+         echo '    <property name="plugin-1" type="string" value="applicationsmenu"/>'; \
+         echo '    <property name="plugin-2" type="string" value="tasklist"/>'; \
+         echo '    <property name="plugin-3" type="string" value="separator"/>'; \
+         echo '    <property name="plugin-4" type="string" value="pager"/>'; \
+         echo '    <property name="plugin-5" type="string" value="systray"/>'; \
+         echo '    <property name="plugin-6" type="string" value="clock"/>'; \
+         echo '  </property>'; \
+         echo '</channel>'; \
+       } > /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml \
+    && { \
+         echo '<?xml version="1.0" encoding="UTF-8"?>'; \
+         echo ''; \
+         echo '<channel name="xsettings" version="1.0">'; \
+         echo '  <property name="Net" type="empty">'; \
+         echo '    <property name="ThemeName" type="string" value="Adwaita-dark"/>'; \
+         echo '    <property name="IconThemeName" type="string" value="Adwaita"/>'; \
+         echo '  </property>'; \
+         echo '</channel>'; \
+       } > /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 
 # Provide a simple xstartup script to launch XFCE
 RUN echo '#!/bin/bash\n\n\
