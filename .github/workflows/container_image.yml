@@ -30,5 +30,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: flaccid/debian-desktop:latest
+          tags: |
+            flaccid/debian-desktop:latest
+            flaccid/debian-desktop:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
