@@ -3,6 +3,19 @@ FROM debian:trixie-slim
 # Prevent interactive prompts during apt
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Add third-party apt repos (VS Code, Google Chrome, Signal)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gpg \
+        apt-transport-https \
+    && rm -rf /var/lib/apt/lists/* \
+    && install -d /usr/share/keyrings \
+    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-archive-keyring.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list \
+    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome-keyring.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && curl -fsSL https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor -o /usr/share/keyrings/signal-desktop-keyring.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-desktop.list
+
 # Install desktop environment, VNC server, noVNC, and other utilities
 RUN apt-get update && apt-get install -y --no-install-recommends \
     xfce4 \
@@ -19,6 +32,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssl \
     adwaita-icon-theme \
     gnome-themes-extra \
+    code \
+    google-chrome-stable \
+    signal-desktop \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user (UID 1000)
