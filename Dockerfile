@@ -73,23 +73,7 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 
 # Create a default index.html that sets noVNC remote resizing before redirecting
-RUN { \
-      echo '<!DOCTYPE html>'; \
-      echo '<html>'; \
-      echo '<head>'; \
-      echo '<meta charset="utf-8">'; \
-      echo '<script>'; \
-      echo 'try {'; \
-      echo '  var s = JSON.parse(localStorage.getItem("noVNC_state") || "{}");'; \
-      echo '  s.resize = "remote";'; \
-      echo '  localStorage.setItem("noVNC_state", JSON.stringify(s));'; \
-      echo '} catch(e) {}'; \
-      echo 'window.location.replace("vnc_auto.html");'; \
-      echo '</script>'; \
-      echo '</head>'; \
-      echo '<body><p>Loading...</p></body>'; \
-      echo '</html>'; \
-    } > /usr/share/novnc/index.html
+RUN echo '<!DOCTYPE html><html><head><meta charset="utf-8"><script>try { localStorage.setItem("noVNC_resize", "remote"); } catch(e) {} window.location.replace("vnc_auto.html");</script></head><body><p>Loading...</p></body></html>' > /usr/share/novnc/index.html
 
 USER $USERNAME
 WORKDIR /home/$USERNAME
@@ -121,31 +105,10 @@ RUN cat > /home/$USERNAME/.vnc/xstartup << 'XSTARTUP'
 xrdb $HOME/.Xresources
 startxfce4 &
 
-# Wait for XFCE to create default panel config, then remove any panel beyond panel-0
+# Wait for XFCE to initialise, then remove any panel beyond panel-0
 sleep 4
-python3 << 'PYEOF'
-import os, xml.etree.ElementTree as ET
-
-path = os.path.expanduser("~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml")
-if os.path.exists(path):
-    ET.register_namespace("", "")
-    tree = ET.parse(path)
-    root = tree.getroot()
-    panels = root.find(".//property[@name='panels']")
-    if panels is not None:
-        to_remove = []
-        for child in panels:
-            if child.tag == "property" and child.attrib.get("name", "").startswith("panel-"):
-                idx = int(child.attrib["name"].split("-")[1])
-                if idx >= 1:
-                    to_remove.append(child)
-        for child in to_remove:
-            panels.remove(child)
-        count = panels.find("value")
-        if count is not None:
-            count.set("value", "1")
-        tree.write(path)
-PYEOF
+xfce4-panel --remove 2>/dev/null || true
+xfce4-panel --remove 2>/dev/null || true
 XSTARTUP
 RUN chmod +x /home/$USERNAME/.vnc/xstartup
 
