@@ -40,10 +40,19 @@ ingress:
   host: desktop.domain.com
   # The internal URL to your oauth2-proxy service
   authUrl: "http://oauth2-proxy.{{ .Release.Namespace }}.svc.cluster.local/oauth2/auth"
-  authSignin: "https://desktop.domain.com/oauth2/start?rd=$escaped_request_uri"
+  authSignin: "https://{{ .Values.ingress.host }}/oauth2/start?rd=$escaped_request_uri"
 
 oauth2Proxy:
   ingress:
     enabled: true
     host: desktop.domain.com
     path: /oauth2
+
+oauth2-proxy:
+  enabled: true
+  config:
+    redirectUrl: ""
+    clientId: ""
+    clientSecret: ""
+    cookieSecret: ""
+    authenticatedEmails: []

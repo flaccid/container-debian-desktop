@@ -11,8 +11,8 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-verify: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/auth-url: {{ .Values.ingress.authUrl | quote }}
-    nginx.ingress.kubernetes.io/auth-signin: {{ .Values.ingress.authSignin | quote }}
+    nginx.ingress.kubernetes.io/auth-url: {{ tpl .Values.ingress.authUrl . | quote }}
+    nginx.ingress.kubernetes.io/auth-signin: {{ tpl .Values.ingress.authSignin . | quote }}
 spec:
   rules:
   - host: {{ .Values.ingress.host | quote }}
