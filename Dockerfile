@@ -116,11 +116,9 @@ xfce4-panel --remove 2>/dev/null || true
 xfce4-panel --remove 2>/dev/null || true
 # Set wallpaper for all monitors/workspaces
 WALLPAPER=/usr/share/backgrounds/wallpaper.jpg
-for prop in $(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep -E '(last-image|image-path)$'); do
-  xfconf-query -c xfce4-desktop -p "$prop" -s "$WALLPAPER"
-done
-for prop in $(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep 'image-style$'); do
-  xfconf-query -c xfce4-desktop -p "$prop" -s 5
+for prop_root in $(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep -E '/backdrop/screen[0-9]+/monitor(VNC-|DP-)*[0-9]+/workspace[0-9]+$' | sed 's/$/\//'); do
+  xfconf-query -c xfce4-desktop -p "${prop_root}last-image" --create -t string -s "$WALLPAPER"
+  xfconf-query -c xfce4-desktop -p "${prop_root}image-style" --create -t int -s 5
 done
 XSTARTUP
 RUN chmod +x /home/$USERNAME/.vnc/xstartup
