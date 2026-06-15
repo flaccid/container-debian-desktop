@@ -15,6 +15,17 @@ spec:
       labels:
         {{- include "debian-desktop.selectorLabels" . | nindent 8 }}
     spec:
+      initContainers:
+      - name: fix-permissions
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        securityContext:
+          runAsUser: 0
+        command: ["/bin/sh", "-c"]
+        args:
+        - chown -R 1000:1000 /home/{{ .Values.env.user }}
+        volumeMounts:
+        - name: config
+          mountPath: /home/{{ .Values.env.user }}
       containers:
       - name: desktop
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
