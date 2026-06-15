@@ -123,6 +123,9 @@ XML
 RUN cat > /home/$USERNAME/.vnc/xstartup << 'XSTARTUP'
 #!/bin/bash
 
+# Ensure config directory exists
+mkdir -p $HOME/.config/xfce4/xfconf/xfce-perchannel-xml
+
 # Force single-panel configuration
 cat > $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml << 'XML'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -181,6 +184,9 @@ XML
 
 xrdb $HOME/.Xresources
 dbus-launch startxfce4 &
+
+sleep 2
+xfce4-panel --restart
 XSTARTUP
 RUN chmod +x /home/$USERNAME/.vnc/xstartup
 
