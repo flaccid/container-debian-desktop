@@ -62,15 +62,16 @@ RUN sed -i 's|^Exec=/usr/bin/google-chrome-stable|Exec=/usr/local/bin/google-chr
     && sed -i 's|^Exec=/opt/Signal/signal-desktop|Exec=/usr/local/bin/signal-desktop|' /usr/share/applications/signal-desktop.desktop \
     && sed -i 's|^Exec=/usr/share/code/code|Exec=/usr/local/bin/code|' /usr/share/applications/code.desktop
 
-# Create a non-root user (UID 1000)
+# Create a non-root user and template home directory
 ARG USERNAME=admin
 ARG USER_UID=1000
 ARG USER_GID=1000
-
 RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m -s /bin/bash $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m -s /bin/bash -d /home/$USERNAME -S /etc/skel $USERNAME \
     && echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
+    && chmod 0440 /etc/sudoers.d/$USERNAME \
+    && mkdir -p /etc/skel/admin/.config \
+    && chown -R $USERNAME:$USERNAME /etc/skel/admin
 
 # Create a default index.html that sets noVNC remote resizing before redirecting
 RUN echo '<!DOCTYPE html><html><head><meta charset="utf-8"><script>try { localStorage.setItem("noVNC_resize", "remote"); } catch(e) {} window.location.replace("vnc_auto.html");</script></head><body><p>Loading...</p></body></html>' > /usr/share/novnc/index.html
@@ -80,25 +81,28 @@ RUN mkdir -p /usr/share/backgrounds && \
     curl -fsSL -o /usr/share/backgrounds/wallpaper.jpg \
     "https://images.unsplash.com/photo-1483982258113-b72862e6cff6?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&dl=rosie-sun-1L71sPT5XKc-unsplash.jpg"
 
-# Copy pre-configured XFCE settings before switching to non-root user
-COPY --chown=admin:admin config/xfce4 /home/$USERNAME/.config/xfce4
+# Copy pre-configured XFCE settings into the skeleton directory
+COPY --chown=admin:admin config/xfce4 /etc/skel/admin/.config/xfce4
 
+# Setup VNC configuration in the skeleton directory
+RUN mkdir -p /etc/skel/admin/.vnc \
+    && openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/skel/admin/.vnc/self.pem -out /etc/skel/admin/.vnc/self.pem -days 3650 -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost" \
+    && chown -R admin:admin /etc/skel/admin/.vnc
+
+# Provide an xstartup script in the skeleton directory
+COPY --chown=admin:admin config/xstartup /etc/skel/admin/.vnc/xstartup
+RUN chmod +x /etc/skel/admin/.vnc/xstartup
+
+# Switch to the non-root user
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
-# Setup VNC configuration and generate a self-signed certificate for HTTPS noVNC
-RUN mkdir -p /home/$USERNAME/.vnc \
-    && openssl req -x509 -nodes -newkey rsa:2048 -keyout /home/$USERNAME/.vnc/self.pem -out /home/$USERNAME/.vnc/self.pem -days 3650 -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost"
-
-RUN mkdir -p /home/$USERNAME/.config/tigervnc
-
-RUN touch /home/$USERNAME/.Xauthority
-
-# Provide an xstartup script that launches XFCE
-COPY --chown=admin:admin config/xstartup /home/$USERNAME/.vnc/xstartup
-RUN chmod +x /home/$USERNAME/.vnc/xstartup
+# Copy in the entrypoint script
+COPY --chown=admin:admin entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose the noVNC port
 EXPOSE 6901
 
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["sh", "-c", "vncserver :1 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes None --I-KNOW-THIS-IS-INSECURE && websockify --web /usr/share/novnc --cert /home/admin/.vnc/self.pem 6901 localhost:5901"]
