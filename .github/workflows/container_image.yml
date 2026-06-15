@@ -3,6 +3,7 @@ name: Publish container image
 on:
   push:
     branches: ["main"]
+    tags: ["v*"]
 
 jobs:
   push_to_registry:
@@ -23,6 +24,10 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: flaccid/debian-desktop
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=sha
 
       - name: Build and push container image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
@@ -30,7 +35,5 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: |
-            flaccid/debian-desktop:latest
-            flaccid/debian-desktop:${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
