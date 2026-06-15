@@ -35,6 +35,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssl \
     adwaita-icon-theme \
     gnome-themes-extra \
+    gsettings-desktop-schemas \
+    dconf-cli \
     guake \
     code \
     google-chrome-stable \
