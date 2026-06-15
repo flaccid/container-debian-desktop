@@ -75,6 +75,11 @@ RUN groupadd --gid $USER_GID $USERNAME \
 # Create a default index.html that sets noVNC remote resizing before redirecting
 RUN echo '<!DOCTYPE html><html><head><meta charset="utf-8"><script>try { localStorage.setItem("noVNC_resize", "remote"); } catch(e) {} window.location.replace("vnc_auto.html");</script></head><body><p>Loading...</p></body></html>' > /usr/share/novnc/index.html
 
+# Download wallpaper
+RUN mkdir -p /usr/share/backgrounds && \
+    curl -fsSL -o /usr/share/backgrounds/wallpaper.jpg \
+    "https://images.unsplash.com/photo-1483982258113-b72862e6cff6?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&dl=rosie-sun-1L71sPT5XKc-unsplash.jpg"
+
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
@@ -109,6 +114,14 @@ startxfce4 &
 sleep 4
 xfce4-panel --remove 2>/dev/null || true
 xfce4-panel --remove 2>/dev/null || true
+# Set wallpaper for all monitors/workspaces
+WALLPAPER=/usr/share/backgrounds/wallpaper.jpg
+for prop in $(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep -E '(last-image|image-path)$'); do
+  xfconf-query -c xfce4-desktop -p "$prop" -s "$WALLPAPER"
+done
+for prop in $(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep 'image-style$'); do
+  xfconf-query -c xfce4-desktop -p "$prop" -s 5
+done
 XSTARTUP
 RUN chmod +x /home/$USERNAME/.vnc/xstartup
 
