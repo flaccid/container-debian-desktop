@@ -1,3 +1,14 @@
 apiVersion: v1
-entries: {}
-generated: "2026-06-14T16:20:39.424834443+10:00"
+entries:
+  debian-desktop:
+  - apiVersion: v2
+    appVersion: 1.19.0
+    created: "2026-06-15T11:41:27.343205317+10:00"
+    description: A Helm chart for a persistent, web-based Linux desktop environment
+    digest: 29903c9d87683b941238aaac505611934f9b1ca500da816534d6d89954935adb
+    name: debian-desktop
+    type: application
+    urls:
+    - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-06-15T11:41:27.342675629+10:00"
