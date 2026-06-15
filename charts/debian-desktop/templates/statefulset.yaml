@@ -27,6 +27,14 @@ spec:
         - name: config
           mountPath: /home/{{ .Values.env.user }}
       containers:
+      - name: nginx-auth-injector
+        image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
       - name: desktop
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -57,3 +65,6 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: 1Gi
+      - name: nginx-conf
+        configMap:
+          name: {{ include "debian-desktop.fullname" . }}-nginx
