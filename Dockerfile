@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssl \
     adwaita-icon-theme \
     gnome-themes-extra \
+    guake \
     code \
     google-chrome-stable \
     signal-desktop \
