@@ -57,6 +57,11 @@ RUN { \
        } > /usr/local/bin/code \
     && chmod +x /usr/local/bin/code
 
+# Point desktop menu entries at our wrappers so menu clicks also use --no-sandbox
+RUN sed -i 's|^Exec=/usr/bin/google-chrome-stable|Exec=/usr/local/bin/google-chrome|' /usr/share/applications/google-chrome.desktop \
+    && sed -i 's|^Exec=/opt/Signal/signal-desktop|Exec=/usr/local/bin/signal-desktop|' /usr/share/applications/signal-desktop.desktop \
+    && sed -i 's|^Exec=/usr/share/code/code|Exec=/usr/local/bin/code|' /usr/share/applications/code.desktop
+
 # Create a non-root user (UID 1000)
 ARG USERNAME=admin
 ARG USER_UID=1000
