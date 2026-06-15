@@ -96,6 +96,14 @@ COPY --chown=admin:admin config/xstartup /etc/skel/admin/.vnc/xstartup
 RUN chmod +x /etc/skel/admin/.vnc/xstartup \
     && ln -sf /home/admin/.vnc/xstartup /etc/skel/admin/.config/tigervnc/xstartup
 
+# Create Desktop icons for the applications in the skeleton directory
+RUN mkdir -p /etc/skel/admin/Desktop \
+    && cp /usr/share/applications/google-chrome.desktop /etc/skel/admin/Desktop/ \
+    && cp /usr/share/applications/signal-desktop.desktop /etc/skel/admin/Desktop/ \
+    && cp /usr/share/applications/code.desktop /etc/skel/admin/Desktop/ \
+    && chmod +x /etc/skel/admin/Desktop/*.desktop \
+    && chown -R admin:admin /etc/skel/admin/Desktop
+
 # Create required X11 session files in the skeleton directory
 RUN touch /etc/skel/admin/.Xauthority /etc/skel/admin/.Xresources \
     && chown admin:admin /etc/skel/admin/.Xauthority /etc/skel/admin/.Xresources
