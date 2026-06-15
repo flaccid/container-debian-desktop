@@ -80,6 +80,9 @@ RUN mkdir -p /usr/share/backgrounds && \
     curl -fsSL -o /usr/share/backgrounds/wallpaper.jpg \
     "https://images.unsplash.com/photo-1483982258113-b72862e6cff6?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&dl=rosie-sun-1L71sPT5XKc-unsplash.jpg"
 
+# Copy pre-configured XFCE settings before switching to non-root user
+COPY --chown=admin:admin config/xfce4 /home/$USERNAME/.config/xfce4
+
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
@@ -91,90 +94,11 @@ RUN mkdir -p /home/$USERNAME/.config/tigervnc
 
 RUN touch /home/$USERNAME/.Xauthority
 
-# Configure XFCE defaults: Adwaita-dark theme and wallpaper
-RUN mkdir -p /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml
-
-# Provide an xstartup script that launches XFCE and ensures the correct panel config
+# Provide an xstartup script that launches XFCE
 RUN cat > /home/$USERNAME/.vnc/xstartup << 'XSTARTUP'
 #!/bin/bash
-
-# Scorched-earth reset of XFCE config
-killall -w xfconfd 2>/dev/null || true
-rm -rf $HOME/.config/xfce4
-
-# Re-create essential config files from scratch
-mkdir -p $HOME/.config/xfce4/xfconf/xfce-perchannel-xml
-
-# 1. Panel Config
-cat > $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml << 'XML'
-<?xml version="1.0" encoding="UTF-8"?>
-<channel name="xfce4-panel" version="1.0">
-  <property name="configver" type="int" value="2"/>
-  <property name="panels" type="array">
-    <value type="int" value="1"/>
-    <property name="dark-mode" type="bool" value="true"/>
-    <property name="panel-1" type="empty">
-      <property name="position" type="string" value="p=6;x=0;y=0"/>
-      <property name="length" type="uint" value="100"/>
-      <property name="position-locked" type="bool" value="true"/>
-      <property name="icon-size" type="uint" value="16"/>
-      <property name="size" type="uint" value="26"/>
-      <property name="plugin-ids" type="array">
-        <value type="int" value="1"/><value type="int" value="2"/><value type="int" value="3"/><value type="int" value="4"/><value type="int" value="5"/><value type="int" value="6"/><value type="int" value="7"/><value type="int" value="8"/><value type="int" value="9"/><value type="int" value="10"/>
-      </property>
-    </property>
-  </property>
-  <property name="plugins" type="empty">
-    <property name="plugin-1" type="string" value="applicationsmenu"/>
-    <property name="plugin-2" type="string" value="tasklist"><property name="grouping" type="uint" value="1"/></property>
-    <property name="plugin-3" type="string" value="separator"><property name="expand" type="bool" value="true"/><property name="style" type="uint" value="0"/></property>
-    <property name="plugin-4" type="string" value="pager"/>
-    <property name="plugin-5" type="string" value="separator"><property name="style" type="uint" value="0"/></property>
-    <property name="plugin-6" type="string" value="systray"><property name="square-icons" type="bool" value="true"/></property>
-    <property name="plugin-7" type="string" value="separator"><property name="style" type="uint" value="0"/></property>
-    <property name="plugin-8" type="string" value="clock"/>
-    <property name="plugin-9" type="string" value="separator"><property name="style" type="uint" value="0"/></property>
-    <property name="plugin-10" type="string" value="actions"/>
-  </property>
-</channel>
-XML
-
-# 2. Desktop (Wallpaper) Config
-cat > $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml << 'XML'
-<?xml version="1.0" encoding="UTF-8"?>
-<channel name="xfce4-desktop" version="1.0">
-  <property name="backdrop" type="empty">
-    <property name="screen0" type="empty">
-      <property name="monitorVNC-0" type="empty">
-        <property name="workspace0" type="empty">
-          <property name="color-style" type="int" value="0"/>
-          <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/usr/share/backgrounds/wallpaper.jpg"/>
-        </property>
-      </property>
-    </property>
-  </property>
-</channel>
-XML
-
-# 3. Settings (Theme) Config
-cat > $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml << 'XML'
-<?xml version="1.0" encoding="UTF-8"?>
-<channel name="xsettings" version="1.0">
-  <property name="Net" type="empty">
-    <property name="ThemeName" type="string" value="Adwaita-dark"/>
-    <property name="IconThemeName" type="string" value="Adwaita"/>
-  </property>
-</channel>
-XML
-
-# Start the session
 xrdb $HOME/.Xresources
 dbus-launch startxfce4 &
-
-# Give it time to start, then force the panel to re-read the config we just wrote
-sleep 8
-xfce4-panel --restart
 XSTARTUP
 RUN chmod +x /home/$USERNAME/.vnc/xstartup
 
