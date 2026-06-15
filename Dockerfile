@@ -77,8 +77,11 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && mkdir -p /etc/skel/admin/.config \
     && chown -R $USERNAME:$USERNAME /etc/skel/admin
 
-# Create a default index.html that sets noVNC remote resizing before redirecting
-RUN echo '<!DOCTYPE html><html><head><meta charset="utf-8"><script>try { localStorage.setItem("noVNC_resize", "remote"); } catch(e) {} window.location.replace("vnc_auto.html");</script></head><body><p>Loading...</p></body></html>' > /usr/share/novnc/index.html
+# Patch noVNC to default to remote resizing
+RUN sed -i "s/UI.initSetting('resize', 'off');/UI.initSetting('resize', 'remote');/g" /usr/share/novnc/app/ui.js
+
+# Create a default index.html to redirect to vnc_auto.html
+RUN echo '<meta http-equiv="refresh" content="0; url=vnc_auto.html">' > /usr/share/novnc/index.html
 
 # Download wallpaper
 RUN mkdir -p /usr/share/backgrounds && \
