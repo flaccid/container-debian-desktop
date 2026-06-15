@@ -91,7 +91,7 @@ RUN mkdir -p /home/$USERNAME/.config/tigervnc
 
 RUN touch /home/$USERNAME/.Xauthority
 
-# Configure XFCE defaults: Adwaita-dark theme, wallpaper, and a single panel
+# Configure XFCE defaults: Adwaita-dark theme and wallpaper
 RUN mkdir -p /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml \
     && { \
          echo '<?xml version="1.0" encoding="UTF-8"?>'; \
@@ -117,8 +117,14 @@ RUN mkdir -p /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml \
     </property>
   </property>
 </channel>
-XML \
-    && cat > /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml << 'XML'
+XML
+
+# Provide an xstartup script that launches XFCE and ensures the correct panel config
+RUN cat > /home/$USERNAME/.vnc/xstartup << 'XSTARTUP'
+#!/bin/bash
+
+# Force single-panel configuration
+cat > $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml << 'XML'
 <?xml version="1.0" encoding="UTF-8"?>
 <channel name="xfce4-panel" version="1.0">
   <property name="configver" type="int" value="2"/>
@@ -173,9 +179,6 @@ XML \
 </channel>
 XML
 
-# Provide an xstartup script that launches XFCE
-RUN cat > /home/$USERNAME/.vnc/xstartup << 'XSTARTUP'
-#!/bin/bash
 xrdb $HOME/.Xresources
 dbus-launch startxfce4 &
 XSTARTUP
