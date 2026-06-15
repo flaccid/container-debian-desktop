@@ -95,11 +95,7 @@ RUN mkdir -p /home/$USERNAME/.config/tigervnc
 RUN touch /home/$USERNAME/.Xauthority
 
 # Provide an xstartup script that launches XFCE
-RUN cat > /home/$USERNAME/.vnc/xstartup << 'XSTARTUP'
-#!/bin/bash
-xrdb $HOME/.Xresources
-dbus-launch startxfce4 &
-XSTARTUP
+COPY --chown=admin:admin config/xstartup /home/$USERNAME/.vnc/xstartup
 RUN chmod +x /home/$USERNAME/.vnc/xstartup
 
 # Expose the noVNC port
