@@ -80,8 +80,8 @@ RUN groupadd --gid $USER_GID $USERNAME \
 # Patch noVNC to default to remote resizing
 RUN sed -i "s/UI.initSetting('resize', 'off');/UI.initSetting('resize', 'remote');/g" /usr/share/novnc/app/ui.js
 
-# Create a default index.html to redirect to vnc_auto.html
-RUN echo '<meta http-equiv="refresh" content="0; url=vnc_auto.html">' > /usr/share/novnc/index.html
+# Create a default index.html to redirect to vnc_auto.html with remote resizing enabled
+RUN echo '<meta http-equiv="refresh" content="0; url=vnc_auto.html?resize=remote">' > /usr/share/novnc/index.html
 
 # Download wallpaper
 RUN mkdir -p /usr/share/backgrounds && \
