@@ -42,7 +42,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Create wrapper scripts for apps that need --no-sandbox in containers
 RUN { \
       echo '#!/bin/bash'; \
-      echo 'exec /opt/google/chrome/google-chrome --no-sandbox --disable-gpu --disable-dev-shm-usage "$@"'; \
+      echo 'exec /opt/google/chrome/google-chrome --no-sandbox --disable-gpu --disable-dev-shm-usage --test-type "$@"'; \
     } > /usr/local/bin/google-chrome \
     && chmod +x /usr/local/bin/google-chrome \
     && ln -sf google-chrome /usr/local/bin/google-chrome-stable
