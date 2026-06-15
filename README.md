@@ -1,43 +1,125 @@
-# container-debian-desktop
+# container-debian-desktop 🖥️
+
+A persistent Debian Trixie XFCE desktop container with TigerVNC, noVNC, and a Helm chart for Kubernetes deployment.
 
 ## Overview
-- This repository contains the Dockerfile for building a persistent Debian Trixie desktop environment.
-- It is designed as a lightweight, flexible, and fully controllable replacement for opinionated desktop images when deploying within a Kubernetes cluster.
 
-## Key Features:
+This repository packages a lightweight, persistent Linux desktop environment for the browser. It runs as a non-root user (`admin`, UID 1000) and avoids the permission headaches typical of PVC-bound desktop containers.
 
-*   **Debian Trixie Base:** Provides a stable and modern desktop OS built from `debian:trixie-slim`.
-*   **XFCE Desktop Environment:** A lightweight and efficient graphical interface.
-*   **TigerVNC Server:** A robust, standard VNC implementation that reliably handles session management without dropping connections in multi-client setups.
-*   **noVNC:** An open-source, web-based VNC client that uses WebSockets for browser access (served via `websockify`).
-*   **Persistence-Ready:** Specifically designed to work flawlessly with Kubernetes PersistentVolumeClaims (PVCs). Mounting a PVC to `/home/admin` will inherently persist all application settings, browser profiles, and desktop configurations.
-*   **Security:**
-    *   Runs strictly as a non-root user (`admin`, UID 1000) for better container security practices, neatly side-stepping permission issues with PVCs.
-    *   Includes a pre-configured `sudoers` file allowing passwordless `sudo` access for the user, providing full administrative control without requiring root entrypoints.
-    *   Automatically generates and utilizes self-signed SSL certificates to encrypt the noVNC WebSocket traffic (`HTTPS`/`WSS`) on port 6901.
+## Features ✨
 
-## Build Process:
+- **Debian Trixie** — modern, stable base (`debian:trixie-slim`)
+- **XFCE Desktop** — lightweight and efficient
+- **TigerVNC** — robust VNC server with reliable session management
+- **noVNC** — browser-based VNC client via WebSocket (`websockify`)
+- **Persistence-ready** — mount a PVC at `/home/admin` and desktop state survives pod restarts
+- **Non-root user** — runs strictly as `admin` (UID 1000) with passwordless `sudo`
+- **Self-signed HTTPS** — noVNC served over HTTPS/WSS on port 6901
 
-To build the Docker image:
+## Quick Start 🚀
+
+### Build the image
 
 ```bash
-docker build -t flaccid/debian-desktop:latest .
+make docker-build
 ```
 
-*(You can tag and push this to your preferred container registry such as Docker Hub, GHCR, or a private registry)*
+### Run locally
 
-## Usage
+```bash
+make docker-run
+```
 
-This image exposes port `6901` (HTTPS). You can run it locally with Docker:
+Then open **https://localhost:6901** in a browser (accept the self-signed cert warning).
+
+> If you get TTY issues, use `make docker-run OPTS="--entrypoint bash"` or just:
+> ```bash
+> docker run -it --rm -p 6901:6901 flaccid/debian-desktop:latest
+> ```
+
+### Run with a persistent volume
 
 ```bash
 docker run -p 6901:6901 -v desktop_data:/home/admin flaccid/debian-desktop:latest
 ```
-Then navigate to `https://localhost:6901` in your web browser. 
 
-**Default Credentials:**
-*   Username: `admin`
-*   Password: No authentication is required for VNC (traffic is served over HTTPS/WSS via noVNC).
+No password is required — VNC authentication is disabled.
 
-### Kubernetes Deployment
-This image acts as a seamless drop-in replacement for desktop deployments. Because it natively runs as UID 1000, it avoids the "permission denied" loops often seen with other images trying to force `chown` operations on bound PVCs. Furthermore, `TigerVNC` and `websockify` have exceptional resilience against reverse-proxy connection drops (like Cloudflare), inherently fixing the "Connecting..." hang bug encountered when sharing sessions across multiple computers.
+## Kubernetes Deployment ☸️
+
+### Using the Helm chart
+
+The chart at `charts/debian-desktop/` deploys everything:
+
+- **StatefulSet** — desktop container + nginx sidecar
+  - `fix-permissions` initContainer — `chown -R 1000:1000 /home/admin` on PVC mount
+  - nginx sidecar — proxies `http://localhost:6901` on port 8080 (handles WebSocket upgrade)
+  - desktop container — runs `vncserver` + `websockify`
+- **PersistentVolumeClaim** — 5Gi default, mounted at `/home/admin`
+- **Service** — exposes port 8080 (nginx)
+- **Ingress** — nginx ingress controller with oauth2-proxy auth
+- **oauth2-proxy** — optional SSO subchart
+
+#### Install
+
+```bash
+# 1. Copy values and fill in oauth2-proxy secrets
+cp charts/debian-desktop/values.yaml helm-values.yaml
+# Edit helm-values.yaml with your secrets
+
+# 2. Install
+make helm-install
+```
+
+#### Upgrade
+
+```bash
+make helm-upgrade
+```
+
+#### Render templates
+
+```bash
+make helm-render
+```
+
+### Architecture
+
+```
+Browser ──HTTPS──> Ingress ──HTTP──> nginx sidecar (:8080) ──HTTP──> desktop (:6901)
+                                       │                                  │
+                                       │                           websockify + cert
+                                       │                                  │
+                                                                     TigerVNC (:5901)
+```
+
+The nginx sidecar sits inside the pod and proxies HTTP to the desktop container's HTTPS endpoint, handling WebSocket upgrades for noVNC. The Ingress terminates external HTTPS and delegates auth to oauth2-proxy.
+
+### Publishing chart updates
+
+After any chart change:
+
+```bash
+make helm-package && make helm-index
+```
+
+Commit the new `.tgz` and `index.yaml` — the Helm repo is served via GitHub Pages at `https://flaccid.github.io/container-debian-desktop/`.
+
+## CI/CD 🔄
+
+On push to `main`, GitHub Actions builds and pushes `flaccid/debian-desktop:latest` to Docker Hub. Chart version bumps and `index.yaml` updates are done manually.
+
+## Build & Make Targets 🛠️
+
+| Target | Description |
+|---|---|
+| `make docker-build` | Build the Docker image |
+| `make docker-build-clean` | Build with `--no-cache` |
+| `make docker-run` | Run container locally |
+| `make docker-push` | Push to Docker Hub |
+| `make docker-exec-shell` | Open a shell in running container |
+| `make helm-lint` | Validate the chart |
+| `make helm-install` | Install from local chart |
+| `make helm-upgrade` | Upgrade deployed release |
+| `make helm-package` | Package chart into `.tgz` |
+| `make helm-index` | Update Helm repo index |

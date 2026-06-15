@@ -1,21 +1,24 @@
-# AGENTS.md - Repository Instructions
+# AGENTS.md
 
 ## Overview
-- Project: Debian-based desktop container (Debian Trixie) + Helm chart.
-- Image is optimized for persistence and runs as a non-root user (`admin`).
+- Debian Trixie XFCE desktop container + Helm chart. Non-root `admin` (UID 1000).
+- Serves noVNC via HTTPS/WSS on `:6901` (self-signed cert at `/home/admin/.vnc/self.pem`).
+- VNC auth disabled (`-SecurityTypes None --I-KNOW-THIS-IS-INSECURE`).
 
-## Development Commands
-- **Build Image:** `make docker-build`
-- **Run Image Locally:** `make docker-run` 
-  - *Note:* If `make docker-run` fails due to TTY constraints, run the `docker run` command directly as defined in the `Makefile`.
+## Build & Run
+- `make docker-build` — builds `flaccid/debian-desktop:latest`
+- `make docker-run` — runs locally on `:6901` (add `--entrypoint bash` if TTY issues)
+- CI: `.github/workflows/container_image.yml` — on push to `main`, builds & pushes to Docker Hub
 
-## Helm Chart
-- Located in: `./charts/debian-desktop/`
-- Verify with: `helm lint charts/debian-desktop`
-
-## Quirks & Conventions
-- **VNC Authentication:** Currently disabled (`-SecurityTypes None`) for ease of access over HTTPS/WSS.
-- **User:** Container runs as user `admin` (UID 1000).
-- **Certificate:** Auto-generated at `/home/admin/.vnc/self.pem`.
-- **NoVNC:** Served at `:6901` (HTTPS).
-- **Style:** Adwaita icon theme and gnome-themes-extra are installed to support alternative themes in XFCE.
+## Helm Chart (`charts/debian-desktop/`)
+- **Release flow:** after any chart change, run:
+  ```
+  make helm-package && make helm-index
+  ```
+  Commit the new `.tgz` and `index.yaml` both.
+- `helm lint charts/debian-desktop` — validate chart
+- `helm-values.yaml` is gitignored — copy from `values.yaml` and fill in oauth2-proxy secrets before `make helm-install` / `make helm-upgrade`
+- StatefulSet runs `privileged: true`; has an initContainer (`fix-permissions`) that `chown -R 1000:1000 /home/admin` on PVC mount
+- nginx sidecar container proxies `:6901` → `:8080` (handles WebSocket upgrade)
+- oauth2-proxy is a subchart dependency — configure via `oauth2-proxy.*` values
+- Helm repo hosted via GitHub Pages at `https://flaccid.github.io/container-debian-desktop/`
