@@ -122,9 +122,11 @@ XML
 # Provide an xstartup script that launches XFCE and ensures the correct panel config
 RUN cat > /home/$USERNAME/.vnc/xstartup << 'XSTARTUP'
 #!/bin/bash
+xrdb $HOME/.Xresources
+dbus-launch startxfce4 &
 
-# Ensure config directory exists
-mkdir -p $HOME/.config/xfce4/xfconf/xfce-perchannel-xml
+# Wait for the session to create its default files, then overwrite the panel config
+sleep 5
 
 # Force single-panel configuration
 cat > $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml << 'XML'
@@ -182,10 +184,7 @@ cat > $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml << 'XML'
 </channel>
 XML
 
-xrdb $HOME/.Xresources
-dbus-launch startxfce4 &
-
-sleep 2
+# Restart the panel to apply the new config
 xfce4-panel --restart
 XSTARTUP
 RUN chmod +x /home/$USERNAME/.vnc/xstartup
