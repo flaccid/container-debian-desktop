@@ -87,12 +87,14 @@ COPY --chown=admin:admin config/xfce4 /etc/skel/admin/.config/xfce4
 
 # Setup VNC configuration in the skeleton directory
 RUN mkdir -p /etc/skel/admin/.vnc \
+    && mkdir -p /etc/skel/admin/.config/tigervnc \
     && openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/skel/admin/.vnc/self.pem -out /etc/skel/admin/.vnc/self.pem -days 3650 -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost" \
-    && chown -R admin:admin /etc/skel/admin/.vnc
+    && chown -R admin:admin /etc/skel/admin/.vnc /etc/skel/admin/.config/tigervnc
 
-# Provide an xstartup script in the skeleton directory
+# Provide an xstartup script in both traditional and XDG locations
 COPY --chown=admin:admin config/xstartup /etc/skel/admin/.vnc/xstartup
-RUN chmod +x /etc/skel/admin/.vnc/xstartup
+RUN chmod +x /etc/skel/admin/.vnc/xstartup \
+    && ln -sf /home/admin/.vnc/xstartup /etc/skel/admin/.config/tigervnc/xstartup
 
 # Create required X11 session files in the skeleton directory
 RUN touch /etc/skel/admin/.Xauthority /etc/skel/admin/.Xresources \
