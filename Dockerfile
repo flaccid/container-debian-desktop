@@ -123,7 +123,7 @@ XML
 RUN cat > /home/$USERNAME/.vnc/xstartup << 'XSTARTUP'
 #!/bin/bash
 xrdb $HOME/.Xresources
-startxfce4 &
+dbus-launch startxfce4 &
 
 # Wait for XFCE to initialise, then remove any panel beyond panel-0
 sleep 8
