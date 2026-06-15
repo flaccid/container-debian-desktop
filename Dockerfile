@@ -20,6 +20,7 @@ RUN apt-get update     && apt-get install -y --no-install-recommends \
 
 # Install desktop environment, VNC server, noVNC, and other utilities
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    gosu \
     xfce4 \
     xfce4-terminal \
     tigervnc-standalone-server \
@@ -94,11 +95,10 @@ COPY --chown=admin:admin config/xstartup /etc/skel/admin/.vnc/xstartup
 RUN chmod +x /etc/skel/admin/.vnc/xstartup
 
 # Switch to the non-root user
-USER $USERNAME
-WORKDIR /home/$USERNAME
+USER root
 
 # Copy in the entrypoint script
-COPY --chown=admin:admin entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose the noVNC port
