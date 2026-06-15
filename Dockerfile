@@ -91,18 +91,33 @@ RUN mkdir -p /home/$USERNAME/.config/tigervnc
 
 RUN touch /home/$USERNAME/.Xauthority
 
-# Configure XFCE defaults: Adwaita-dark theme
+# Configure XFCE defaults: Adwaita-dark theme and wallpaper
 RUN mkdir -p /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml \
     && { \
          echo '<?xml version="1.0" encoding="UTF-8"?>'; \
-         echo ''; \
          echo '<channel name="xsettings" version="1.0">'; \
          echo '  <property name="Net" type="empty">'; \
          echo '    <property name="ThemeName" type="string" value="Adwaita-dark"/>'; \
          echo '    <property name="IconThemeName" type="string" value="Adwaita"/>'; \
          echo '  </property>'; \
          echo '</channel>'; \
-       } > /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
+       } > /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml \
+    && cat > /home/$USERNAME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml << 'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitor0" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="/usr/share/backgrounds/wallpaper.jpg"/>
+        </property>
+      </property>
+    </property>
+  </property>
+</channel>
+XML
 
 # Provide an xstartup script that launches XFCE and removes extra panels at startup
 RUN cat > /home/$USERNAME/.vnc/xstartup << 'XSTARTUP'
@@ -114,11 +129,6 @@ startxfce4 &
 sleep 8
 xfce4-panel --remove 2>/dev/null || true
 xfce4-panel --remove 2>/dev/null || true
-# Set wallpaper
-WALLPAPER=/usr/share/backgrounds/wallpaper.jpg
-XFCONF_PATH=/backdrop/screen0/monitor0/workspace0
-xfconf-query -c xfce4-desktop -p ${XFCONF_PATH}/last-image --create -t string -s "$WALLPAPER"
-xfconf-query -c xfce4-desktop -p ${XFCONF_PATH}/image-style --create -t int -s 5
 XSTARTUP
 RUN chmod +x /home/$USERNAME/.vnc/xstartup
 
