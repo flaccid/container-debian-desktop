@@ -45,7 +45,17 @@ RUN { \
       echo 'exec /opt/google/chrome/google-chrome --no-sandbox --disable-gpu --disable-dev-shm-usage --test-type "$@"'; \
     } > /usr/local/bin/google-chrome \
     && chmod +x /usr/local/bin/google-chrome \
-    && ln -sf google-chrome /usr/local/bin/google-chrome-stable
+    && ln -sf google-chrome /usr/local/bin/google-chrome-stable \
+    && { \
+         echo '#!/bin/bash'; \
+         echo 'exec /opt/Signal/signal-desktop --no-sandbox "$@"'; \
+       } > /usr/local/bin/signal-desktop \
+    && chmod +x /usr/local/bin/signal-desktop \
+    && { \
+         echo '#!/bin/bash'; \
+         echo 'exec /usr/share/code/code --no-sandbox "$@"'; \
+       } > /usr/local/bin/code \
+    && chmod +x /usr/local/bin/code
 
 # Create a non-root user (UID 1000)
 ARG USERNAME=admin
