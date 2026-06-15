@@ -111,7 +111,7 @@ xrdb $HOME/.Xresources
 startxfce4 &
 
 # Wait for XFCE to initialise, then remove any panel beyond panel-0
-sleep 4
+sleep 8
 xfce4-panel --remove 2>/dev/null || true
 xfce4-panel --remove 2>/dev/null || true
 # Set wallpaper
