@@ -94,6 +94,10 @@ RUN mkdir -p /etc/skel/admin/.vnc \
 COPY --chown=admin:admin config/xstartup /etc/skel/admin/.vnc/xstartup
 RUN chmod +x /etc/skel/admin/.vnc/xstartup
 
+# Create required X11 session files in the skeleton directory
+RUN touch /etc/skel/admin/.Xauthority /etc/skel/admin/.Xresources \
+    && chown admin:admin /etc/skel/admin/.Xauthority /etc/skel/admin/.Xresources
+
 # Switch to the non-root user
 USER root
 
