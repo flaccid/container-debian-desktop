@@ -15,6 +15,7 @@ if [ -d "$HOME/.config/xfce4" ]; then
 fi
 mkdir -p "$HOME/.config"
 cp -r /etc/skel/admin/.config/xfce4 "$HOME/.config/"
+cp -r /etc/skel/admin/.config/autostart "$HOME/.config/" 2>/dev/null || true
 
 # 3. Restore VNC startup files
 cp -r /etc/skel/admin/.vnc/* "$HOME/.vnc/" 2>/dev/null || true
