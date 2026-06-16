@@ -7,14 +7,22 @@
   </property>
   <property name="xfwm4" type="empty">
     <property name="custom" type="empty">
+      <property name="&lt;Super&gt;KP_Left" type="empty"/>
+      <property name="&lt;Super&gt;KP_Right" type="empty"/>
+      <property name="&lt;Super&gt;KP_Up" type="empty"/>
+      <property name="&lt;Super&gt;KP_Down" type="empty"/>
+      <property name="&lt;Super&gt;KP_Page_Up" type="empty"/>
+      <property name="&lt;Super&gt;KP_Home" type="empty"/>
+      <property name="&lt;Super&gt;KP_End" type="empty"/>
+      <property name="&lt;Super&gt;KP_Next" type="empty"/>
+      <property name="&lt;Primary&gt;&lt;Shift&gt;Left" type="string" value="tile_left_key"/>
+      <property name="&lt;Primary&gt;&lt;Shift&gt;Right" type="string" value="tile_right_key"/>
+      <property name="&lt;Primary&gt;&lt;Shift&gt;Up" type="string" value="tile_up_key"/>
+      <property name="&lt;Primary&gt;&lt;Shift&gt;Down" type="string" value="tile_down_key"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;Left" type="string" value="left_workspace_key"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;Right" type="string" value="right_workspace_key"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;Up" type="string" value="up_workspace_key"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;Down" type="string" value="down_workspace_key"/>
-      <property name="&lt;Shift&gt;&lt;Alt&gt;Left" type="string" value="tile_left_key"/>
-      <property name="&lt;Shift&gt;&lt;Alt&gt;Right" type="string" value="tile_right_key"/>
-      <property name="&lt;Shift&gt;&lt;Alt&gt;Up" type="string" value="tile_up_key"/>
-      <property name="&lt;Shift&gt;&lt;Alt&gt;Down" type="string" value="tile_down_key"/>
       <property name="override" type="bool" value="true"/>
     </property>
   </property>
