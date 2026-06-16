@@ -1,24 +1,31 @@
 #!/bin/bash
-# Script to restore XFCE4 defaults from the image skeleton
+# Script to restore XFCE4 defaults and reload the UI
 
 echo "Restoring XFCE4 defaults from /etc/skel/admin..."
 
-# Kill configuration daemon and other XFCE processes
-killall -w xfconfd xfce4-panel xfdesktop xfwm4 2>/dev/null || true
+# 1. Kill core XFCE components
+# We must kill xfconfd so it doesn't overwrite our files with cached data on exit
+killall -9 xfconfd xfce4-panel xfdesktop xfwm4 2>/dev/null || true
+sleep 1
 
-# Backup existing config just in case
+# 2. Backup and Restore
 if [ -d "$HOME/.config/xfce4" ]; then
-    BACKUP_DIR="$HOME/.config/xfce4.bak.$(date +%Y%m%d%H%M%S)"
-    echo "Backing up current config to $BACKUP_DIR"
-    mv "$HOME/.config/xfce4" "$BACKUP_DIR"
+    mv "$HOME/.config/xfce4" "$HOME/.config/xfce4.bak.$(date +%Y%m%d%H%M%S)"
 fi
-
-# Restore from skeleton
 mkdir -p "$HOME/.config"
 cp -r /etc/skel/admin/.config/xfce4 "$HOME/.config/"
-cp -r /etc/skel/admin/.vnc "$HOME/"
-touch "$HOME/.Xauthority"
-touch "$HOME/.Xresources"
 
-echo "Defaults restored."
-echo "Please logout or restart the container for all changes to take effect."
+# 3. Re-link/Restore VNC startup files
+cp -r /etc/skel/admin/.vnc/* "$HOME/.vnc/" 2>/dev/null || true
+
+# 4. Restart core components
+# Note: xfsettingsd will often start xfconfd automatically
+export DISPLAY=:1
+xfsettingsd &
+sleep 1
+xfwm4 --replace &
+xfce4-panel &
+xfdesktop &
+
+echo "Reset complete. The UI should reload momentarily."
+echo "If any elements are missing, a container restart is recommended."
