@@ -4,6 +4,7 @@ FROM debian:trixie-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Add third-party apt repos (VS Code, Google Chrome, Signal)
+ARG GIT_INFO="unknown"
 RUN apt-get update     && apt-get install -y --no-install-recommends \
         curl \
         ca-certificates \
@@ -16,11 +17,14 @@ RUN apt-get update     && apt-get install -y --no-install-recommends \
     && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome-keyring.gpg \
     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
     && curl -fsSL https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor -o /usr/share/keyrings/signal-desktop-keyring.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-desktop.list
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/signal-desktop-keyring.gpg] https://updates.signal.org/desktop/apt xenial main" > /etc/apt/sources.list.d/signal-desktop.list \
+    && date > /etc/lastbuilt \
+    && echo "$GIT_INFO" > /etc/gitinfo
 
 # Install desktop environment, VNC server, noVNC, and other utilities
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gosu \
+    psmisc \
     xfce4 \
     xfce4-terminal \
     tigervnc-standalone-server \
@@ -118,9 +122,10 @@ RUN touch /etc/skel/admin/.Xauthority /etc/skel/admin/.Xresources \
 # Switch to the non-root user
 USER root
 
-# Copy in the entrypoint script
+# Copy in the entrypoint script and reset script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY config/reset-xfce4 /usr/local/bin/reset-xfce4
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/reset-xfce4
 
 # Expose the noVNC port
 EXPOSE 6901

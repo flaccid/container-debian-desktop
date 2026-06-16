@@ -1,0 +1,24 @@
+#!/bin/bash
+# Script to restore XFCE4 defaults from the image skeleton
+
+echo "Restoring XFCE4 defaults from /etc/skel/admin..."
+
+# Kill configuration daemon and other XFCE processes
+killall -w xfconfd xfce4-panel xfdesktop xfwm4 2>/dev/null || true
+
+# Backup existing config just in case
+if [ -d "$HOME/.config/xfce4" ]; then
+    BACKUP_DIR="$HOME/.config/xfce4.bak.$(date +%Y%m%d%H%M%S)"
+    echo "Backing up current config to $BACKUP_DIR"
+    mv "$HOME/.config/xfce4" "$BACKUP_DIR"
+fi
+
+# Restore from skeleton
+mkdir -p "$HOME/.config"
+cp -r /etc/skel/admin/.config/xfce4 "$HOME/.config/"
+cp -r /etc/skel/admin/.vnc "$HOME/"
+touch "$HOME/.Xauthority"
+touch "$HOME/.Xresources"
+
+echo "Defaults restored."
+echo "Please logout or restart the container for all changes to take effect."

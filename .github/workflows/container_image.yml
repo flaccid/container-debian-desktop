@@ -29,6 +29,11 @@ jobs:
             type=ref,event=tag
             type=sha
 
+      - name: Get Git Info
+        id: git_info
+        run: |
+          echo "GIT_INFO=$(git log -1 --pretty=format:'%h %s (%ci)')" >> $GITHUB_OUTPUT
+
       - name: Build and push container image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
@@ -37,3 +42,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            GIT_INFO=${{ steps.git_info.outputs.GIT_INFO }}

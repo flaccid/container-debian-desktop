@@ -19,6 +19,7 @@ docker-push:: ## Pushes the docker image to the registry
 docker-build:: ## builds the docker image locally
 		@docker build  \
 			--pull \
+			--build-arg GIT_INFO="$(shell git log -1 --pretty=format:'%h %s (%ci)')" \
 			-t $(IMAGE_TAG) \
 				$(WORKING_DIR)
 
@@ -26,6 +27,7 @@ docker-build-clean:: ## cleanly builds the docker image locally
 		@docker build  \
 			--no-cache \
 			--pull \
+			--build-arg GIT_INFO="$(shell git log -1 --pretty=format:'%h %s (%ci)')" \
 			-t $(IMAGE_TAG) \
 				$(WORKING_DIR)
 
