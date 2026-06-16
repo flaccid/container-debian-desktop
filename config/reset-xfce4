@@ -3,29 +3,41 @@
 
 echo "Restoring XFCE4 defaults from /etc/skel/admin..."
 
-# 1. Kill core XFCE components
-# We must kill xfconfd so it doesn't overwrite our files with cached data on exit
-killall -9 xfconfd xfce4-panel xfdesktop xfwm4 2>/dev/null || true
-sleep 1
+# 1. Kill core XFCE components aggressively
+# xfconfd MUST be killed with -9 to prevent it from saving state on exit
+killall -9 xfconfd xfsettingsd xfce4-panel xfdesktop xfwm4 2>/dev/null || true
+sleep 2
 
-# 2. Backup and Restore
+# 2. Backup and Restore files
 if [ -d "$HOME/.config/xfce4" ]; then
-    mv "$HOME/.config/xfce4" "$HOME/.config/xfce4.bak.$(date +%Y%m%d%H%M%S)"
+    BACKUP_DIR="$HOME/.config/xfce4.bak.$(date +%Y%m%d%H%M%S)"
+    echo "Backing up current config to $BACKUP_DIR"
+    mv "$HOME/.config/xfce4" "$BACKUP_DIR"
 fi
 mkdir -p "$HOME/.config"
 cp -r /etc/skel/admin/.config/xfce4 "$HOME/.config/"
 
-# 3. Re-link/Restore VNC startup files
+# 3. Restore VNC startup files
 cp -r /etc/skel/admin/.vnc/* "$HOME/.vnc/" 2>/dev/null || true
 
 # 4. Restart core components
-# Note: xfsettingsd will often start xfconfd automatically
 export DISPLAY=:1
 xfsettingsd &
-sleep 1
+sleep 2
+
+# 5. Explicitly apply shortcuts via xfconf-query to ensure they are registered
+echo "Applying custom keyboard shortcuts..."
+xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Primary><Shift>Left" -n -t string -s "tile_left_key"
+xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Primary><Shift>Right" -n -t string -s "tile_right_key"
+xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Primary><Shift>Up" -n -t string -s "tile_up_key"
+xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Primary><Shift>Down" -n -t string -s "tile_down_key"
+xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Primary><Alt>Left" -n -t string -s "left_workspace_key"
+xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Primary><Alt>Right" -n -t string -s "right_workspace_key"
+xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Primary><Alt>Up" -n -t string -s "up_workspace_key"
+xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Primary><Alt>Down" -n -t string -s "down_workspace_key"
+
 xfwm4 --replace &
 xfce4-panel &
 xfdesktop &
 
 echo "Reset complete. The UI should reload momentarily."
-echo "If any elements are missing, a container restart is recommended."
