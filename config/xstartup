@@ -25,8 +25,9 @@ xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Left" -n -t string -s "lef
 xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Right" -n -t string -s "right_workspace_key"
 xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Up" -n -t string -s "up_workspace_key"
 xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Down" -n -t string -s "down_workspace_key"
-# Ensure overrides don't break defaults
-xfconf-query -c $CHAN -p "/xfwm4/custom/override" -n -t bool -s false
+# Ensure overrides are set to true so custom settings are honored
+xfconf-query -c $CHAN -p "/xfwm4/custom/override" -n -t bool -s true
+xfconf-query -c $CHAN -p "/commands/custom/override" -n -t bool -s true
 
 # Also ensure tiling is enabled in the xfwm4 channel
 xfconf-query -c xfwm4 -p /general/tile_on_move -n -t bool -s true

@@ -4,6 +4,7 @@
 echo "Restoring XFCE4 defaults from /etc/skel/admin..."
 
 # 1. Kill core XFCE components aggressively
+# xfconfd MUST be killed with -9 to prevent it from saving state on exit
 killall -9 xfconfd xfsettingsd xfce4-panel xfdesktop xfwm4 2>/dev/null || true
 sleep 2
 
@@ -24,29 +25,25 @@ export DISPLAY=:1
 xfsettingsd &
 sleep 2
 
-# 5. Explicitly apply shortcuts via xfconf-query
+# 5. Explicitly apply shortcuts via xfconf-query (The "God Mode" Fix)
 echo "Applying custom keyboard shortcuts..."
 CHAN="xfce4-keyboard-shortcuts"
 
-# Cleanup old problematic shortcuts first
-xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Shift>Left" -r 2>/dev/null || true
-xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Shift>Right" -r 2>/dev/null || true
-xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Shift>Up" -r 2>/dev/null || true
-xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Shift>Down" -r 2>/dev/null || true
+# Set override to true to make sure custom shortcuts are honored
+xfconf-query -c $CHAN -p "/xfwm4/custom/override" -n -t bool -s true
+xfconf-query -c $CHAN -p "/commands/custom/override" -n -t bool -s true
 
-# Apply new Alt+Shift shortcuts
-xfconf-query -c $CHAN -p "/xfwm4/custom/<Alt><Shift>Left" -n -t string -s "tile_left_key"
-xfconf-query -c $CHAN -p "/xfwm4/custom/<Alt><Shift>Right" -n -t string -s "tile_right_key"
-xfconf-query -c $CHAN -p "/xfwm4/custom/<Alt><Shift>Up" -n -t string -s "tile_up_key"
-xfconf-query -c $CHAN -p "/xfwm4/custom/<Alt><Shift>Down" -n -t string -s "tile_down_key"
+# Apply tiling shortcuts (using <Shift><Alt> order proven in GUI)
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Shift><Alt>Left" -n -t string -s "tile_left_key"
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Shift><Alt>Right" -n -t string -s "tile_right_key"
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Shift><Alt>Up" -n -t string -s "tile_up_key"
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Shift><Alt>Down" -n -t string -s "tile_down_key"
 
 # Apply workspace shortcuts
 xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Left" -n -t string -s "left_workspace_key"
 xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Right" -n -t string -s "right_workspace_key"
 xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Up" -n -t string -s "up_workspace_key"
 xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Down" -n -t string -s "down_workspace_key"
-
-xfconf-query -c $CHAN -p "/xfwm4/custom/override" -n -t bool -s false
 
 # 6. Final UI Reload
 xfwm4 --replace &
