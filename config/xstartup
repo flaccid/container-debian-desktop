@@ -1,3 +1,35 @@
 #!/bin/bash
 xrdb $HOME/.Xresources
-exec dbus-launch --exit-with-session startxfce4
+
+# Start XFCE in the background
+dbus-launch startxfce4 &
+XFCE_PID=$!
+
+# Wait for xfconfd to be ready
+for i in {1..10}; do
+    if xfconf-query -c xfwm4 -p /general/tile_on_move >/dev/null 2>&1; then
+        break
+    fi
+    sleep 1
+done
+
+# Force keyboard shortcuts
+CHAN="xfce4-keyboard-shortcuts"
+# Tiling - using the exact order Shift+Alt proven in GUI
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Shift><Alt>Left" -n -t string -s "tile_left_key"
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Shift><Alt>Right" -n -t string -s "tile_right_key"
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Shift><Alt>Up" -n -t string -s "tile_up_key"
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Shift><Alt>Down" -n -t string -s "tile_down_key"
+# Workspaces
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Left" -n -t string -s "left_workspace_key"
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Right" -n -t string -s "right_workspace_key"
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Up" -n -t string -s "up_workspace_key"
+xfconf-query -c $CHAN -p "/xfwm4/custom/<Primary><Alt>Down" -n -t string -s "down_workspace_key"
+# Ensure overrides don't break defaults
+xfconf-query -c $CHAN -p "/xfwm4/custom/override" -n -t bool -s false
+
+# Also ensure tiling is enabled in the xfwm4 channel
+xfconf-query -c xfwm4 -p /general/tile_on_move -n -t bool -s true
+
+# Wait for the session to finish
+wait $XFCE_PID
