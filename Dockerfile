@@ -114,6 +114,7 @@ RUN mkdir -p /etc/skel/admin/Desktop /etc/skel/admin/.config/autostart \
     && cp /usr/share/applications/code.desktop /etc/skel/admin/Desktop/ \
     && cp /usr/share/applications/guake.desktop /etc/skel/admin/.config/autostart/ \
     && chmod +x /etc/skel/admin/Desktop/*.desktop \
+    && chmod +x /etc/skel/admin/.config/autostart/*.desktop \
     && chown -R admin:admin /etc/skel/admin/Desktop /etc/skel/admin/.config/autostart
 
 # Create required X11 session files in the skeleton directory
