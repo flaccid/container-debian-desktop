@@ -38,6 +38,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     dbus-x11 \
     openssl \
     adwaita-icon-theme \
+    papirus-icon-theme \
+    librsvg2-common \
     gnome-themes-extra \
     gsettings-desktop-schemas \
     dconf-cli \
@@ -45,7 +47,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     code \
     google-chrome-stable \
     signal-desktop \
+    fonts-cantarell \
+    fonts-jetbrains-mono \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
+
+# Install the Ubuntu font family (not packaged in Trixie)
+RUN curl -fsSL -o /tmp/fonts-ubuntu.deb \
+    "http://ftp.debian.org/debian/pool/non-free/f/fonts-ubuntu/fonts-ubuntu_0.83-6_all.deb" \
+    && dpkg -i /tmp/fonts-ubuntu.deb \
+    && rm /tmp/fonts-ubuntu.deb
 
 # Create wrapper scripts for apps that need --no-sandbox in containers
 RUN { \

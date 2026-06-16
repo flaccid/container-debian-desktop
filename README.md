@@ -34,6 +34,8 @@ The image comes with several productivity tools ready to use:
 - **Clean Layout** — single-panel configuration (bloat removed)
 - **Desktop Icons** — launchers for main apps pre-placed on the desktop
 - **Keyboard Shortcuts** — custom tiling and system shortcuts (see [keyboard-shortcuts.md](docs/keyboard-shortcuts.md))
+- **Icon Theme** — Papirus-Dark for modern, consistent application icons
+- **Fonts** — Ubuntu font family for UI text, JetBrains Mono for monospace (terminal/code), Cantarell also available
 
 ## Quick Start 🚀
 
@@ -83,8 +85,6 @@ The chart at `charts/debian-desktop/` deploys everything:
 ### Image Tagging & Caching 🏷️
 
 To avoid stale image caching on cluster nodes, CI tags each build with a semantic version tag (`v0.x.y`) and `latest`. The `imagePullPolicy: Always` alone is insufficient when the `:latest` tag resolves to the same digest — always use a specific version tag in production.
-
-ArgoCD deployments reference a fixed semver tag (e.g., `v0.2.6`) and are bumped explicitly after each release.
 
 #### Install
 
