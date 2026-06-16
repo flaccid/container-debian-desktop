@@ -53,9 +53,9 @@ make docker-run
 
 Then open **https://localhost:6901** in a browser (accept the self-signed cert warning).
 
-> If you get TTY issues, use `make docker-run OPTS="--entrypoint bash"` or just:
+> If you get TTY issues, use `make docker-run OPTS=""` or run without `-it`:
 > ```bash
-> docker run -it --rm -p 6901:6901 flaccid/debian-desktop:latest
+> docker run --rm -p 6901:6901 flaccid/debian-desktop:latest
 > ```
 
 ### Run with a persistent volume
@@ -85,7 +85,6 @@ The chart at `charts/debian-desktop/` deploys everything:
 ### Image Tagging & Caching 🏷️
 
 To avoid stale image caching on cluster nodes, CI tags each build with a semantic version tag (`v0.x.y`) and `latest`. The `imagePullPolicy: Always` alone is insufficient when the `:latest` tag resolves to the same digest — always use a specific version tag in production.
-
 #### Install
 
 ```bash
@@ -119,7 +118,7 @@ Browser ──HTTPS──> Ingress ──HTTP──> nginx sidecar (:8080) ─�
                                                                      TigerVNC (:5901)
 ```
 
-The nginx sidecar sits inside the pod and proxies HTTP to the desktop container's HTTPS endpoint, handling WebSocket upgrades for noVNC. It also ensures the custom `index.html` is served to initialize the browser settings (like scaling mode). The Ingress terminates external HTTPS and delegates auth to oauth2-proxy.
+The nginx sidecar sits inside the pod, serves the custom `index.html`, and proxies `/` to websockify on `localhost:6901` (plain HTTP — TLS is handled by the Ingress). WebSocket upgrades for noVNC are passed through transparently. The Ingress terminates external HTTPS and delegates auth to oauth2-proxy.
 
 ### Publishing chart updates
 
