@@ -7,10 +7,10 @@ Use these shortcuts to quickly snap windows to different parts of the screen.
 
 | Action | Shortcut |
 | :--- | :--- |
-| **Tile Left** | `Ctrl` + `Shift` + `←` |
-| **Tile Right** | `Ctrl` + `Shift` + `→` |
-| **Tile Up** | `Ctrl` + `Shift` + `↑` |
-| **Tile Down** | `Ctrl` + `Shift` + `↓` |
+| **Tile Left** | `Alt` + `Shift` + `←` |
+| **Tile Right** | `Alt` + `Shift` + `→` |
+| **Tile Up** | `Alt` + `Shift` + `↑` |
+| **Tile Down** | `Alt` + `Shift` + `↓` |
 
 ---
 

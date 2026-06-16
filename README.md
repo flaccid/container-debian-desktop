@@ -33,6 +33,7 @@ The image comes with several productivity tools ready to use:
 - **Custom Wallpaper** — persistent, modern background pre-configured
 - **Clean Layout** — single-panel configuration (bloat removed)
 - **Desktop Icons** — launchers for main apps pre-placed on the desktop
+- **Keyboard Shortcuts** — custom tiling and system shortcuts (see [keyboard-shortcuts.md](docs/keyboard-shortcuts.md))
 
 ## Quick Start 🚀
 
