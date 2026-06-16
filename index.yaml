@@ -3,7 +3,17 @@ entries:
   debian-desktop:
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-15T20:02:18.116070484+10:00"
+    created: "2026-06-16T14:20:33.516029213+10:00"
+    description: A Helm chart for a persistent, web-based Linux desktop environment
+    digest: a03828745122833299499bf92d5d8c2d4b61f06f9f5c284af1718c96f621abac
+    name: debian-desktop
+    type: application
+    urls:
+    - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
+    appVersion: 1.19.0
+    created: "2026-06-16T14:20:33.515768715+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 9760ffc912ac766341698b09820aade7612c36598cbf7ac339b38bb039f36358
     name: debian-desktop
@@ -13,7 +23,7 @@ entries:
     version: 0.1.8
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-15T20:02:18.11579945+10:00"
+    created: "2026-06-16T14:20:33.514911808+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 51619e11342caf7edef4d5362320a6c04ada9c09a5aef2a9860d399055bf06cf
     name: debian-desktop
@@ -23,7 +33,7 @@ entries:
     version: 0.1.7
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-15T20:02:18.115466429+10:00"
+    created: "2026-06-16T14:20:33.514175366+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: a3c7421112fb561ad3bd7a981199fc02df9115777bfb8b80ecdc222f50756cf5
     name: debian-desktop
@@ -33,7 +43,7 @@ entries:
     version: 0.1.6
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-15T20:02:18.115228592+10:00"
+    created: "2026-06-16T14:20:33.513677035+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 28ab1b80ece3ea3f22b075c4446c2e8fb03bd8ea690f3ccb757fa50a9c5e9e4c
     name: debian-desktop
@@ -43,7 +53,7 @@ entries:
     version: 0.1.5
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-15T20:02:18.114976692+10:00"
+    created: "2026-06-16T14:20:33.513190539+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 37d0f346669c08852c70c465f9260cb47b9589c9531f3df149b20497454ba4d0
     name: debian-desktop
@@ -53,7 +63,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-15T20:02:18.114713236+10:00"
+    created: "2026-06-16T14:20:33.512717813+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 7fc5163c928ec20bac71c7cc617a6cafd05ab84b0f5674b1b9beb89d8940372f
     name: debian-desktop
@@ -63,7 +73,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-15T20:02:18.114415662+10:00"
+    created: "2026-06-16T14:20:33.512211928+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: dc6471b877b5658e4d41afe055a174a0396c30cba8aab03d73cea2062f85d4c3
     name: debian-desktop
@@ -73,7 +83,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-15T20:02:18.114211645+10:00"
+    created: "2026-06-16T14:20:33.511585476+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: dc7715cae930727d3069217d6e573b200dc9ec936eb4296476b4525f5e9460ea
     name: debian-desktop
@@ -83,7 +93,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-15T20:02:18.114027573+10:00"
+    created: "2026-06-16T14:20:33.510876809+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 29903c9d87683b941238aaac505611934f9b1ca500da816534d6d89954935adb
     name: debian-desktop
@@ -91,4 +101,4 @@ entries:
     urls:
     - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.1.0.tgz
     version: 0.1.0
-generated: "2026-06-15T20:02:18.113583952+10:00"
+generated: "2026-06-16T14:20:33.509865837+10:00"
