@@ -350,7 +350,8 @@ const AudioPlugin = {
 
     load() {
         this.initUi();
-        NV.observeState('connected', async () => {
+        const doc = document.documentElement;
+        const onConnected = async () => {
             if (!NVUI.getSetting('audio_enabled')) return;
             NV.disableOptions();
             try {
@@ -358,11 +359,18 @@ const AudioPlugin = {
             } catch (err) {
                 NVUI.showStatus(`Audio setup failed: ${err.message}`, 'error');
             }
-        });
-        NV.observeState('disconnected', async () => {
+        };
+        const onDisconnected = async () => {
             await this.stopAudio();
             NV.disableOptions(false);
-        });
+        };
+        // Observe future connect/disconnect state changes
+        NV.observeState('connected', onConnected);
+        NV.observeState('disconnected', onDisconnected);
+        // If already connected (noVNC loaded before this script), start immediately
+        if (doc.classList.contains('noVNC_connected')) {
+            onConnected();
+        }
     }
 };
 
