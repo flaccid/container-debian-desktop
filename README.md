@@ -27,6 +27,7 @@ The image comes with several productivity tools ready to use:
 - **Guake** — drop-down terminal (toggled with `F12`; autostarts via `~/.config/autostart/guake.desktop`)
 - **Git** — version control (`git version`)
 - **OpenCode** — open source AI coding agent (`opencode`)
+- **GitHub CLI** — GitHub from the terminal (`gh`)
 - **XFCE Utilities** — including Thunar file manager and XFCE terminal
 
 ## Customizations 🎨
