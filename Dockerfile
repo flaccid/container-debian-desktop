@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gosu \
     psmisc \
     xfce4 \
+    xfce4-taskmanager \
     xfce4-terminal \
     tigervnc-standalone-server \
     tigervnc-common \
