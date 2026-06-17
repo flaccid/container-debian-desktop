@@ -54,6 +54,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     git \
     gh \
+    golang-go \
+    kubectx \
+    make \
     && rm -rf /var/lib/apt/lists/*
 
 # Install the Ubuntu font family (not packaged in Trixie)
@@ -67,6 +70,17 @@ RUN curl -fsSL "https://github.com/anomalyco/opencode/releases/download/v1.17.7/
     && tar xzf /tmp/opencode.tar.gz -C /usr/local/bin/ opencode \
     && chmod +x /usr/local/bin/opencode \
     && rm /tmp/opencode.tar.gz
+
+# Install CLI tools: helm, kubectl, k9s, glab
+RUN curl -fsSL https://get.helm.sh/helm-v3.21.1-linux-amd64.tar.gz | tar xz -C /usr/local/bin --strip-components=1 linux-amd64/helm \
+    && curl -fsSL -o /usr/local/bin/kubectl "https://dl.k8s.io/release/v1.36.2/bin/linux/amd64/kubectl" \
+    && chmod +x /usr/local/bin/kubectl \
+    && curl -fsSL -o /tmp/k9s.tar.gz "https://github.com/derailed/k9s/releases/download/v0.51.0/k9s_Linux_amd64.tar.gz" \
+    && tar xzf /tmp/k9s.tar.gz -C /usr/local/bin k9s \
+    && rm /tmp/k9s.tar.gz \
+    && curl -fsSL -o /tmp/glab.tar.gz "https://gitlab.com/gitlab-org/cli/-/releases/v1.103.0/downloads/glab_1.103.0_linux_amd64.tar.gz" \
+    && tar xzf /tmp/glab.tar.gz --strip-components=2 -C /usr/local/bin glab_1.103.0_linux_amd64/bin/glab \
+    && rm /tmp/glab.tar.gz
 
 # Create wrapper scripts for apps that need --no-sandbox in containers
 RUN { \
