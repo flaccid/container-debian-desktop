@@ -49,6 +49,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     signal-desktop \
     fonts-cantarell \
     fonts-jetbrains-mono \
+    fonts-noto-color-emoji \
     unzip \
     git \
     && rm -rf /var/lib/apt/lists/*

@@ -46,6 +46,11 @@ commandTests:
     args: ["-c", "dpkg -s fonts-cantarell | grep -q 'Status: install ok installed'"]
     expectedOutput: []
 
+  - name: "fonts-noto-color-emoji is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s fonts-noto-color-emoji | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
   - name: "chrome wrapper is executable"
     command: "test"
     args: ["-x", "/usr/local/bin/google-chrome"]
