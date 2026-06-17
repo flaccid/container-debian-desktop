@@ -39,6 +39,7 @@ The image comes with several productivity tools ready to use:
 - **AWS CLI** — Amazon Web Services CLI v2 (`aws`)
 - **Make** — build automation tool (`make`)
 - **XFCE Utilities** — including Thunar file manager, XFCE terminal, and XFCE task manager
+- **Fonts** — Ubuntu, JetBrains Mono, Cantarell, Noto Color Emoji, and Noto fonts for broad Unicode script coverage
 
 ## Customizations 🎨
 
@@ -215,8 +216,8 @@ Chart version bumps and `index.yaml` updates are done manually.
 | `make helm-install` | Install from local chart |
 | `make helm-upgrade` | Upgrade deployed release |
 | `make test` | Run all tests |
-| `make test-structure` | Container structure tests (~47 assertions) |
-| `make test-bats` | Shell script unit tests (bats) |
+| `make test-structure` | Container structure tests (~48 assertions) |
+| `make test-bats` | Shell script unit tests (15 bats tests) |
 | `make test-smoke` | Runtime integration smoke test |
 | `make test-helm` | Helm chart lint |
 | `make helm-package` | Package chart into `.tgz` |
