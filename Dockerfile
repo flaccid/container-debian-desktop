@@ -52,6 +52,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-noto-color-emoji \
     unzip \
     git \
+    gh \
     && rm -rf /var/lib/apt/lists/*
 
 # Install the Ubuntu font family (not packaged in Trixie)
