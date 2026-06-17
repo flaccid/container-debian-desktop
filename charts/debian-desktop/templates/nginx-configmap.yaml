@@ -10,6 +10,19 @@ data:
         listen 8080;
         root /usr/share/novnc;
 
+        # Force fresh page loads — never cache the HTML/JS that loads the audio plugin
+        location ~* \.(html|js|json)$ {
+            add_header Cache-Control "no-cache, must-revalidate";
+            try_files $uri $uri/ @proxy;
+        }
+
+        # Add cache-bust param to the redirect URL so a stale cached index.html
+        # still forces a fresh fetch of vnc_auto.html
+        location = /index.html {
+            add_header Cache-Control "no-cache, must-revalidate";
+            return 302 /vnc.html?resize=remote;
+        }
+
         location / {
             try_files $uri $uri/ @proxy;
         }
