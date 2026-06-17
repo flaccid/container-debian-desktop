@@ -168,6 +168,12 @@ const NV = {
         settingLabel.appendChild(document.createTextNode(label));
         settingInput.addEventListener('change', () => NVUI.saveSetting(name));
         settingsList.appendChild(settingItem);
+        // noVNC's UI.start() is async and may not have initialized
+        // customSettings before window.load fires on some browser
+        // versions. Protect against undefined defaults/mandatory.
+        if (!NVUI.customSettings) NVUI.customSettings = { defaults: {}, mandatory: {} };
+        if (!NVUI.customSettings.defaults) NVUI.customSettings.defaults = {};
+        if (!NVUI.customSettings.mandatory) NVUI.customSettings.mandatory = {};
         NVUI.initSetting(name, defaultVal);
         this.optionEls.push(settingInput);
         return settingInput;
