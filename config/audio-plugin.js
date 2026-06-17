@@ -262,10 +262,11 @@ const AudioPlugin = {
             case 'aac': mime = 'audio/mp4; codecs="mp4a.40.2"'; break;
             default: throw new Error(`Unsupported codec ${codec}`);
         }
-        const wsSchema = (NVUI.getSetting('audio_encrypt')) ? 'wss://' : 'ws://';
-        const wsHost = NVUI.getSetting('audio_host');
-        const wsPort = NVUI.getSetting('audio_port');
-        const wsPath = NVUI.getSetting('audio_path');
+        const wsEncrypt = NVUI.getSetting('audio_encrypt') ?? (window.location.protocol === 'https:');
+        const wsSchema = wsEncrypt ? 'wss://' : 'ws://';
+        const wsHost = NVUI.getSetting('audio_host') || window.location.hostname;
+        const wsPort = NVUI.getSetting('audio_port') || window.location.port || (wsEncrypt ? '443' : '80');
+        const wsPath = NVUI.getSetting('audio_path') || 'audio/';
         this.ws = new WebSocket(`${wsSchema}${wsHost}:${wsPort}/${wsPath}`);
         this.ws.binaryType = 'arraybuffer';
         this.ws.addEventListener('error', async () => {
@@ -342,9 +343,10 @@ const AudioPlugin = {
         NV.addInput(audioSettings, 'Secret:', 'audio_secret', null, 'password', 'Optional connection secret (does NOT provide encryption)');
 
         const audioWsSettings = NV.addSubCategory(audioSettings, 'WebSocket');
-        NV.addInput(audioWsSettings, 'Encrypt', 'audio_encrypt', NVUI.getSetting('encrypt'), 'checkbox', 'Use encrypted WebSocket connection');
-        NV.addInput(audioWsSettings, 'Host:', 'audio_host', NVUI.getSetting('host'), 'text', 'WebSocket host for audio proxy');
-        NV.addInput(audioWsSettings, 'Port:', 'audio_port', NVUI.getSetting('port'), 'text', 'WebSocket port for audio proxy');
+        const pagePort = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
+        NV.addInput(audioWsSettings, 'Encrypt', 'audio_encrypt', window.location.protocol === 'https:', 'checkbox', 'Use encrypted WebSocket connection');
+        NV.addInput(audioWsSettings, 'Host:', 'audio_host', window.location.hostname, 'text', 'WebSocket host for audio proxy');
+        NV.addInput(audioWsSettings, 'Port:', 'audio_port', pagePort, 'text', 'WebSocket port for audio proxy');
         NV.addInput(audioWsSettings, 'Path:', 'audio_path', 'audio/', 'text', 'WebSocket path for audio proxy');
     },
 
