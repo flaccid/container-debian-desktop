@@ -2,8 +2,22 @@ apiVersion: v1
 entries:
   debian-desktop:
   - apiVersion: v2
+    appVersion: 0.5.5
+    created: "2026-06-18T07:59:25.452557203+10:00"
+    dependencies:
+    - name: oauth2-proxy
+      repository: file://./charts/oauth2-proxy
+      version: 0.1.0
+    description: A Helm chart for a persistent, web-based Linux desktop environment
+    digest: 11a49c7a493475d64c5e74d57ae669909168222a5829a1c8a5df5d55c8e64dd6
+    name: debian-desktop
+    type: application
+    urls:
+    - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.1.26.tgz
+    version: 0.1.26
+  - apiVersion: v2
     appVersion: 0.5.4
-    created: "2026-06-17T23:11:36.199001388+10:00"
+    created: "2026-06-18T07:59:25.451411959+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -17,7 +31,7 @@ entries:
     version: 0.1.25
   - apiVersion: v2
     appVersion: 0.5.4
-    created: "2026-06-17T23:11:36.198625766+10:00"
+    created: "2026-06-18T07:59:25.451010467+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -31,7 +45,7 @@ entries:
     version: 0.1.24
   - apiVersion: v2
     appVersion: 0.5.3
-    created: "2026-06-17T23:11:36.198254809+10:00"
+    created: "2026-06-18T07:59:25.450369945+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -45,7 +59,7 @@ entries:
     version: 0.1.23
   - apiVersion: v2
     appVersion: 0.5.2
-    created: "2026-06-17T23:11:36.197854838+10:00"
+    created: "2026-06-18T07:59:25.449665606+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -59,7 +73,7 @@ entries:
     version: 0.1.22
   - apiVersion: v2
     appVersion: 0.5.1
-    created: "2026-06-17T23:11:36.197491206+10:00"
+    created: "2026-06-18T07:59:25.449013485+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -73,7 +87,7 @@ entries:
     version: 0.1.21
   - apiVersion: v2
     appVersion: 0.5.0
-    created: "2026-06-17T23:11:36.197052286+10:00"
+    created: "2026-06-18T07:59:25.448458319+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -87,7 +101,7 @@ entries:
     version: 0.1.20
   - apiVersion: v2
     appVersion: 0.4.4
-    created: "2026-06-17T23:11:36.196508579+10:00"
+    created: "2026-06-18T07:59:25.447473648+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -101,7 +115,7 @@ entries:
     version: 0.1.19
   - apiVersion: v2
     appVersion: 0.4.4
-    created: "2026-06-17T23:11:36.196065639+10:00"
+    created: "2026-06-18T07:59:25.446764951+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 92ae498ceb604b636302a855e2cfa74fd234bce75cf686de228cf242cc90a87c
     name: debian-desktop
@@ -111,7 +125,7 @@ entries:
     version: 0.1.18
   - apiVersion: v2
     appVersion: 0.4.3
-    created: "2026-06-17T23:11:36.195786492+10:00"
+    created: "2026-06-18T07:59:25.446205405+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: a64a21e7cc149c0a5bd721ddd900212f8f030132fef9f0f593b43d1ce7bdabc2
     name: debian-desktop
@@ -121,7 +135,7 @@ entries:
     version: 0.1.17
   - apiVersion: v2
     appVersion: 0.4.2
-    created: "2026-06-17T23:11:36.195253824+10:00"
+    created: "2026-06-18T07:59:25.444616998+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 480e653b26ae5c7c90e5a42903e7a8c0a6e5d34ca1d4f40da4ced2cdc089d634
     name: debian-desktop
@@ -131,7 +145,7 @@ entries:
     version: 0.1.16
   - apiVersion: v2
     appVersion: 0.4.1
-    created: "2026-06-17T23:11:36.194613513+10:00"
+    created: "2026-06-18T07:59:25.444135281+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 0680eb1fc5592525b55606377bf97d4e805cbc9063264db46a1fc996ce763702
     name: debian-desktop
@@ -141,7 +155,7 @@ entries:
     version: 0.1.15
   - apiVersion: v2
     appVersion: 0.3.4
-    created: "2026-06-17T23:11:36.19436441+10:00"
+    created: "2026-06-18T07:59:25.443616762+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: cfcb68184b4a2260096204be3dd6aa7d9acb5400cc2bb6e3945b4cce0ad238ed
     name: debian-desktop
@@ -151,7 +165,7 @@ entries:
     version: 0.1.13
   - apiVersion: v2
     appVersion: 0.3.0
-    created: "2026-06-17T23:11:36.19410687+10:00"
+    created: "2026-06-18T07:59:25.443071747+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: ad3afdde7dfb98b4a35ffb98f15b6d38d0f14f2927ac7fe601ea7a0455099686
     name: debian-desktop
@@ -161,7 +175,7 @@ entries:
     version: 0.1.12
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.193833469+10:00"
+    created: "2026-06-18T07:59:25.442465503+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 2b64f30db4581566254e620e5dac9933cdf948a1db46b4f9e96d5b75bec5eded
     name: debian-desktop
@@ -171,7 +185,7 @@ entries:
     version: 0.1.11
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.193547088+10:00"
+    created: "2026-06-18T07:59:25.441993936+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 6ea99fde6fd8d13bd485b2a09dd2659060b1a2bc99cf48d9dc1f135ba0bce7ba
     name: debian-desktop
@@ -181,7 +195,7 @@ entries:
     version: 0.1.10
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.201289184+10:00"
+    created: "2026-06-18T07:59:25.456126963+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: a03828745122833299499bf92d5d8c2d4b61f06f9f5c284af1718c96f621abac
     name: debian-desktop
@@ -191,7 +205,7 @@ entries:
     version: 0.1.9
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.201020431+10:00"
+    created: "2026-06-18T07:59:25.455668004+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 9760ffc912ac766341698b09820aade7612c36598cbf7ac339b38bb039f36358
     name: debian-desktop
@@ -201,7 +215,7 @@ entries:
     version: 0.1.8
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.200790691+10:00"
+    created: "2026-06-18T07:59:25.455127462+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 51619e11342caf7edef4d5362320a6c04ada9c09a5aef2a9860d399055bf06cf
     name: debian-desktop
@@ -211,7 +225,7 @@ entries:
     version: 0.1.7
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.200559262+10:00"
+    created: "2026-06-18T07:59:25.454585404+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: a3c7421112fb561ad3bd7a981199fc02df9115777bfb8b80ecdc222f50756cf5
     name: debian-desktop
@@ -221,7 +235,7 @@ entries:
     version: 0.1.6
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.200316814+10:00"
+    created: "2026-06-18T07:59:25.454101783+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 28ab1b80ece3ea3f22b075c4446c2e8fb03bd8ea690f3ccb757fa50a9c5e9e4c
     name: debian-desktop
@@ -231,7 +245,7 @@ entries:
     version: 0.1.5
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.200034828+10:00"
+    created: "2026-06-18T07:59:25.453579919+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 37d0f346669c08852c70c465f9260cb47b9589c9531f3df149b20497454ba4d0
     name: debian-desktop
@@ -241,7 +255,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.199772195+10:00"
+    created: "2026-06-18T07:59:25.453087273+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 7fc5163c928ec20bac71c7cc617a6cafd05ab84b0f5674b1b9beb89d8940372f
     name: debian-desktop
@@ -251,7 +265,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.196676693+10:00"
+    created: "2026-06-18T07:59:25.447861507+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: dc6471b877b5658e4d41afe055a174a0396c30cba8aab03d73cea2062f85d4c3
     name: debian-desktop
@@ -261,7 +275,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.193189369+10:00"
+    created: "2026-06-18T07:59:25.441455574+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: dc7715cae930727d3069217d6e573b200dc9ec936eb4296476b4525f5e9460ea
     name: debian-desktop
@@ -271,7 +285,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.19.0
-    created: "2026-06-17T23:11:36.192961369+10:00"
+    created: "2026-06-18T07:59:25.440976573+10:00"
     description: A Helm chart for a persistent, web-based Linux desktop environment
     digest: 29903c9d87683b941238aaac505611934f9b1ca500da816534d6d89954935adb
     name: debian-desktop
@@ -279,4 +293,4 @@ entries:
     urls:
     - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.1.0.tgz
     version: 0.1.0
-generated: "2026-06-17T23:11:36.19259673+10:00"
+generated: "2026-06-18T07:59:25.440027929+10:00"
