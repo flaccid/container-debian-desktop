@@ -1,6 +1,6 @@
 DOCKER_REGISTRY = index.docker.io
 IMAGE_NAME = debian-desktop
-IMAGE_VERSION = 0.3.2
+IMAGE_VERSION = 0.3.3
 IMAGE_ORG = flaccid
 IMAGE_TAG = $(DOCKER_REGISTRY)/$(IMAGE_ORG)/$(IMAGE_NAME):$(IMAGE_VERSION)
 KUBE_NAMESPACE = default
@@ -102,6 +102,27 @@ helm-index:: ## creates/updates the helm repo index file
 helm-flush:: ## removes local helm packages and index file
 		@rm -f ./debian-desktop-*.tgz
 		@rm -f index.yaml
+
+test:: test-structure test-bats test-smoke test-helm ## runs all tests
+
+test-structure:: ## runs container structure tests against the local image
+		@echo "Running container structure tests..."
+		@curl -fsSL https://github.com/GoogleContainerTools/container-structure-test/releases/download/v1.22.1/container-structure-test-linux-amd64 -o /tmp/container-structure-test \
+			&& chmod +x /tmp/container-structure-test \
+			&& /tmp/container-structure-test test --image $(IMAGE_TAG) --config tests/container-structure-test.yaml
+
+test-bats:: ## runs shell script tests with bats
+		@echo "Running bats tests..."
+		@command -v bats >/dev/null 2>&1 || { echo "Installing bats..."; sudo apt-get update -qq && sudo apt-get install -y -qq bats; }
+		@bats tests/entrypoint.bats tests/reset-xfce4.bats
+
+test-smoke:: ## runs runtime smoke test against the local image
+		@echo "Running smoke test..."
+		@tests/smoke-test.sh $(IMAGE_TAG)
+
+test-helm:: ## runs helm lint
+		@echo "Running helm lint..."
+		$(MAKE) helm-validate
 
 # A help target including self-documenting targets (see the awk statement)
 define HELP_TEXT

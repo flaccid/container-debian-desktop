@@ -50,6 +50,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-cantarell \
     fonts-jetbrains-mono \
     unzip \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install the Ubuntu font family (not packaged in Trixie)
@@ -57,6 +58,12 @@ RUN curl -fsSL -o /tmp/fonts-ubuntu.deb \
     "http://ftp.debian.org/debian/pool/non-free/f/fonts-ubuntu/fonts-ubuntu_0.83-6_all.deb" \
     && dpkg -i /tmp/fonts-ubuntu.deb \
     && rm /tmp/fonts-ubuntu.deb
+
+# Install opencode CLI
+RUN curl -fsSL "https://github.com/anomalyco/opencode/releases/download/v1.17.7/opencode-linux-x64.tar.gz" -o /tmp/opencode.tar.gz \
+    && tar xzf /tmp/opencode.tar.gz -C /usr/local/bin/ opencode \
+    && chmod +x /usr/local/bin/opencode \
+    && rm /tmp/opencode.tar.gz
 
 # Create wrapper scripts for apps that need --no-sandbox in containers
 RUN { \

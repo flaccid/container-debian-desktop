@@ -7,7 +7,7 @@ on:
 
 jobs:
   push_to_registry:
-    name: Build and push container image to Docker Hub
+    name: Build, test, and push container image to Docker Hub
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -18,6 +18,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -34,7 +37,40 @@ jobs:
         run: |
           echo "GIT_INFO=$(git log -1 --pretty=format:'%h %s (%ci)')" >> $GITHUB_OUTPUT
 
-      - name: Build and push container image
+      - name: Build and tag container image
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true
+          tags: flaccid/debian-desktop:test-${{ github.sha }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            GIT_INFO=${{ steps.git_info.outputs.GIT_INFO }}
+          cache-to: type=gha,mode=max
+
+      - name: Install container-structure-test
+        run: |
+          curl -fsSL https://github.com/GoogleContainerTools/container-structure-test/releases/download/v1.22.1/container-structure-test-linux-amd64 -o /tmp/container-structure-test
+          chmod +x /tmp/container-structure-test
+
+      - name: Run container structure tests
+        run: |
+          /tmp/container-structure-test test \
+            --image flaccid/debian-desktop:test-${{ github.sha }} \
+            --config tests/container-structure-test.yaml
+
+      - name: Install bats
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq bats
+
+      - name: Run bats tests
+        run: bats tests/*.bats
+
+      - name: Run smoke test
+        run: ./tests/smoke-test.sh flaccid/debian-desktop:test-${{ github.sha }}
+
+      - name: Push container image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: .
@@ -44,3 +80,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             GIT_INFO=${{ steps.git_info.outputs.GIT_INFO }}
+          cache-from: type=gha

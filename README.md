@@ -25,6 +25,8 @@ The image comes with several productivity tools ready to use:
 - **Signal Desktop** — secure messaging
 - **Visual Studio Code** — full-featured IDE
 - **Guake** — drop-down terminal (toggled with `F12`; autostarts via `~/.config/autostart/guake.desktop`)
+- **Git** — version control (`git version`)
+- **OpenCode** — open source AI coding agent (`opencode`)
 - **XFCE Utilities** — including Thunar file manager and XFCE terminal
 
 ## Customizations 🎨
@@ -175,6 +177,11 @@ Chart version bumps and `index.yaml` updates are done manually.
 | `make helm-lint` | Validate the chart |
 | `make helm-install` | Install from local chart |
 | `make helm-upgrade` | Upgrade deployed release |
+| `make test` | Run all tests |
+| `make test-structure` | Container structure tests (~47 assertions) |
+| `make test-bats` | Shell script unit tests (bats) |
+| `make test-smoke` | Runtime integration smoke test |
+| `make test-helm` | Helm chart lint |
 | `make helm-package` | Package chart into `.tgz` |
 | `make helm-index` | Update Helm repo index |
 

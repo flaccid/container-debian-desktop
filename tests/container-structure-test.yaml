@@ -1,0 +1,228 @@
+schemaVersion: "2.0.0"
+
+commandTests:
+  - name: "admin user exists with UID 1000"
+    command: "id"
+    args: ["-u", "admin"]
+    expectedOutput: ["1000"]
+
+  - name: "gosu is installed"
+    command: "which"
+    args: ["gosu"]
+    expectedOutput: ["/usr/sbin/gosu"]
+
+  - name: "tigervnc is installed"
+    command: "which"
+    args: ["Xvnc"]
+    expectedOutput: ["/usr/bin/Xvnc"]
+
+  - name: "websockify is installed"
+    command: "which"
+    args: ["websockify"]
+    expectedOutput: ["/usr/bin/websockify"]
+
+  - name: "papirus-icon-theme is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s papirus-icon-theme | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
+  - name: "librsvg2-common is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s librsvg2-common | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
+  - name: "fonts-ubuntu is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s fonts-ubuntu | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
+  - name: "fonts-jetbrains-mono is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s fonts-jetbrains-mono | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
+  - name: "fonts-cantarell is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s fonts-cantarell | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
+  - name: "chrome wrapper is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/google-chrome"]
+    expectedOutput: []
+
+  - name: "signal wrapper is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/signal-desktop"]
+    expectedOutput: []
+
+  - name: "code wrapper is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/code"]
+    expectedOutput: []
+
+  - name: "entrypoint is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/entrypoint.sh"]
+    expectedOutput: []
+
+  - name: "reset-xfce4 is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/reset-xfce4"]
+    expectedOutput: []
+
+  - name: "xstartup is executable"
+    command: "test"
+    args: ["-x", "/etc/skel/admin/.vnc/xstartup"]
+    expectedOutput: []
+
+  - name: "admin has passwordless sudo"
+    command: "sudo"
+    args: ["-n", "true"]
+    expectedOutput: []
+
+  - name: "xfce4 is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s xfce4 | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
+  # File existence checks as command tests (to avoid tool batch-size issues)
+  - name: "VNC cert exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.vnc/self.pem"]
+    expectedOutput: []
+
+  - name: "Wallpaper exists"
+    command: "test"
+    args: ["-f", "/usr/share/backgrounds/wallpaper.jpg"]
+    expectedOutput: []
+
+  - name: "noVNC index.html exists"
+    command: "test"
+    args: ["-f", "/usr/share/novnc/index.html"]
+    expectedOutput: []
+
+  - name: "xsettings.xml exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"]
+    expectedOutput: []
+
+  - name: "xfce4-panel.xml exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"]
+    expectedOutput: []
+
+  - name: "xfce4-keyboard-shortcuts.xml exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml"]
+    expectedOutput: []
+
+  - name: "thunar.xml exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"]
+    expectedOutput: []
+
+  - name: "xfce4-desktop.xml exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"]
+    expectedOutput: []
+
+  - name: "guake autostart exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.config/autostart/guake.desktop"]
+    expectedOutput: []
+
+  - name: "xstartup tigervnc symlink exists"
+    command: "test"
+    args: ["-L", "/etc/skel/admin/.config/tigervnc/xstartup"]
+    expectedOutput: []
+
+  - name: "chrome desktop launcher exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/Desktop/google-chrome.desktop"]
+    expectedOutput: []
+
+  - name: "signal desktop launcher exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/Desktop/signal-desktop.desktop"]
+    expectedOutput: []
+
+  - name: "code desktop launcher exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/Desktop/code.desktop"]
+    expectedOutput: []
+
+  - name: "Xauthority exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.Xauthority"]
+    expectedOutput: []
+
+  - name: "Xresources exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.Xresources"]
+    expectedOutput: []
+
+  - name: "sudoers for admin exists"
+    command: "test"
+    args: ["-f", "/etc/sudoers.d/admin"]
+    expectedOutput: []
+
+  - name: "gitinfo exists"
+    command: "test"
+    args: ["-f", "/etc/gitinfo"]
+    expectedOutput: []
+
+  - name: "lastbuilt exists"
+    command: "test"
+    args: ["-f", "/etc/lastbuilt"]
+    expectedOutput: []
+
+fileContentTests:
+  - name: "noVNC index.html redirects to vnc_auto.html with remote resize"
+    path: "/usr/share/novnc/index.html"
+    expectedContents: ["resize=remote"]
+
+  - name: "xstartup uses dbus-launch startxfce4"
+    path: "/etc/skel/admin/.vnc/xstartup"
+    expectedContents: ["dbus-launch", "startxfce4"]
+
+  - name: "chrome wrapper has no-sandbox flag"
+    path: "/usr/local/bin/google-chrome"
+    expectedContents: ["--no-sandbox"]
+
+  - name: "signal wrapper has no-sandbox flag"
+    path: "/usr/local/bin/signal-desktop"
+    expectedContents: ["--no-sandbox"]
+
+  - name: "code wrapper has no-sandbox flag"
+    path: "/usr/local/bin/code"
+    expectedContents: ["--no-sandbox"]
+
+  - name: "entrypoint has gosu logic"
+    path: "/usr/local/bin/entrypoint.sh"
+    expectedContents: ["gosu"]
+
+  - name: "reset-xfce4 restores from skeleton"
+    path: "/usr/local/bin/reset-xfce4"
+    expectedContents: ["/etc/skel/admin"]
+
+  - name: "xsettings.xml has Ubuntu 11 font"
+    path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"
+    expectedContents: ["Ubuntu 11", "JetBrains Mono 10", "Adwaita-dark", "Papirus-Dark"]
+
+  - name: "xfce4-panel.xml has icon-size 32"
+    path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+    expectedContents: ['"icon-size" type="uint" value="32"']
+
+  - name: "xfce4-panel.xml has size 42"
+    path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+    expectedContents: ['"size" type="uint" value="42"']
+
+  - name: "xfce4-panel.xml uses applicationsmenu"
+    path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+    expectedContents: ["applicationsmenu"]
+
+metadataTest:
+  entrypoint: ["/usr/local/bin/entrypoint.sh"]
+  cmd: ["sh", "-c", "vncserver :1 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes None --I-KNOW-THIS-IS-INSECURE && websockify --web /usr/share/novnc --cert /home/admin/.vnc/self.pem 6901 localhost:5901"]
+  user: "root"
