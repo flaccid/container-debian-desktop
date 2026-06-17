@@ -26,9 +26,18 @@ The image comes with several productivity tools ready to use:
 - **Visual Studio Code** — full-featured IDE
 - **Guake** — drop-down terminal (toggled with `F12`; autostarts via `~/.config/autostart/guake.desktop`)
 - **Git** — version control (`git version`)
-- **OpenCode** — open source AI coding agent (`opencode`)
 - **GitHub CLI** — GitHub from the terminal (`gh`)
-- **XFCE Utilities** — including Thunar file manager and XFCE terminal
+- **GitLab CLI** — GitLab from the terminal (`glab`)
+- **OpenCode** — open source AI coding agent (`opencode`)
+- **Go** — Go programming language compiler (`go version`)
+- **Helm** — Kubernetes package manager (`helm`)
+- **kubectl** — Kubernetes CLI (`kubectl`)
+- **kubectx/kubens** — Kubernetes context/namespace switchers (`kubectx`, `kubens`)
+- **k9s** — Kubernetes TUI dashboard (`k9s`)
+- **Terraform** — infrastructure as code (`terraform`)
+- **AWS CLI** — Amazon Web Services CLI v2 (`aws`)
+- **Make** — build automation tool (`make`)
+- **XFCE Utilities** — including Thunar file manager, XFCE terminal, and XFCE task manager
 
 ## Customizations 🎨
 

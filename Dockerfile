@@ -39,6 +39,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     dbus-x11 \
     openssl \
     adwaita-icon-theme \
+    awscli \
     papirus-icon-theme \
     librsvg2-common \
     gnome-themes-extra \
@@ -71,7 +72,7 @@ RUN curl -fsSL "https://github.com/anomalyco/opencode/releases/download/v1.17.7/
     && chmod +x /usr/local/bin/opencode \
     && rm /tmp/opencode.tar.gz
 
-# Install CLI tools: helm, kubectl, k9s, glab
+# Install CLI tools: helm, kubectl, k9s, glab, terraform
 RUN curl -fsSL https://get.helm.sh/helm-v3.21.1-linux-amd64.tar.gz | tar xz -C /usr/local/bin --strip-components=1 linux-amd64/helm \
     && curl -fsSL -o /usr/local/bin/kubectl "https://dl.k8s.io/release/v1.36.2/bin/linux/amd64/kubectl" \
     && chmod +x /usr/local/bin/kubectl \
@@ -80,7 +81,10 @@ RUN curl -fsSL https://get.helm.sh/helm-v3.21.1-linux-amd64.tar.gz | tar xz -C /
     && rm /tmp/k9s.tar.gz \
     && curl -fsSL -o /tmp/glab.tar.gz "https://gitlab.com/gitlab-org/cli/-/releases/v1.103.0/downloads/glab_1.103.0_linux_amd64.tar.gz" \
     && tar xzf /tmp/glab.tar.gz --strip-components=2 -C /usr/local/bin glab_1.103.0_linux_amd64/bin/glab \
-    && rm /tmp/glab.tar.gz
+    && rm /tmp/glab.tar.gz \
+    && curl -fsSL -o /tmp/terraform.zip "https://releases.hashicorp.com/terraform/1.15.6/terraform_1.15.6_linux_amd64.zip" \
+    && unzip -o /tmp/terraform.zip -d /usr/local/bin \
+    && rm /tmp/terraform.zip
 
 # Create wrapper scripts for apps that need --no-sandbox in containers
 RUN { \
