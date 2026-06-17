@@ -38,6 +38,7 @@ pactl load-module module-null-sink \
     2>/dev/null || true
 
 pactl load-module module-simple-protocol-tcp \
+    port=4711 \
     listen=127.0.0.1 format=s16le channels=2 rate=48000 \
     record=true playback=false \
     source=virtual_sink.monitor \
