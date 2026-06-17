@@ -37,6 +37,20 @@ Helm repo served via GitHub Pages at `https://flaccid.github.io/container-debian
   ```
 - Pod restart after `reset-xfce4` is often needed because restarting XFCE from outside the session is unreliable
 
+## Testing
+Three layers of tests, run in CI after every push:
+- **`make test-structure`** (~25 assertions) — Google `container-structure-test` against the built image. Checks packages, files, permissions, wrapper scripts, config XML values. No container runtime needed.
+- **`make test-bats`** (10 tests) — Bats unit tests for `entrypoint.sh` and `reset-xfce4` logic. Runs in temp directories, no Docker required.
+- **`make test-smoke`** (8 checks) — Runtime integration test. Starts the container, waits for VNC+websockify, reads xsettings.xml/xfce4-panel.xml from the running session, verifies fonts/themes/panel/app menu.
+
+Run all locally:
+```
+make docker-build && make test IMAGE_VERSION=<tag>
+```
+Individual targets: `make test-structure test-bats test-smoke test-helm`
+
+CI flow: build → structure test → bats → smoke test → push. Cache layer means the push rebuild is near-instant.
+
 ## Key gotchas
 - `librsvg2-common` must be listed explicitly in Dockerfile (it's only a Recommends of `papirus-icon-theme`; `--no-install-recommends` skips it)
 - XFCE autostart `.desktop` files **must be executable** (`chmod +x`) or XFCE ignores them

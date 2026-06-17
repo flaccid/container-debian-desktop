@@ -8,12 +8,22 @@ populate_home() {
     chmod +x /home/admin/.config/autostart/*.desktop 2>/dev/null || true
 }
 
+# Ensure key autostart entries from the skeleton survive pod replacements.
+ensure_autostart() {
+    # Copy the skeleton's guake.desktop so it survives pod replacement
+    # on PVCs that already have a populated home directory.
+    cp /etc/skel/admin/.config/autostart/guake.desktop /home/admin/.config/autostart/guake.desktop 2>/dev/null || true
+    chmod +x /home/admin/.config/autostart/guake.desktop 2>/dev/null || true
+}
+
 # When running as root (the default in Docker/Kubernetes), drop privileges
 # to the admin user via gosu after populating the home directory.
 if [ "$(id -u)" = "0" ]; then
     if [ ! -d "/home/admin/.config/xfce4" ]; then
         populate_home
         chown -R admin:admin /home/admin
+    else
+        ensure_autostart
     fi
     exec gosu admin "$@"
 # When already running as the admin user (e.g. exec'd into the pod), skip
@@ -21,6 +31,8 @@ if [ "$(id -u)" = "0" ]; then
 else
     if [ ! -d "/home/admin/.config/xfce4" ]; then
         populate_home
+    else
+        ensure_autostart
     fi
     exec "$@"
 fi
