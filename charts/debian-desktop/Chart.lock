@@ -1,0 +1,6 @@
+dependencies:
+- name: oauth2-proxy
+  repository: file://./charts/oauth2-proxy
+  version: 0.1.0
+digest: sha256:051ea426a51374c271c50ee8f3518117f0dde0950630acd14f35a4cdfd5f43d2
+generated: "2026-06-17T18:32:21.031242491+10:00"

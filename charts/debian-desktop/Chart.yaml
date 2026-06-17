@@ -2,5 +2,10 @@ apiVersion: v2
 name: debian-desktop
 description: A Helm chart for a persistent, web-based Linux desktop environment
 type: application
-version: 0.1.18
+version: 0.1.19
 appVersion: "0.4.4"
+
+dependencies:
+  - name: oauth2-proxy
+    version: "0.1.0"
+    repository: "file://./charts/oauth2-proxy"
