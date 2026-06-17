@@ -370,6 +370,18 @@ const AudioPlugin = {
         // If already connected (noVNC loaded before this script), start immediately
         if (doc.classList.contains('noVNC_connected')) {
             onConnected();
+        } else if (NVUI.rfb) {
+            // RFB object exists but not yet marked connected — listen directly
+            NVUI.rfb.addEventListener('connect', onConnected, { once: true });
+        } else {
+            // Retry in case noVNC is still initializing
+            const retry = setInterval(() => {
+                if (doc.classList.contains('noVNC_connected') || (NVUI.rfb && NVUI.rfb._rfbConnectionState === 'connected')) {
+                    clearInterval(retry);
+                    onConnected();
+                }
+            }, 200);
+            setTimeout(() => clearInterval(retry), 10000);
         }
     }
 };
