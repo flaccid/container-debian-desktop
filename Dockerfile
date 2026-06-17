@@ -52,6 +52,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-cantarell \
     fonts-jetbrains-mono \
     fonts-noto-color-emoji \
+    fonts-noto-core \
+    fonts-noto-cjk \
     unzip \
     git \
     gh \
