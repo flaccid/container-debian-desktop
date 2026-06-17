@@ -80,7 +80,7 @@ RUN curl -fsSL https://get.helm.sh/helm-v3.21.1-linux-amd64.tar.gz | tar xz -C /
     && tar xzf /tmp/k9s.tar.gz -C /usr/local/bin k9s \
     && rm /tmp/k9s.tar.gz \
     && curl -fsSL -o /tmp/glab.tar.gz "https://gitlab.com/gitlab-org/cli/-/releases/v1.103.0/downloads/glab_1.103.0_linux_amd64.tar.gz" \
-    && tar xzf /tmp/glab.tar.gz --strip-components=2 -C /usr/local/bin glab_1.103.0_linux_amd64/bin/glab \
+    && tar xzf /tmp/glab.tar.gz --strip-components=1 -C /usr/local/bin bin/glab \
     && rm /tmp/glab.tar.gz \
     && curl -fsSL -o /tmp/terraform.zip "https://releases.hashicorp.com/terraform/1.15.6/terraform_1.15.6_linux_amd64.zip" \
     && unzip -o /tmp/terraform.zip -d /usr/local/bin \
