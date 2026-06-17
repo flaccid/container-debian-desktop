@@ -60,6 +60,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     golang-go \
     kubectx \
     make \
+    pulseaudio \
+    pulseaudio-utils \
+    socat \
+    gstreamer1.0-tools \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
     && rm -rf /var/lib/apt/lists/*
 
 # Install the Ubuntu font family (not packaged in Trixie)
@@ -128,6 +135,10 @@ RUN sed -i "s/UI.initSetting('resize', 'off');/UI.initSetting('resize', 'remote'
 # Create a default index.html to redirect to vnc_auto.html with remote resizing enabled
 RUN echo '<meta http-equiv="refresh" content="0; url=vnc_auto.html?resize=remote">' > /usr/share/novnc/index.html
 
+# Install the audio plugin for noVNC (client-side WebM/Opus player)
+COPY config/audio-plugin.js /usr/share/novnc/audio-plugin.js
+RUN sed -i 's|</head>|<script type="module" crossorigin="anonymous" src="audio-plugin.js"></script></head>|' /usr/share/novnc/vnc.html
+
 # Download wallpaper
 RUN mkdir -p /usr/share/backgrounds && \
     curl -fsSL -o /usr/share/backgrounds/wallpaper.jpg \
@@ -136,6 +147,12 @@ RUN mkdir -p /usr/share/backgrounds && \
 # Copy pre-configured XFCE settings into the skeleton directory
 RUN echo "build_id: $(date +%s)" > /etc/config_id
 COPY --chown=admin:admin config/xfce4 /etc/skel/admin/.config/xfce4
+
+# Configure PulseAudio for audio streaming to the browser
+# virtual-sink.pa  — creates a null sink that apps output to
+# audio-stream.pa  — streams raw PCM from the null sink to TCP (port 4711)
+COPY config/pulse/default.pa.d/virtual-sink.pa /etc/pulse/default.pa.d/virtual-sink.pa
+COPY config/pulse/default.pa.d/audio-stream.pa /etc/pulse/default.pa.d/audio-stream.pa
 
 # Setup VNC configuration in the skeleton directory
 RUN mkdir -p /etc/skel/admin/.vnc \
@@ -170,9 +187,15 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY config/reset-xfce4 /usr/local/bin/reset-xfce4
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/reset-xfce4
 
-# Expose the noVNC port
+# Copy the desktop orchestrator and audio proxy
+COPY config/start-desktop.sh /usr/local/bin/start-desktop.sh
+COPY config/audio-proxy.sh /usr/local/bin/audio-proxy.sh
+RUN chmod +x /usr/local/bin/start-desktop.sh /usr/local/bin/audio-proxy.sh
+
+# Expose noVNC and audio WebSocket ports
 EXPOSE 6901
+EXPOSE 6902
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["sh", "-c", "vncserver :1 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes None --I-KNOW-THIS-IS-INSECURE && websockify --web /usr/share/novnc --cert /home/admin/.vnc/self.pem 6901 localhost:5901"]
+CMD ["/usr/local/bin/start-desktop.sh"]
 

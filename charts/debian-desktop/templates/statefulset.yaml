@@ -48,6 +48,8 @@ spec:
         ports:
         - containerPort: 6901
           name: https
+        - containerPort: 6902
+          name: audio
         volumeMounts:
         - name: config
           mountPath: /home/{{ .Values.env.user }}

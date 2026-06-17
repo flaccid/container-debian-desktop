@@ -38,10 +38,11 @@ Helm repo served via GitHub Pages at `https://flaccid.github.io/container-debian
 - Pod restart after `reset-xfce4` is often needed because restarting XFCE from outside the session is unreliable
 
 ## Testing
-Three layers of tests, run in CI after every push:
-- **`make test-structure`** (~25 assertions) — Google `container-structure-test` against the built image. Checks packages, files, permissions, wrapper scripts, config XML values. No container runtime needed.
-- **`make test-bats`** (10 tests) — Bats unit tests for `entrypoint.sh` and `reset-xfce4` logic. Runs in temp directories, no Docker required.
-- **`make test-smoke`** (8 checks) — Runtime integration test. Starts the container, waits for VNC+websockify, reads xsettings.xml/xfce4-panel.xml from the running session, verifies fonts/themes/panel/app menu.
+Four layers of tests, run in CI after every push:
+- **`make test-structure`** (~55 assertions) — Google `container-structure-test` against the built image. Checks packages, files, permissions, wrapper scripts, config XML values, PulseAudio config, audio plugin files. No container runtime needed.
+- **`make test-bats`** (16 tests) — Bats unit tests for `entrypoint.sh`, `reset-xfce4`, and `start-desktop.sh` logic. Runs in temp directories, no Docker required.
+- **`make test-smoke`** (15 checks) — Runtime integration test. Starts the container, waits for VNC+websockify, reads xsettings.xml/xfce4-panel.xml, verifies audio plugin files and config.
+- **`make test-helm`** — Helm chart lint.
 
 Run all locally:
 ```
@@ -61,3 +62,10 @@ CI flow: build → structure test → bats → smoke test → push. Cache layer 
 - `docker exec` from outside VNC has no D-Bus session; `xfconf-query` and `xfdesktop --restart` won't affect the running session
 - `--no-install-recommends` means any transitive dep (icon engines, font renderers, etc.) must be listed explicitly
 - nginx sidecar `try_files` serves `index.html` first, then proxies to websockify (handles WebSocket upgrade)
+- Audio streaming uses `module-simple-protocol-tcp` in PulseAudio; the PulseAudio config is at `/etc/pulse/default.pa.d/` and loaded automatically on startup
+- `audio-proxy.sh` requires `socat` and `gstreamer1.0-tools + plugins` — all installed explicitly via Dockerfile
+- The audio plugin (`audio-plugin.js`) is loaded as an ES module in `vnc.html` and defaults to auto-enabled with path `/audio/`
+- The audio WebSocket runs on port `6902` (separate from VNC's `6901`); nginx sidecar routes `/audio/` → `127.0.0.1:6902`
+- `start-desktop.sh` replaces the old inline CMD; it starts VNC → PulseAudio → audio-proxy → websockify×2; failures in audio services are non-fatal (the desktop still works without audio)
+- Browser autoplay policy: audio starts on first user click in the session (handled by the plugin)
+- `pactl` commands may fail on first attempt if PulseAudio hasn't finished initializing; `start-desktop.sh` has a retry loop (up to 10s wait)

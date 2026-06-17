@@ -127,7 +127,37 @@ docker exec "$CONTAINER_NAME" test -x /usr/local/bin/google-chrome \
     || { echo "FAIL: wrapper scripts not executable"; exit 1; }
 echo "Wrapper scripts executable: OK"
 
-# 8. Verify noVNC redirect
+# 8. Verify audio components
+echo "--- Checking audio components ---"
+docker exec "$CONTAINER_NAME" test -f /usr/share/novnc/audio-plugin.js \
+    || { echo "FAIL: audio-plugin.js not found"; exit 1; }
+echo "audio-plugin.js present: OK"
+
+docker exec "$CONTAINER_NAME" test -x /usr/local/bin/start-desktop.sh \
+    || { echo "FAIL: start-desktop.sh not executable"; exit 1; }
+echo "start-desktop.sh executable: OK"
+
+docker exec "$CONTAINER_NAME" test -x /usr/local/bin/audio-proxy.sh \
+    || { echo "FAIL: audio-proxy.sh not executable"; exit 1; }
+echo "audio-proxy.sh executable: OK"
+
+docker exec "$CONTAINER_NAME" test -f /etc/pulse/default.pa.d/virtual-sink.pa \
+    || { echo "FAIL: virtual-sink.pa not found"; exit 1; }
+echo "PulseAudio virtual-sink config: OK"
+
+docker exec "$CONTAINER_NAME" test -f /etc/pulse/default.pa.d/audio-stream.pa \
+    || { echo "FAIL: audio-stream.pa not found"; exit 1; }
+echo "PulseAudio audio-stream config: OK"
+
+AUDIO_VNC=$(docker exec "$CONTAINER_NAME" grep -c 'audio-plugin.js' /usr/share/novnc/vnc.html || true)
+if [ "$AUDIO_VNC" -ge 1 ]; then
+    echo "vnc.html includes audio-plugin.js: OK"
+else
+    echo "FAIL: vnc.html does not include audio-plugin.js"
+    exit 1
+fi
+
+# 9. Verify noVNC redirect
 echo "--- Checking noVNC index.html ---"
 NOVNC_INDEX=$(docker exec "$CONTAINER_NAME" cat /usr/share/novnc/index.html)
 if echo "$NOVNC_INDEX" | grep -q "resize=remote"; then

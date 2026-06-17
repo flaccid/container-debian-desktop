@@ -16,6 +16,7 @@ This repository packages a lightweight, persistent Linux desktop environment for
 - **Persistence-ready** — uses a skeleton directory and entrypoint script to populate fresh PVCs at `/home/admin`
 - **Non-root user** — runs strictly as `admin` (UID 1000) with passwordless `sudo` (uses `gosu` for clean privilege dropping)
 - **Self-signed HTTPS** — noVNC served over HTTPS/WSS on port 6901
+- **Audio Streaming** — desktop audio captured via PulseAudio null-sink, encoded to WebM/Opus by GStreamer, streamed to the browser via a separate WebSocket (port 6902) through nginx sidecar at `/audio/`
 
 ## Pre-installed Applications 📦
 
@@ -78,6 +79,34 @@ docker run -p 6901:6901 -v desktop_data:/home/admin flaccid/debian-desktop:lates
 
 No password is required — VNC authentication is disabled.
 
+## Audio Streaming 🔊
+
+Desktop audio is automatically streamed to the browser through a separate out-of-band channel:
+
+1. **PulseAudio null-sink** (`virtual_sink`) — captures all audio output from desktop applications
+2. **GStreamer pipeline** (`audio-proxy.sh`) — encodes raw PCM to WebM/Opus on-the-fly
+3. **WebSocket relay** (websockify on port `6902`) — proxies encoded audio to the browser
+4. **Client-side player** (`audio-plugin.js`) — receives audio via WebSocket and plays it using the Media Source API
+
+### How it works
+
+In the "Settings" panel of the noVNC client, expand "Audio Plugin" — audio is enabled by default. After connecting to the desktop, any audio played by applications (YouTube in Chrome, notifications, etc.) will be audible in the browser.
+
+Controls in the Audio Plugin settings:
+- **Enabled** toggle — enable/disable audio streaming
+- **Codec** — WebM/Opus (default, broadly supported) or MP4/AAC
+- **Bitrate** — 64/96/128/192 kbps (96 kbps default)
+- **WebSocket** — host, port, and path for the audio stream (defaults to VNC host on path `/audio/`)
+
+> Chrome/Edge autoplay policy: audio playback starts on the first user click inside the session. This is handled automatically by the plugin.
+
+### Troubleshooting
+
+- If you hear no audio, open the noVNC Settings panel and ensure "Audio Plugin → Enabled" is checked
+- Check that `/audio/` is proxied correctly by inspecting the nginx ConfigMap in the Helm chart
+- In the container, verify PulseAudio is running: `docker exec <container> pactl info`
+- Audio only works when the VNC session is connected — it stops on disconnect
+
 ## Kubernetes Deployment ☸️
 
 ### Using the Helm chart
@@ -123,14 +152,12 @@ make helm-render
 ### Architecture
 
 ```
-Browser ──HTTPS──> Ingress ──HTTP──> nginx sidecar (:8080) ──HTTP──> desktop (:6901)
-                                       │                                  │
-                                       │ (serves index.html)       websockify + cert
-                                       │                                  │
-                                                                     TigerVNC (:5901)
+Browser ──HTTPS──> Ingress ──HTTP──> nginx sidecar (:8080)
+  / ──────────────────────────────────> websockify (:6901) ──TCP──> TigerVNC (:5901)
+  /audio/ ────────────────────────────> websockify (:6902) ──TCP──> audio-proxy (:5711) ──TCP──> PulseAudio (:4711)
 ```
 
-The nginx sidecar sits inside the pod, serves the custom `index.html`, and proxies `/` to websockify on `localhost:6901` (plain HTTP — TLS is handled by the Ingress). WebSocket upgrades for noVNC are passed through transparently. The Ingress terminates external HTTPS and delegates auth to oauth2-proxy.
+The nginx sidecar sits inside the pod, serves the custom `index.html`, and proxies `/` to websockify on `localhost:6901` (plain HTTP — TLS is handled by the Ingress). The `/audio/` path is proxied to a second websockify on `6902`, which connects to the audio proxy (GStreamer encoding PulseAudio raw PCM to WebM/Opus). WebSocket upgrades for both noVNC and audio are passed through transparently. The Ingress terminates external HTTPS and delegates auth to oauth2-proxy.
 
 ### Publishing chart updates
 

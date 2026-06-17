@@ -101,6 +101,26 @@ commandTests:
     args: ["-c", "dpkg -s xfce4 | grep -q 'Status: install ok installed'"]
     expectedOutput: []
 
+  - name: "pulseaudio is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s pulseaudio | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
+  - name: "pulseaudio-utils is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s pulseaudio-utils | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
+  - name: "socat is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s socat | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
+  - name: "gstreamer1.0-tools is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s gstreamer1.0-tools | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
   # File existence checks as command tests (to avoid tool batch-size issues)
   - name: "VNC cert exists"
     command: "test"
@@ -192,10 +212,47 @@ commandTests:
     args: ["-f", "/etc/lastbuilt"]
     expectedOutput: []
 
+  - name: "audio-plugin.js exists"
+    command: "test"
+    args: ["-f", "/usr/share/novnc/audio-plugin.js"]
+    expectedOutput: []
+
+  - name: "start-desktop.sh is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/start-desktop.sh"]
+    expectedOutput: []
+
+  - name: "audio-proxy.sh is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/audio-proxy.sh"]
+    expectedOutput: []
+
+  - name: "pulse virtual-sink config exists"
+    command: "test"
+    args: ["-f", "/etc/pulse/default.pa.d/virtual-sink.pa"]
+    expectedOutput: []
+
+  - name: "pulse audio-stream config exists"
+    command: "test"
+    args: ["-f", "/etc/pulse/default.pa.d/audio-stream.pa"]
+    expectedOutput: []
+
 fileContentTests:
   - name: "noVNC index.html redirects to vnc_auto.html with remote resize"
     path: "/usr/share/novnc/index.html"
     expectedContents: ["resize=remote"]
+
+  - name: "vnc.html includes audio-plugin.js"
+    path: "/usr/share/novnc/vnc.html"
+    expectedContents: ['audio-plugin.js']
+
+  - name: "pulse virtual-sink config is correct"
+    path: "/etc/pulse/default.pa.d/virtual-sink.pa"
+    expectedContents: ["module-null-sink", "virtual_sink"]
+
+  - name: "pulse audio-stream config is correct"
+    path: "/etc/pulse/default.pa.d/audio-stream.pa"
+    expectedContents: ["module-simple-protocol-tcp", "virtual_sink.monitor"]
 
   - name: "xstartup uses dbus-launch startxfce4"
     path: "/etc/skel/admin/.vnc/xstartup"
@@ -239,5 +296,5 @@ fileContentTests:
 
 metadataTest:
   entrypoint: ["/usr/local/bin/entrypoint.sh"]
-  cmd: ["sh", "-c", "vncserver :1 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes None --I-KNOW-THIS-IS-INSECURE && websockify --web /usr/share/novnc --cert /home/admin/.vnc/self.pem 6901 localhost:5901"]
+  cmd: ["/usr/local/bin/start-desktop.sh"]
   user: "root"

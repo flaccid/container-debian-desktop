@@ -114,7 +114,7 @@ test-structure:: ## runs container structure tests against the local image
 test-bats:: ## runs shell script tests with bats
 		@echo "Running bats tests..."
 		@command -v bats >/dev/null 2>&1 || { echo "Installing bats..."; sudo apt-get update -qq && sudo apt-get install -y -qq bats; }
-		@bats tests/entrypoint.bats tests/reset-xfce4.bats
+		@bats tests/entrypoint.bats tests/reset-xfce4.bats tests/start-desktop.bats
 
 test-smoke:: ## runs runtime smoke test against the local image
 		@echo "Running smoke test..."
