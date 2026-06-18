@@ -9,8 +9,8 @@ metadata:
     kubernetes.io/ingress.class: {{ .Values.ingress.className | quote }}
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/ssl-verify: "false"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "10800"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "10800"
     nginx.ingress.kubernetes.io/auth-url: {{ tpl .Values.ingress.authUrl . | quote }}
     nginx.ingress.kubernetes.io/auth-signin: {{ tpl .Values.ingress.authSignin . | quote }}
 spec:
