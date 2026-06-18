@@ -1,6 +1,6 @@
 DOCKER_REGISTRY = index.docker.io
 IMAGE_NAME = debian-desktop
-IMAGE_VERSION = 0.4.4
+IMAGE_VERSION = 0.6.0
 IMAGE_ORG = flaccid
 IMAGE_TAG = $(DOCKER_REGISTRY)/$(IMAGE_ORG)/$(IMAGE_NAME):$(IMAGE_VERSION)
 KUBE_NAMESPACE = default
@@ -40,6 +40,7 @@ docker-run:: ## Runs the docker image
 			-it \
 			--rm \
 			-p 6901:6901 \
+			-p 6902:6902 \
 			$(OPTS) \
 				$(IMAGE_TAG) $(ARGS)
 

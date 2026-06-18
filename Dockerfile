@@ -137,7 +137,8 @@ RUN echo '<meta http-equiv="refresh" content="0; url=vnc_auto.html?resize=remote
 
 # Install the audio plugin for noVNC (client-side WebM/Opus player)
 COPY config/audio-plugin.js /usr/share/novnc/audio-plugin.js
-RUN sed -i 's|</head>|<script type="module" crossorigin="anonymous" src="audio-plugin.js"></script></head>|' /usr/share/novnc/vnc.html
+RUN sed -i 's|</head>|<script type="module" crossorigin="anonymous" src="audio-plugin.js"></script></head>|' /usr/share/novnc/vnc.html && \
+    sed -i '/import UI from "\.\/app\/ui\.js";/a\        window.NVUI = UI;' /usr/share/novnc/vnc.html
 
 # Download wallpaper
 RUN mkdir -p /usr/share/backgrounds && \

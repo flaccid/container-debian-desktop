@@ -65,7 +65,7 @@ fi
 # 5. Start audio websockify (WebSocket → audio proxy)
 # ------------------------------------------------------------------
 echo "Starting audio websockify on port 6902..."
-websockify --cert /home/admin/.vnc/self.pem 6902 localhost:5711 &
+websockify 6902 localhost:5711 &
 AW_PID=$!
 sleep 1
 if kill -0 "$AW_PID" 2>/dev/null; then

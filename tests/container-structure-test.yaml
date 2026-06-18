@@ -246,6 +246,10 @@ fileContentTests:
     path: "/usr/share/novnc/vnc.html"
     expectedContents: ['audio-plugin.js']
 
+  - name: "vnc.html sets window.NVUI = UI"
+    path: "/usr/share/novnc/vnc.html"
+    expectedContents: ['window.NVUI = UI']
+
   - name: "pulse virtual-sink config is correct"
     path: "/etc/pulse/default.pa.d/virtual-sink.pa"
     expectedContents: ["module-null-sink", "virtual_sink"]

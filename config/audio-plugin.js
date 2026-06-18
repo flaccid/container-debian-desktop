@@ -174,7 +174,12 @@ const NV = {
         if (!NVUI.customSettings) NVUI.customSettings = { defaults: {}, mandatory: {} };
         if (!NVUI.customSettings.defaults) NVUI.customSettings.defaults = {};
         if (!NVUI.customSettings.mandatory) NVUI.customSettings.mandatory = {};
-        NVUI.initSetting(name, defaultVal);
+        try { NVUI.initSetting(name, defaultVal); } catch (e) { console.warn('audio-plugin: initSetting', name, e); }
+        // Persist to localStorage immediately — UI.start() resets the
+        // in-memory settings cache, so settings must survive in localStorage.
+        if (defaultVal !== null) {
+            try { localStorage.setItem(name, String(defaultVal)); } catch (e) {}
+        }
         this.optionEls.push(settingInput);
         return settingInput;
     },
@@ -196,7 +201,13 @@ const NV = {
             settingSelect.appendChild(option);
         }
         settingsList.appendChild(settingItem);
-        NVUI.initSetting(name, defaultVal);
+        if (!NVUI.customSettings) NVUI.customSettings = { defaults: {}, mandatory: {} };
+        if (!NVUI.customSettings.defaults) NVUI.customSettings.defaults = {};
+        if (!NVUI.customSettings.mandatory) NVUI.customSettings.mandatory = {};
+        try { NVUI.initSetting(name, defaultVal); } catch (e) { console.warn('audio-plugin: initSetting', name, e); }
+        if (defaultVal !== null) {
+            try { localStorage.setItem(name, String(defaultVal)); } catch (e) {}
+        }
         this.optionEls.push(settingSelect);
         return settingSelect;
     },
@@ -268,12 +279,17 @@ const AudioPlugin = {
             case 'aac': mime = 'audio/mp4; codecs="mp4a.40.2"'; break;
             default: throw new Error(`Unsupported codec ${codec}`);
         }
-        const wsEncrypt = NVUI.getSetting('audio_encrypt') ?? (window.location.protocol === 'https:');
+        const wsEncryptVal = NVUI.getSetting('audio_encrypt');
+        const wsEncrypt = wsEncryptVal === true || wsEncryptVal === 'true' || (wsEncryptVal == null && window.location.protocol === 'https:');
         const wsSchema = wsEncrypt ? 'wss://' : 'ws://';
         const wsHost = NVUI.getSetting('audio_host') || window.location.hostname;
         const wsPort = NVUI.getSetting('audio_port') || window.location.port || (wsEncrypt ? '443' : '80');
-        const wsPath = NVUI.getSetting('audio_path') || 'audio/';
-        this.ws = new WebSocket(`${wsSchema}${wsHost}:${wsPort}/${wsPath}`);
+        const wsPath = NVUI.getSetting('audio_path');
+        const wsUrl = wsPath
+            ? `${wsSchema}${wsHost}:${wsPort}/${wsPath.replace(/^\/+/, '')}`
+            : `${wsSchema}${wsHost}:${wsPort}`;
+        console.log('audio-plugin: connecting to', wsUrl);
+        this.ws = new WebSocket(wsUrl);
         this.ws.binaryType = 'arraybuffer';
         this.ws.addEventListener('error', async () => {
             if (NVUI.connected) NVUI.showStatus('Audio WebSocket connection failed', 'error');
@@ -350,16 +366,19 @@ const AudioPlugin = {
 
         const audioWsSettings = NV.addSubCategory(audioSettings, 'WebSocket');
         const pagePort = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
+        const defaultPort = pagePort === '6901' ? '6902' : pagePort;
+        const defaultPath = pagePort === '6901' ? '' : 'audio/';
         NV.addInput(audioWsSettings, 'Encrypt', 'audio_encrypt', window.location.protocol === 'https:', 'checkbox', 'Use encrypted WebSocket connection');
         NV.addInput(audioWsSettings, 'Host:', 'audio_host', window.location.hostname, 'text', 'WebSocket host for audio proxy');
-        NV.addInput(audioWsSettings, 'Port:', 'audio_port', pagePort, 'text', 'WebSocket port for audio proxy');
-        NV.addInput(audioWsSettings, 'Path:', 'audio_path', 'audio/', 'text', 'WebSocket path for audio proxy');
+        NV.addInput(audioWsSettings, 'Port:', 'audio_port', defaultPort, 'text', 'WebSocket port for audio proxy');
+        NV.addInput(audioWsSettings, 'Path:', 'audio_path', defaultPath, 'text', 'WebSocket path for audio proxy');
     },
 
     load() {
-        this.initUi();
+        console.log('audio-plugin: load() called');
         const doc = document.documentElement;
         const onConnected = async () => {
+            console.log('audio-plugin: onConnected fired, audio_enabled:', NVUI.getSetting('audio_enabled'));
             if (!NVUI.getSetting('audio_enabled')) return;
             NV.disableOptions();
             try {
@@ -379,10 +398,8 @@ const AudioPlugin = {
         if (doc.classList.contains('noVNC_connected')) {
             onConnected();
         } else if (NVUI.rfb) {
-            // RFB object exists but not yet marked connected — listen directly
             NVUI.rfb.addEventListener('connect', onConnected, { once: true });
         } else {
-            // Retry in case noVNC is still initializing
             const retry = setInterval(() => {
                 if (doc.classList.contains('noVNC_connected') || (NVUI.rfb && NVUI.rfb._rfbConnectionState === 'connected')) {
                     clearInterval(retry);
@@ -394,4 +411,14 @@ const AudioPlugin = {
     }
 };
 
-window.addEventListener('load', () => AudioPlugin.load());
+// Set up immediately — don't wait for window.load
+console.log('audio-plugin: initializing UI');
+if (!NVUI.customSettings) NVUI.customSettings = { defaults: {}, mandatory: {} };
+if (!NVUI.customSettings.defaults) NVUI.customSettings.defaults = {};
+if (!NVUI.customSettings.mandatory) NVUI.customSettings.mandatory = {};
+AudioPlugin.initUi();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => AudioPlugin.load());
+} else {
+    AudioPlugin.load();
+}
