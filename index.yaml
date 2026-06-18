@@ -2,8 +2,22 @@ apiVersion: v1
 entries:
   debian-desktop:
   - apiVersion: v2
+    appVersion: 0.8.3
+    created: "2026-06-18T20:04:12.734466262+10:00"
+    dependencies:
+    - name: oauth2-proxy
+      repository: file://./charts/oauth2-proxy
+      version: 0.1.0
+    description: A Helm chart for a persistent, web-based Linux desktop environment
+    digest: 0e11d03bb6b2fb81a1de490c47c3afeb2c13c3b11c501342b2aaed14208c76f1
+    name: debian-desktop
+    type: application
+    urls:
+    - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.1.36.tgz
+    version: 0.1.36
+  - apiVersion: v2
     appVersion: 0.8.2
-    created: "2026-06-18T19:20:33.213674236+10:00"
+    created: "2026-06-18T20:04:12.733626809+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -17,7 +31,7 @@ entries:
     version: 0.1.35
   - apiVersion: v2
     appVersion: 0.8.1
-    created: "2026-06-18T19:20:33.210714437+10:00"
+    created: "2026-06-18T20:04:12.732791005+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -31,7 +45,7 @@ entries:
     version: 0.1.34
   - apiVersion: v2
     appVersion: 0.8.0
-    created: "2026-06-18T19:20:33.207396685+10:00"
+    created: "2026-06-18T20:04:12.731357776+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -45,7 +59,7 @@ entries:
     version: 0.1.33
   - apiVersion: v2
     appVersion: 0.7.0
-    created: "2026-06-18T19:20:33.14463819+10:00"
+    created: "2026-06-18T20:04:12.729757298+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -59,7 +73,7 @@ entries:
     version: 0.1.32
   - apiVersion: v2
     appVersion: 0.6.3
-    created: "2026-06-18T19:20:33.142469857+10:00"
+    created: "2026-06-18T20:04:12.728923882+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -73,7 +87,7 @@ entries:
     version: 0.1.31
   - apiVersion: v2
     appVersion: 0.6.2
-    created: "2026-06-18T19:20:33.140584492+10:00"
+    created: "2026-06-18T20:04:12.728115236+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -87,7 +101,7 @@ entries:
     version: 0.1.30
   - apiVersion: v2
     appVersion: 0.6.1
-    created: "2026-06-18T19:20:33.138614216+10:00"
+    created: "2026-06-18T20:04:12.727372875+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -101,7 +115,7 @@ entries:
     version: 0.1.29
   - apiVersion: v2
     appVersion: 0.6.0
-    created: "2026-06-18T19:20:33.133966273+10:00"
+    created: "2026-06-18T20:04:12.726512493+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -115,7 +129,7 @@ entries:
     version: 0.1.28
   - apiVersion: v2
     appVersion: 0.5.5
-    created: "2026-06-18T19:20:33.130184226+10:00"
+    created: "2026-06-18T20:04:12.725676962+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -127,4 +141,4 @@ entries:
     urls:
     - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.1.26.tgz
     version: 0.1.26
-generated: "2026-06-18T19:20:33.126359636+10:00"
+generated: "2026-06-18T20:04:12.724347323+10:00"
