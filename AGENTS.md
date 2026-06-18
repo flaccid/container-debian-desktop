@@ -86,3 +86,7 @@ CI flow: build → structure test → bats → smoke test → push. Cache layer 
 - `start-desktop.sh` replaces the old inline CMD; it starts PulseAudio → VNC → audio-proxy → websockify×2; failures in audio services are non-fatal (the desktop still works without audio)
 - Browser autoplay policy: audio starts on first user click in the session (handled by the plugin)
 - `pactl` commands may fail on first attempt if PulseAudio hasn't finished initializing; `start-desktop.sh` has a retry loop (up to 10s wait)
+- **Clipboard sync** requires `xclip` and `vncconfig -nowin`:
+  - `xclip` is installed in the image and provides the `xclip` binary that programs (including opencode) use to write to the X11 CLIPBOARD selection
+  - `vncconfig -nowin` runs from `~/.vnc/xstartup` as a background daemon to relay CLIPBOARD content to the noVNC client's clipboard panel
+  - Without either, the noVNC clipboard panel won't show copied text

@@ -7,4 +7,8 @@ export XDG_RUNTIME_DIR=/run/user/1000
 # own timeout is the sole authority for idle locking.
 xset s off
 
+# Start clipboard sync daemon so VNC client (noVNC) clipboard panel
+# receives X11 CLIPBOARD selections from terminal/opencode/xclip.
+vncconfig -nowin &
+
 exec dbus-launch --exit-with-session startxfce4

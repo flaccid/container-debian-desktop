@@ -55,6 +55,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-noto-core \
     fonts-noto-cjk \
     unzip \
+    xclip \
     git \
     gh \
     golang-go \

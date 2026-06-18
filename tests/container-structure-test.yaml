@@ -265,7 +265,7 @@ fileContentTests:
 
   - name: "xstartup uses dbus-launch startxfce4 and disables X11 saver"
     path: "/etc/skel/admin/.vnc/xstartup"
-    expectedContents: ["dbus-launch", "startxfce4", "xset s off"]
+    expectedContents: ["dbus-launch", "startxfce4", "xset s off", "vncconfig -nowin"]
 
   - name: "chrome wrapper has no-sandbox flag"
     path: "/usr/local/bin/google-chrome"
