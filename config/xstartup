@@ -3,4 +3,8 @@ xrdb $HOME/.Xresources
 
 export XDG_RUNTIME_DIR=/run/user/1000
 
+# Disable the X server's built-in screen saver so xfce4-screensaver's
+# own timeout is the sole authority for idle locking.
+xset s off
+
 exec dbus-launch --exit-with-session startxfce4

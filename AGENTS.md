@@ -71,6 +71,7 @@ CI flow: build → structure test → bats → smoke test → push. Cache layer 
   xfconf-query -c xfce4-screensaver -p /saver/timeout -s 7200
   ```
   Then restart the session. Resetting from skeleton (`reset-xfce4`) reverts to the 1-hour default.
+  - The X server's built-in screen saver is disabled in `~/.vnc/xstartup` (`xset s off`) so it doesn't interfere with xfce4-screensaver's timeout.
 - `--no-sandbox` apps (Chrome, Signal, VS Code) use wrapper scripts at `/usr/local/bin/`; menu `.desktop` files are `sed`'d to point at wrappers
 - `--test-type` in Chrome wrapper suppresses the unsupported-flag banner (Chrome 149+ may still show it)
 - Keyboard shortcuts: `xfwm4` requires `override=true` in XML; all conflicting defaults must be masked with empty properties

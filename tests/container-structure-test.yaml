@@ -263,9 +263,9 @@ fileContentTests:
     path: "/etc/pulse/default.pa.d/audio-stream.pa"
     expectedContents: ["module-simple-protocol-tcp", "virtual_sink.monitor"]
 
-  - name: "xstartup uses dbus-launch startxfce4"
+  - name: "xstartup uses dbus-launch startxfce4 and disables X11 saver"
     path: "/etc/skel/admin/.vnc/xstartup"
-    expectedContents: ["dbus-launch", "startxfce4"]
+    expectedContents: ["dbus-launch", "startxfce4", "xset s off"]
 
   - name: "chrome wrapper has no-sandbox flag"
     path: "/usr/local/bin/google-chrome"
