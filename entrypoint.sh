@@ -26,6 +26,9 @@ ensure_config() {
        /home/admin/.config/autostart/disable-x11-screensaver.desktop 2>/dev/null || true
     chmod +x /home/admin/.config/autostart/disable-x11-screensaver.desktop 2>/dev/null || true
 
+    # Copy the wrapper script used by autostart.
+    cp /usr/local/bin/disable-x11-screensaver.sh /usr/local/bin/disable-x11-screensaver.sh 2>/dev/null || true
+
     # Copy xfce4-panel.xml to pick up new plugin definitions
     # (e.g. plugin-11 pulseaudio). The user can always customise
     # their panel afterward.

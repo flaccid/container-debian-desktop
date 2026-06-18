@@ -2,6 +2,6 @@
 Type=Application
 Name=Disable X11 Screen Saver
 Comment=Disable the X server built-in screen saver so xfce4-screensaver is the sole authority for idle locking
-Exec=xset s off
+Exec=/usr/local/bin/disable-x11-screensaver.sh
 StartupNotify=false
 NoDisplay=true

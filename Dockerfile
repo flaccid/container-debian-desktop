@@ -174,10 +174,12 @@ RUN mkdir -p /etc/skel/admin/.vnc \
 # Provide the XFCE autostart entry that disables the X server built-in
 # screen saver (runs after the session is fully initialised).
 COPY --chown=admin:admin config/autostart/disable-x11-screensaver.desktop /etc/skel/admin/.config/autostart/disable-x11-screensaver.desktop
+COPY config/disable-x11-screensaver.sh /usr/local/bin/disable-x11-screensaver.sh
 
 # Provide an xstartup script in both traditional and XDG locations
 COPY --chown=admin:admin config/xstartup /etc/skel/admin/.vnc/xstartup
 RUN chmod +x /etc/skel/admin/.vnc/xstartup \
+    && chmod +x /usr/local/bin/disable-x11-screensaver.sh \
     && ln -sf /home/admin/.vnc/xstartup /etc/skel/admin/.config/tigervnc/xstartup
 
 # Create Desktop icons and autostart for the applications in the skeleton directory

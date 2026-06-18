@@ -130,6 +130,7 @@ echo "--- Checking wrapper scripts ---"
 docker exec "$CONTAINER_NAME" test -x /usr/local/bin/google-chrome \
     && docker exec "$CONTAINER_NAME" test -x /usr/local/bin/signal-desktop \
     && docker exec "$CONTAINER_NAME" test -x /usr/local/bin/code \
+    && docker exec "$CONTAINER_NAME" test -x /usr/local/bin/disable-x11-screensaver.sh \
     || { echo "FAIL: wrapper scripts not executable"; exit 1; }
 echo "Wrapper scripts executable: OK"
 

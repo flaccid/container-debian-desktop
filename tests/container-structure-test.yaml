@@ -177,6 +177,11 @@ commandTests:
     args: ["-f", "/etc/skel/admin/.config/autostart/disable-x11-screensaver.desktop"]
     expectedOutput: []
 
+  - name: "disable-x11-screensaver.sh exists"
+    command: "test"
+    args: ["-f", "/usr/local/bin/disable-x11-screensaver.sh"]
+    expectedOutput: []
+
   - name: "xstartup tigervnc symlink exists"
     command: "test"
     args: ["-L", "/etc/skel/admin/.config/tigervnc/xstartup"]
@@ -230,6 +235,11 @@ commandTests:
   - name: "start-desktop.sh is executable"
     command: "test"
     args: ["-x", "/usr/local/bin/start-desktop.sh"]
+    expectedOutput: []
+
+  - name: "disable-x11-screensaver.sh is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/disable-x11-screensaver.sh"]
     expectedOutput: []
 
   - name: "audio-proxy.sh is executable"
