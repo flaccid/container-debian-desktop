@@ -1,0 +1,84 @@
+/*
+ * noVNC dark theme
+ * Overrides constants.css, base.css, and input.css
+ * Loaded last so it wins via cascade/specificity
+ */
+
+:root {
+    --novnc-grey: rgb(180, 180, 180);
+    --novnc-lightgrey: rgb(160, 160, 160);
+    --novnc-darkgrey: rgb(180, 180, 180);
+    --novnc-buttongrey: rgba(255, 255, 255, 0.15);
+}
+
+body {
+    background-color: #2d2d2d;
+}
+
+#noVNC_container {
+    background-color: #1a1a1a;
+}
+
+.noVNC_panel {
+    background: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+.noVNC_panel .noVNC_heading {
+    color: white;
+}
+
+.noVNC_panel hr {
+    border-top-color: #555;
+}
+
+input:not([type]),
+input[type=date],
+input[type=datetime-local],
+input[type=email],
+input[type=month],
+input[type=number],
+input[type=password],
+input[type=search],
+input[type=tel],
+input[type=text],
+input[type=time],
+input[type=url],
+input[type=week],
+textarea {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+select {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    --select-arrow: url('data:image/svg+xml;utf8, \
+        <svg width="11" height="6" version="1.1" viewBox="0 0 11 6" \
+             xmlns="http://www.w3.org/2000/svg"> \
+            <path d="m10.5.5-5 5-5-5" fill="none" \
+                  stroke="white" stroke-width="1.5" \
+                  stroke-linecap="round" stroke-linejoin="round"/> \
+        </svg>');
+}
+
+select[size]:not([size="1"]), select[multiple] {
+    background-color: #2a2a2a;
+    border-color: #555;
+}
+
+option {
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+}
+
+option:checked {
+    background-color: #555;
+}
+
+#noVNC_keyboardinput {
+    background-color: #333;
+    color: #333;
+}

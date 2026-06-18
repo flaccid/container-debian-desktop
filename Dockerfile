@@ -142,6 +142,11 @@ COPY config/audio-plugin.js /usr/share/novnc/audio-plugin.js
 RUN sed -i 's|</head>|<script type="module" src="audio-plugin.js"></script></head>|' /usr/share/novnc/vnc.html && \
     sed -i '/import UI from "\.\/app\/ui\.js";/a\        window.NVUI = UI;' /usr/share/novnc/vnc.html
 
+# Install dark theme for noVNC
+COPY config/novnc-dark.css /usr/share/novnc/novnc-dark.css
+RUN sed -i 's|</head>|<link rel="stylesheet" href="novnc-dark.css"></head>|' /usr/share/novnc/vnc.html && \
+    sed -i 's|</head>|<link rel="stylesheet" href="novnc-dark.css"></head>|' /usr/share/novnc/vnc_auto.html
+
 # Download wallpaper
 RUN mkdir -p /usr/share/backgrounds && \
     curl -fsSL -o /usr/share/backgrounds/wallpaper.jpg \
