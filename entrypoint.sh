@@ -8,12 +8,23 @@ populate_home() {
     chmod +x /home/admin/.config/autostart/*.desktop 2>/dev/null || true
 }
 
-# Ensure key autostart entries from the skeleton survive pod replacements.
-ensure_autostart() {
-    # Copy the skeleton's guake.desktop so it survives pod replacement
-    # on PVCs that already have a populated home directory.
+# Ensure key config files from the skeleton survive pod replacements
+# on PVCs that already have a populated home directory.
+ensure_config() {
+    # Copy xstartup so XDG_RUNTIME_DIR and other critical settings
+    # are always picked up on fresh VNC starts.
+    cp /etc/skel/admin/.vnc/xstartup /home/admin/.vnc/xstartup 2>/dev/null || true
+    chmod +x /home/admin/.vnc/xstartup 2>/dev/null || true
+
+    # Copy the skeleton's guake.desktop so it survives pod replacement.
     cp /etc/skel/admin/.config/autostart/guake.desktop /home/admin/.config/autostart/guake.desktop 2>/dev/null || true
     chmod +x /home/admin/.config/autostart/guake.desktop 2>/dev/null || true
+
+    # Copy xfce4-panel.xml to pick up new plugin definitions
+    # (e.g. plugin-11 pulseaudio). The user can always customise
+    # their panel afterward.
+    cp /etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml \
+       /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml 2>/dev/null || true
 }
 
 # When running as root (the default in Docker/Kubernetes), drop privileges
@@ -23,7 +34,7 @@ if [ "$(id -u)" = "0" ]; then
         populate_home
         chown -R admin:admin /home/admin
     else
-        ensure_autostart
+        ensure_config
     fi
     # Create the XDG_RUNTIME_DIR for PulseAudio socket (required by the
     # XFCE PulseAudio panel plugin).
@@ -35,7 +46,7 @@ else
     if [ ! -d "/home/admin/.config/xfce4" ]; then
         populate_home
     else
-        ensure_autostart
+        ensure_config
     fi
     exec "$@"
 fi

@@ -52,24 +52,34 @@ teardown() {
     [ -f "$TEST_HOME/.config/xfce4/settings.xml" ]
 }
 
-@test "ensure_autostart copies guake.desktop and makes it executable" {
+@test "ensure_config copies guake.desktop, xstartup, and makes them executable" {
     mkdir -p "$TEST_HOME/.config/autostart"
+    mkdir -p "$TEST_HOME/.vnc"
+    mkdir -p "$TEST_HOME/.config/xfce4/xfconf/xfce-perchannel-xml"
     chmod 644 "$TEST_HOME/.config/autostart/"*.desktop 2>/dev/null || true
     cp "$TEST_SKEL/.config/autostart/guake.desktop" "$TEST_HOME/.config/autostart/guake.desktop" 2>/dev/null || true
+    cp "$TEST_SKEL/.vnc/xstartup" "$TEST_HOME/.vnc/xstartup" 2>/dev/null || true
     chmod +x "$TEST_HOME/.config/autostart/guake.desktop" 2>/dev/null || true
+    chmod +x "$TEST_HOME/.vnc/xstartup" 2>/dev/null || true
     [ -f "$TEST_HOME/.config/autostart/guake.desktop" ]
     [ -x "$TEST_HOME/.config/autostart/guake.desktop" ]
+    [ -f "$TEST_HOME/.vnc/xstartup" ]
+    [ -x "$TEST_HOME/.vnc/xstartup" ]
 }
 
-@test "main logic: root, xfce4 exists, skips populate, runs ensure_autostart" {
+@test "main logic: root, xfce4 exists, skips populate, runs ensure_config" {
     mkdir -p "$TEST_HOME/.config/xfce4"
     echo "existing" > "$TEST_HOME/.config/xfce4/settings.xml"
     mkdir -p "$TEST_HOME/.config/autostart"
+    mkdir -p "$TEST_HOME/.vnc"
+    mkdir -p "$TEST_HOME/.config/xfce4/xfconf/xfce-perchannel-xml"
     export HOME="$TEST_HOME"
     run bash -c '
         if [ ! -d "$HOME/.config/xfce4" ]; then
             cp -r '"$TEST_SKEL"'/. "$HOME/"
         else
+            cp '"$TEST_SKEL"'/.vnc/xstartup "$HOME/.vnc/xstartup" 2>/dev/null || true
+            chmod +x "$HOME/.vnc/xstartup" 2>/dev/null || true
             cp '"$TEST_SKEL"'/.config/autostart/guake.desktop "$HOME/.config/autostart/guake.desktop" 2>/dev/null || true
             chmod +x "$HOME/.config/autostart/guake.desktop" 2>/dev/null || true
         fi
@@ -78,6 +88,8 @@ teardown() {
     [ "$status" -eq 0 ]
     [ -f "$TEST_HOME/.config/autostart/guake.desktop" ]
     [ -x "$TEST_HOME/.config/autostart/guake.desktop" ]
+    [ -f "$TEST_HOME/.vnc/xstartup" ]
+    [ -x "$TEST_HOME/.vnc/xstartup" ]
     read -r content < "$TEST_HOME/.config/xfce4/settings.xml"
     [ "$content" = "existing" ]
 }
@@ -95,15 +107,19 @@ teardown() {
     [ -f "$TEST_HOME/.config/xfce4/settings.xml" ]
 }
 
-@test "main logic: non-root, xfce4 exists, skips populate, runs ensure_autostart" {
+@test "main logic: non-root, xfce4 exists, skips populate, runs ensure_config" {
     mkdir -p "$TEST_HOME/.config/xfce4"
     echo "existing" > "$TEST_HOME/.config/xfce4/settings.xml"
     mkdir -p "$TEST_HOME/.config/autostart"
+    mkdir -p "$TEST_HOME/.vnc"
+    mkdir -p "$TEST_HOME/.config/xfce4/xfconf/xfce-perchannel-xml"
     export HOME="$TEST_HOME"
     run bash -c '
         if [ ! -d "$HOME/.config/xfce4" ]; then
             cp -r '"$TEST_SKEL"'/. "$HOME/"
         else
+            cp '"$TEST_SKEL"'/.vnc/xstartup "$HOME/.vnc/xstartup" 2>/dev/null || true
+            chmod +x "$HOME/.vnc/xstartup" 2>/dev/null || true
             cp '"$TEST_SKEL"'/.config/autostart/guake.desktop "$HOME/.config/autostart/guake.desktop" 2>/dev/null || true
             chmod +x "$HOME/.config/autostart/guake.desktop" 2>/dev/null || true
         fi
