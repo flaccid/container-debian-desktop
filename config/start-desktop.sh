@@ -1,25 +1,25 @@
 #!/bin/bash
 #
 # Orchestrator for the desktop container.
-# Starts VNC, PulseAudio, audio proxy, and websockify instances.
+# Starts PulseAudio, VNC, audio proxy, and websockify instances.
 set -e
 
+# PulseAudio needs XDG_RUNTIME_DIR for its socket path. Set it early
+# so both PulseAudio and the XFCE session (via xstartup) get it.
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+
 # ------------------------------------------------------------------
-# 1. Start TigerVNC (launches XFCE via ~/.vnc/xstartup)
+# 1. Start PulseAudio (before VNC so the panel plugin can connect)
+# ------------------------------------------------------------------
+echo "Starting PulseAudio..."
+pulseaudio --start --exit-idle-time=-1 --disallow-exit 2>/dev/null || true
+
+# ------------------------------------------------------------------
+# 2. Start TigerVNC (launches XFCE via ~/.vnc/xstartup)
 # ------------------------------------------------------------------
 echo "Starting TigerVNC on :1 (1920x1080, 24bpp)..."
 vncserver :1 -geometry 1920x1080 -depth 24 -localhost no \
     -SecurityTypes None --I-KNOW-THIS-IS-INSECURE
-
-# ------------------------------------------------------------------
-# 2. Start PulseAudio (if not already running)
-# ------------------------------------------------------------------
-echo "Starting PulseAudio..."
-# Set XDG_RUNTIME_DIR so PulseAudio creates its socket at the standard
-# location ($XDG_RUNTIME_DIR/pulse/native), which the XFCE panel plugin
-# and pavucontrol expect.
-export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
-pulseaudio --start --exit-idle-time=-1 --disallow-exit 2>/dev/null || true
 
 # ------------------------------------------------------------------
 # 3. Wait for PulseAudio, then load null-sink and TCP stream modules

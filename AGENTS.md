@@ -4,6 +4,7 @@
 - Debian Trixie XFCE desktop container + Helm chart. Non-root `admin` (UID 1000).
 - Serves noVNC via HTTPS/WSS on `:6901` (self-signed cert at `/home/admin/.vnc/self.pem`).
 - VNC auth disabled (`-SecurityTypes None --I-KNOW-THIS-IS-INSECURE`).
+- Panel tray has an action button: Lock Screen. Log Out was removed since it kills the XFCE session with no display manager to restart it.
 
 ## Build
 - `make docker-build` — builds `flaccid/debian-desktop:<Makefile version>`
@@ -55,6 +56,7 @@ CI flow: build → structure test → bats → smoke test → push. Cache layer 
 ## Key gotchas
 - `librsvg2-common` must be listed explicitly in Dockerfile (it's only a Recommends of `papirus-icon-theme`; `--no-install-recommends` skips it)
 - XFCE autostart `.desktop` files **must be executable** (`chmod +x`) or XFCE ignores them
+- **Lock Screen** (`xfce4-screensaver`) requires a password on the `admin` user. No password is set by default. To enable lock screen, exec into the pod and run `passwd admin` (as root), then restart the session. Without a password, the lock screen "unlocks" automatically after pressing any key.
 - `--no-sandbox` apps (Chrome, Signal, VS Code) use wrapper scripts at `/usr/local/bin/`; menu `.desktop` files are `sed`'d to point at wrappers
 - `--test-type` in Chrome wrapper suppresses the unsupported-flag banner (Chrome 149+ may still show it)
 - Keyboard shortcuts: `xfwm4` requires `override=true` in XML; all conflicting defaults must be masked with empty properties
@@ -66,6 +68,6 @@ CI flow: build → structure test → bats → smoke test → push. Cache layer 
 - `audio-proxy.sh` requires `socat` and `gstreamer1.0-tools + plugins` — all installed explicitly via Dockerfile
 - The audio plugin (`audio-plugin.js`) is loaded as an ES module in `vnc.html` and defaults to auto-enabled with path `/audio/`
 - The audio WebSocket runs on port `6902` (separate from VNC's `6901`); nginx sidecar routes `/audio/` → `127.0.0.1:6902`
-- `start-desktop.sh` replaces the old inline CMD; it starts VNC → PulseAudio → audio-proxy → websockify×2; failures in audio services are non-fatal (the desktop still works without audio)
+- `start-desktop.sh` replaces the old inline CMD; it starts PulseAudio → VNC → audio-proxy → websockify×2; failures in audio services are non-fatal (the desktop still works without audio)
 - Browser autoplay policy: audio starts on first user click in the session (handled by the plugin)
 - `pactl` commands may fail on first attempt if PulseAudio hasn't finished initializing; `start-desktop.sh` has a retry loop (up to 10s wait)

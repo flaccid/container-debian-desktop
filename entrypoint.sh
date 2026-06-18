@@ -37,8 +37,9 @@ if [ "$(id -u)" = "0" ]; then
         ensure_config
     fi
     # Create the XDG_RUNTIME_DIR for PulseAudio socket (required by the
-    # XFCE PulseAudio panel plugin).
+    # XFCE PulseAudio panel plugin) and export it so gosu/admin inherit it.
     mkdir -p /run/user/1000 && chown admin:admin /run/user/1000
+    export XDG_RUNTIME_DIR=/run/user/1000
     exec gosu admin "$@"
 # When already running as the admin user (e.g. exec'd into the pod), skip
 # privilege drop but still populate if needed.
