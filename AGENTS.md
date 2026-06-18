@@ -71,7 +71,7 @@ CI flow: build → structure test → bats → smoke test → push. Cache layer 
   xfconf-query -c xfce4-screensaver -p /saver/timeout -s 7200
   ```
   Then restart the session. Resetting from skeleton (`reset-xfce4`) reverts to the 1-hour default.
-  - The X server's built-in screen saver is disabled via an XFCE autostart entry (`disable-x11-screensaver.desktop`) that runs `xset s 3600 3600` after the session is fully initialised, so it doesn't interfere with xfce4-screensaver's timeout.
+  - The X server's built-in screen saver is disabled via an XFCE autostart entry (`disable-x11-screensaver.desktop`) that runs `xset s 3600 3600` after the session is fully initialised, so it doesn't interfere with xfce4-screensaver's timeout. The wrapper script also sets GSettings `org.gnome.desktop.session idle-delay` to 3600 because the preferences GUI reads from GSettings, not xfconf.
 - `--no-sandbox` apps (Chrome, Signal, VS Code) use wrapper scripts at `/usr/local/bin/`; menu `.desktop` files are `sed`'d to point at wrappers
 - `--test-type` in Chrome wrapper suppresses the unsupported-flag banner (Chrome 149+ may still show it)
 - Keyboard shortcuts: `xfwm4` requires `override=true` in XML; all conflicting defaults must be masked with empty properties
