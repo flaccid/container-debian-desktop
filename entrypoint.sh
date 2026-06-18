@@ -20,6 +20,12 @@ ensure_config() {
     cp /etc/skel/admin/.config/autostart/guake.desktop /home/admin/.config/autostart/guake.desktop 2>/dev/null || true
     chmod +x /home/admin/.config/autostart/guake.desktop 2>/dev/null || true
 
+    # Copy disable-x11-screensaver.desktop so the X11 screen saver is
+    # disabled on existing PVCs too.
+    cp /etc/skel/admin/.config/autostart/disable-x11-screensaver.desktop \
+       /home/admin/.config/autostart/disable-x11-screensaver.desktop 2>/dev/null || true
+    chmod +x /home/admin/.config/autostart/disable-x11-screensaver.desktop 2>/dev/null || true
+
     # Copy xfce4-panel.xml to pick up new plugin definitions
     # (e.g. plugin-11 pulseaudio). The user can always customise
     # their panel afterward.

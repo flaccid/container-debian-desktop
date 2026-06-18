@@ -172,6 +172,11 @@ commandTests:
     args: ["-f", "/etc/skel/admin/.config/autostart/guake.desktop"]
     expectedOutput: []
 
+  - name: "disable-x11-screensaver autostart exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.config/autostart/disable-x11-screensaver.desktop"]
+    expectedOutput: []
+
   - name: "xstartup tigervnc symlink exists"
     command: "test"
     args: ["-L", "/etc/skel/admin/.config/tigervnc/xstartup"]
@@ -263,9 +268,9 @@ fileContentTests:
     path: "/etc/pulse/default.pa.d/audio-stream.pa"
     expectedContents: ["module-simple-protocol-tcp", "virtual_sink.monitor"]
 
-  - name: "xstartup uses dbus-launch startxfce4 and disables X11 saver"
+  - name: "xstartup uses dbus-launch startxfce4 and vncconfig"
     path: "/etc/skel/admin/.vnc/xstartup"
-    expectedContents: ["dbus-launch", "startxfce4", "xset s off", "vncconfig -nowin"]
+    expectedContents: ["dbus-launch", "startxfce4", "vncconfig -nowin"]
 
   - name: "chrome wrapper has no-sandbox flag"
     path: "/usr/local/bin/google-chrome"

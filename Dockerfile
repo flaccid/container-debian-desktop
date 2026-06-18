@@ -171,6 +171,10 @@ RUN mkdir -p /etc/skel/admin/.vnc \
     && openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/skel/admin/.vnc/self.pem -out /etc/skel/admin/.vnc/self.pem -days 3650 -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost" \
     && chown -R admin:admin /etc/skel/admin/.vnc /etc/skel/admin/.config/tigervnc
 
+# Provide the XFCE autostart entry that disables the X server built-in
+# screen saver (runs after the session is fully initialised).
+COPY --chown=admin:admin config/autostart/disable-x11-screensaver.desktop /etc/skel/admin/.config/autostart/disable-x11-screensaver.desktop
+
 # Provide an xstartup script in both traditional and XDG locations
 COPY --chown=admin:admin config/xstartup /etc/skel/admin/.vnc/xstartup
 RUN chmod +x /etc/skel/admin/.vnc/xstartup \
@@ -184,6 +188,7 @@ RUN mkdir -p /etc/skel/admin/Desktop /etc/skel/admin/.config/autostart \
     && cp /usr/share/applications/guake.desktop /etc/skel/admin/.config/autostart/ \
     && chmod +x /etc/skel/admin/Desktop/*.desktop \
     && chmod +x /etc/skel/admin/.config/autostart/*.desktop \
+    && chmod +x /etc/skel/admin/.config/autostart/disable-x11-screensaver.desktop \
     && chown -R admin:admin /etc/skel/admin/Desktop /etc/skel/admin/.config/autostart
 
 # Create required X11 session files in the skeleton directory

@@ -61,6 +61,9 @@ docker exec "$CONTAINER_NAME" test -f /home/admin/.config/xfce4/xfconf/xfce-perc
 docker exec "$CONTAINER_NAME" test -f /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml \
     || { echo "FAIL: xfce4-screensaver.xml not found"; exit 1; }
 
+docker exec "$CONTAINER_NAME" test -f /home/admin/.config/autostart/disable-x11-screensaver.desktop \
+    || { echo "FAIL: disable-x11-screensaver.desktop not found"; exit 1; }
+
 echo "Config files present: OK"
 
 # 5. Verify xsettings.xml values
