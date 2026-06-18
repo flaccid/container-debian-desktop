@@ -256,6 +256,7 @@ const AudioPlugin = {
     msp: null,
     ws: null,
     audioEl: null,
+    connecting: false,
 
     async onClickPlayHandler() {
         try {
@@ -269,7 +270,8 @@ const AudioPlugin = {
     },
 
     async startAudio() {
-        if (this.msp) return;
+        if (this.msp || this.connecting) return;
+        this.connecting = true;
         const codec = NVUI.getSetting('audio_codec');
         const bitrate = NVUI.getSetting('audio_bitrate');
         const samplerate = NVUI.getSetting('audio_samplerate');
@@ -292,10 +294,12 @@ const AudioPlugin = {
         this.ws = new WebSocket(wsUrl);
         this.ws.binaryType = 'arraybuffer';
         this.ws.addEventListener('error', async () => {
+            this.connecting = false;
             if (NVUI.connected) NVUI.showStatus('Audio WebSocket connection failed', 'error');
             await this.stopAudio();
         });
         this.ws.addEventListener('close', async () => {
+            this.connecting = false;
             if (!this.msp) return;
             if (NVUI.connected) NVUI.showStatus('Audio WebSocket connection closed', 'error');
             await this.stopAudio();
@@ -305,6 +309,7 @@ const AudioPlugin = {
                 this.msp = new MediaSourcePlayer(mime);
                 await this.msp.attach(this.audioEl);
             } catch (err) {
+                this.connecting = false;
                 NVUI.showStatus(`MediaSource initialization failed: ${err.message}`);
                 await this.stopAudio();
                 return;
@@ -312,10 +317,12 @@ const AudioPlugin = {
             try {
                 await AudioProxy.handshake(this.ws, codec, bitrate, samplerate);
             } catch (err) {
+                this.connecting = false;
                 NVUI.showStatus(`Audio handshake failed: ${err.message}`, 'error');
                 await this.stopAudio();
                 return;
             }
+            this.connecting = false;
             this.ws.addEventListener('message', async (msg) => {
                 try {
                     this.msp.feed(msg.data);
@@ -329,6 +336,7 @@ const AudioPlugin = {
     },
 
     async stopAudio() {
+        this.connecting = false;
         if (this.msp) { await this.msp.detach(); this.msp = null; }
         if (this.ws) { this.ws.close(); this.ws = null; }
     },
