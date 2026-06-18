@@ -1,4 +1,6 @@
 #!/bin/bash
 xrdb $HOME/.Xresources
 
+export XDG_RUNTIME_DIR=/run/user/1000
+
 exec dbus-launch --exit-with-session startxfce4

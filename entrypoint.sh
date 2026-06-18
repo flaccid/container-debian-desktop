@@ -25,6 +25,9 @@ if [ "$(id -u)" = "0" ]; then
     else
         ensure_autostart
     fi
+    # Create the XDG_RUNTIME_DIR for PulseAudio socket (required by the
+    # XFCE PulseAudio panel plugin).
+    mkdir -p /run/user/1000 && chown admin:admin /run/user/1000
     exec gosu admin "$@"
 # When already running as the admin user (e.g. exec'd into the pod), skip
 # privilege drop but still populate if needed.

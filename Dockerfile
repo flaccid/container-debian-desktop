@@ -62,6 +62,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     make \
     pulseaudio \
     pulseaudio-utils \
+    pavucontrol \
     socat \
     gstreamer1.0-tools \
     gstreamer1.0-plugins-base \

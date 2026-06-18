@@ -15,6 +15,10 @@ vncserver :1 -geometry 1920x1080 -depth 24 -localhost no \
 # 2. Start PulseAudio (if not already running)
 # ------------------------------------------------------------------
 echo "Starting PulseAudio..."
+# Set XDG_RUNTIME_DIR so PulseAudio creates its socket at the standard
+# location ($XDG_RUNTIME_DIR/pulse/native), which the XFCE panel plugin
+# and pavucontrol expect.
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 pulseaudio --start --exit-idle-time=-1 --disallow-exit 2>/dev/null || true
 
 # ------------------------------------------------------------------
@@ -45,6 +49,18 @@ pactl load-module module-simple-protocol-tcp \
     2>/dev/null || true
 
 pactl set-default-sink virtual_sink 2>/dev/null || true
+
+# Create a dummy source for the PulseAudio panel plugin's mic/input tab.
+# Without this, the default source is virtual_sink.monitor, so muting the
+# "mic" in the panel would mute the audio stream. This dummy source is
+# completely separate — muting it has no effect on audio.
+pactl load-module module-null-sink \
+    sink_name=dummy_mic \
+    sink_properties=device.description="Dummy_Mic" \
+    2>/dev/null || true
+pactl set-default-source dummy_mic.monitor 2>/dev/null || true
+# Mute the dummy mic by default — removes any doubt that it is not a real mic.
+pactl set-source-mute dummy_mic.monitor 1 2>/dev/null || true
 
 echo "PulseAudio virtual sink ready"
 
