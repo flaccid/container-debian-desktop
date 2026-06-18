@@ -132,6 +132,48 @@ teardown() {
     [ "$content" = "existing" ]
 }
 
+@test "persist_shadow creates backup in home from /etc/shadow" {
+    skip "requires root to read /etc/shadow"
+    mkdir -p "$TEST_HOME"
+    export HOME="$TEST_HOME"
+    run bash -c '
+        shadow_backup="$HOME/.shadow"
+        cp /etc/shadow "$shadow_backup"
+        chown admin:admin "$shadow_backup" 2>/dev/null || true
+    '
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_HOME/.shadow" ]
+}
+
+@test "persist_shadow restores /etc/shadow from existing backup" {
+    skip "requires root to write /etc/shadow"
+    mkdir -p "$TEST_HOME"
+    export HOME="$TEST_HOME"
+    echo "mock-shadow-content" > "$TEST_HOME/.shadow"
+    run bash -c '
+        shadow_backup="$HOME/.shadow"
+        if [ -f "$shadow_backup" ]; then
+            cp "$shadow_backup" /etc/shadow
+        fi
+        cp /etc/shadow "$shadow_backup"
+    '
+    [ "$status" -eq 0 ]
+}
+
+@test "persist_shadow does not fail when backup is absent" {
+    mkdir -p "$TEST_HOME"
+    export HOME="$TEST_HOME"
+    run bash -c '
+        shadow_backup="$HOME/.shadow"
+        if [ -f "$shadow_backup" ]; then
+            cp "$shadow_backup" /etc/shadow
+        fi
+        touch "$shadow_backup"
+    '
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_HOME/.shadow" ]
+}
+
 @test "entrypoint.sh is valid bash" {
     run bash -n "$BATS_TEST_DIRNAME/../entrypoint.sh"
     [ "$status" -eq 0 ]

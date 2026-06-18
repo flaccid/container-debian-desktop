@@ -27,6 +27,18 @@ ensure_config() {
        /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml 2>/dev/null || true
 }
 
+# Persist /etc/shadow across pod restarts so the lock screen password
+# (set via `passwd admin`) survives container/image replacement.
+# `/etc/shadow` is copied to/from `/home/admin/.shadow` on the PVC.
+persist_shadow() {
+    local shadow_backup="/home/admin/.shadow"
+    if [ -f "$shadow_backup" ]; then
+        cp "$shadow_backup" /etc/shadow
+    fi
+    cp /etc/shadow "$shadow_backup"
+    chown admin:admin "$shadow_backup"
+}
+
 # When running as root (the default in Docker/Kubernetes), drop privileges
 # to the admin user via gosu after populating the home directory.
 if [ "$(id -u)" = "0" ]; then
@@ -40,6 +52,14 @@ if [ "$(id -u)" = "0" ]; then
     # XFCE PulseAudio panel plugin) and export it so gosu/admin inherit it.
     mkdir -p /run/user/1000 && chown admin:admin /run/user/1000
     export XDG_RUNTIME_DIR=/run/user/1000
+    persist_shadow
+    # Sync shadow to PVC every 2 minutes so password changes persist
+    (
+        while true; do
+            sleep 120
+            cp /etc/shadow /home/admin/.shadow 2>/dev/null || true
+        done
+    ) &
     exec gosu admin "$@"
 # When already running as the admin user (e.g. exec'd into the pod), skip
 # privilege drop but still populate if needed.
