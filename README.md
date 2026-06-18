@@ -41,6 +41,16 @@ The image comes with several productivity tools ready to use:
 - **XFCE Utilities** — including Thunar file manager, XFCE terminal, and XFCE task manager
 - **Fonts** — Ubuntu, JetBrains Mono, Cantarell, Noto Color Emoji, and Noto fonts for broad Unicode script coverage
 
+## Whitelabelling 🏷️
+
+The noVNC interface is whitelabelled with Debian branding:
+
+- **Sidebar logo** — Debian swirl (openlogo-debianV2.svg) replaces the "noVNC" text in the left control bar
+- **Connect dialog logo** — Full Debian logo (Debian-OpenLogo.svg) with swirl and wordmark replaces the center "noVNC" text
+- **Dark theme** — Custom CSS (`config/novnc-dark.css`) provides a uniform dark appearance across all UI elements
+
+Both logos are SVG files loaded as CSS backgrounds, copied into the container at build time.
+
 ## Customizations 🎨
 
 - **Dark Theme** — Adwaita-dark set as the default system theme

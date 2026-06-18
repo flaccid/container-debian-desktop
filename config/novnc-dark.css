@@ -19,15 +19,23 @@ body {
     background: none;
 }
 
-#noVNC_connect_dlg .noVNC_logo {
-    color: #888;
-    text-shadow: none;
-    background: none;
-    border: none;
+#noVNC_control_bar .noVNC_logo {
+    font-size: 0;
+    width: 36px;
+    height: 36px;
+    margin: 15px auto;
+    background: url('openlogo-debianV2.svg') no-repeat center;
+    background-size: contain;
 }
 
-#noVNC_connect_dlg .noVNC_logo span {
-    color: #666;
+#noVNC_connect_dlg .noVNC_logo {
+    font-size: 0;
+    width: 280px;
+    height: 200px;
+    margin: 10px auto 20px;
+    padding: 0;
+    background: url('Debian-OpenLogo.svg') no-repeat center;
+    background-size: contain;
 }
 
 #noVNC_container {

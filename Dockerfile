@@ -139,6 +139,8 @@ RUN echo '<meta http-equiv="refresh" content="0; url=vnc_auto.html?resize=remote
 
 # Install the audio plugin for noVNC (client-side WebM/Opus player)
 COPY config/audio-plugin.js /usr/share/novnc/audio-plugin.js
+COPY config/openlogo-debianV2.svg /usr/share/novnc/openlogo-debianV2.svg
+COPY config/Debian-OpenLogo.svg /usr/share/novnc/Debian-OpenLogo.svg
 RUN sed -i 's|</head>|<script type="module" src="audio-plugin.js"></script></head>|' /usr/share/novnc/vnc.html && \
     sed -i '/import UI from "\.\/app\/ui\.js";/a\        window.NVUI = UI;' /usr/share/novnc/vnc.html
 

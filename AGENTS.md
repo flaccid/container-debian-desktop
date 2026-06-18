@@ -53,6 +53,14 @@ Individual targets: `make test-structure test-bats test-smoke test-helm`
 
 CI flow: build → structure test → bats → smoke test → push. Cache layer means the push rebuild is near-instant.
 
+## Whitelabelling / Theming
+- noVNC logos are replaced with Debian branding via CSS background images:
+  - **Sidebar** (`#noVNC_control_bar .noVNC_logo`): 36×36px Debian swirl (`openlogo-debianV2.svg`)
+  - **Connect dialog** (`#noVNC_connect_dlg .noVNC_logo`): 280×200px full Debian logo (`Debian-OpenLogo.svg`)
+  - Text is hidden with `font-size: 0`; logos are added as `background-image` in `novnc-dark.css`
+- Dark theme lives in `config/novnc-dark.css`, loaded last in `vnc.html` and `vnc_auto.html`
+- SVG logo files (`openlogo-debianV2.svg`, `Debian-OpenLogo.svg`) are copied into `/usr/share/novnc/` via Dockerfile COPY
+
 ## Key gotchas
 - `librsvg2-common` must be listed explicitly in Dockerfile (it's only a Recommends of `papirus-icon-theme`; `--no-install-recommends` skips it)
 - XFCE autostart `.desktop` files **must be executable** (`chmod +x`) or XFCE ignores them
