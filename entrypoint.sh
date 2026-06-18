@@ -25,6 +25,10 @@ ensure_config() {
     # their panel afterward.
     cp /etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml \
        /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml 2>/dev/null || true
+
+    # Copy xfce4-screensaver.xml to pick up default idle/lock timeout.
+    cp /etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml \
+       /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml 2>/dev/null || true
 }
 
 # Persist /etc/shadow across pod restarts so the lock screen password

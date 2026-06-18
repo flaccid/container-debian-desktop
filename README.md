@@ -192,6 +192,23 @@ On container start, the entrypoint detects whether it is running as `root` or as
 
 This approach means fresh PVCs are populated automatically, while existing PVCs (post first-run) preserve user data across pod restarts.
 
+### Screensaver Idle Timeout 🔒
+
+The screen automatically locks after **1 hour** of inactivity, managed by `xfce4-screensaver`. To change the timeout:
+
+```bash
+# Change to 2 hours (7200 seconds)
+kubectl exec -n <namespace> <pod> -c desktop -- xfconf-query -c xfce4-screensaver -p /saver/timeout -s 7200
+
+# Disable automatic locking entirely
+kubectl exec -n <namespace> <pod> -c desktop -- xfconf-query -c xfce4-screensaver -p /lock/enabled -s false
+
+# Disable the screensaver entirely
+kubectl exec -n <namespace> <pod> -c desktop -- xfconf-query -c xfce4-screensaver -p /saver/enabled -s false
+```
+
+After changing, restart the XFCE session for the new settings to take effect. Running `reset-xfce4` reverts to the 1-hour default.
+
 ### Reset Script (`reset-xfce4`)
 
 If you need to restore the default XFCE configuration from the skeleton on an existing PVC (e.g., after a config change or to pick up new shortcuts/autostart entries):

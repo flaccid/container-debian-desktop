@@ -66,6 +66,11 @@ CI flow: build → structure test → bats → smoke test → push. Cache layer 
 - XFCE autostart `.desktop` files **must be executable** (`chmod +x`) or XFCE ignores them
 - **Lock Screen** (`xfce4-screensaver`) requires a password on the `admin` user. No password is set by default. To enable lock screen, exec into the pod and run `passwd admin` (as root), then restart the session. Without a password, the lock screen "unlocks" automatically after pressing any key.
   - The `/etc/shadow` file is persisted to `/home/admin/.shadow` on the PVC and restored on pod start, so the password survives container/image replacement. A background sync loop saves it every 2 minutes.
+- **Screensaver idle timeout** defaults to **1 hour** (`/saver/timeout = 3600`). To change it, exec into the pod and run:
+  ```
+  xfconf-query -c xfce4-screensaver -p /saver/timeout -s 7200
+  ```
+  Then restart the session. Resetting from skeleton (`reset-xfce4`) reverts to the 1-hour default.
 - `--no-sandbox` apps (Chrome, Signal, VS Code) use wrapper scripts at `/usr/local/bin/`; menu `.desktop` files are `sed`'d to point at wrappers
 - `--test-type` in Chrome wrapper suppresses the unsupported-flag banner (Chrome 149+ may still show it)
 - Keyboard shortcuts: `xfwm4` requires `override=true` in XML; all conflicting defaults must be masked with empty properties

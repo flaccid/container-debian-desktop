@@ -162,6 +162,11 @@ commandTests:
     args: ["-f", "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"]
     expectedOutput: []
 
+  - name: "xfce4-screensaver.xml exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml"]
+    expectedOutput: []
+
   - name: "guake autostart exists"
     command: "test"
     args: ["-f", "/etc/skel/admin/.config/autostart/guake.desktop"]
@@ -297,6 +302,10 @@ fileContentTests:
   - name: "xfce4-panel.xml uses applicationsmenu"
     path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
     expectedContents: ["applicationsmenu"]
+
+  - name: "xfce4-screensaver.xml has 1-hour timeout"
+    path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml"
+    expectedContents: ['"timeout" type="int" value="3600"', '"enabled" type="bool" value="true"']
 
 metadataTest:
   entrypoint: ["/usr/local/bin/entrypoint.sh"]
