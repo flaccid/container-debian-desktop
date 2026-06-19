@@ -175,6 +175,12 @@ Browser ──HTTPS──> Ingress ──HTTP──> nginx sidecar (:8080)
 
 The nginx sidecar sits inside the pod, serves the custom `index.html`, and proxies `/` to websockify on `localhost:6901` (plain HTTP — TLS is handled by the Ingress). The `/audio/` path is proxied to a second websockify on `6902`, which connects to the audio proxy (GStreamer encoding PulseAudio raw PCM to WebM/Opus). WebSocket upgrades for both noVNC and audio are passed through transparently. The Ingress terminates external HTTPS and delegates auth to oauth2-proxy.
 
+### Signing Out 🔒
+
+When deployed via Helm, a **Sign Out** button appears in the noVNC control bar (between Settings and Disconnect). Clicking it opens the logout page in a new tab, where a single click signs you out of both oauth2-proxy and Google. After signing out, you'll be prompted to sign in again to access the desktop.
+
+The logout page is served at `/logout` by the nginx sidecar ConfigMap and is only available in Helm deployments — it is not present in the Docker image.
+
 ### Publishing chart updates
 
 After any chart change:
