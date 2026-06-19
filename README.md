@@ -37,6 +37,11 @@ The image comes with several productivity tools ready to use:
 - **k9s** — Kubernetes TUI dashboard (`k9s`)
 - **Terraform** — infrastructure as code (`terraform`)
 - **AWS CLI** — Amazon Web Services CLI v2 (`aws`)
+- **taws** — Terminal UI for browsing AWS resources (`taws`)
+- **Google Cloud CLI** — Google Cloud Platform CLI (`gcloud`)
+- **joe** — Joe's Own Editor, a light text editor (`joe`)
+- **yq** — portable YAML/JSON processor (`yq`)
+- **tfswitch** — Terraform version switcher (`tfswitch`)
 - **Make** — build automation tool (`make`)
 - **XFCE Utilities** — including Thunar file manager, XFCE terminal, and XFCE task manager
 - **Fonts** — Ubuntu, JetBrains Mono, Cantarell, Noto Color Emoji, and Noto fonts for broad Unicode script coverage
