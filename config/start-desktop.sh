@@ -18,7 +18,7 @@ pulseaudio --start --exit-idle-time=-1 --disallow-exit 2>/dev/null || true
 # 2. Start TigerVNC (launches XFCE via ~/.vnc/xstartup)
 # ------------------------------------------------------------------
 echo "Starting TigerVNC on :1 (1920x1080, 24bpp)..."
-vncserver :1 -geometry 1920x1080 -depth 24 -localhost no \
+vncserver :1 -geometry 1920x1080 -depth 24 -localhost no -forever \
     -SecurityTypes None --I-KNOW-THIS-IS-INSECURE
 
 # ------------------------------------------------------------------
