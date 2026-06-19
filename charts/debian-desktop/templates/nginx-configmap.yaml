@@ -14,18 +14,6 @@ data:
         location ~* \.(html|js|json)$ {
             expires -1;
             try_files $uri $uri/ @proxy;
-            sub_filter '<!-- Connection controls -->'
-                       '<input type="image" alt="Sign Out" src="app/images/logout.svg"
-                            id="noVNC_signout_button" class="noVNC_button"
-                            title="Sign Out"
-                            onclick="window.open(\'/logout\', \'_blank\'); return false;">
-            <!-- Connection controls -->';
-            sub_filter_once on;
-            sub_filter_types text/html;
-            sub_filter '</head>'
-                       '<style>
-            :root:not(.noVNC_connected) #noVNC_signout_button { display: none; }
-        </style></head>';
         }
 
         # Add cache-bust param to the redirect URL so a stale cached index.html
@@ -36,7 +24,7 @@ data:
         }
 
         location / {
-            try_files $uri $uri/ @proxy;
+            try_files $uri @proxy;
         }
 
         location = /logout {
@@ -58,6 +46,19 @@ data:
             proxy_set_header Connection "upgrade";
             proxy_set_header Host $host;
             proxy_read_timeout 86400s;
+
+            sub_filter_types text/html;
+            sub_filter '<!-- Connection controls -->'
+                       '<input type="image" alt="Sign Out" src="app/images/logout.svg"
+                            id="noVNC_signout_button" class="noVNC_button"
+                            title="Sign Out"
+                            onclick="location.href=\'/logout\'; return false;">
+            <!-- Connection controls -->';
+            sub_filter_once on;
+            sub_filter '</head>'
+                       '<style>
+            #noVNC_signout_button { filter: brightness(0) invert(1); }
+        </style></head>';
         }
     }
   logout.html: |
@@ -84,7 +85,7 @@ data:
         border-radius: 12px;
         padding: 3rem;
         text-align: center;
-        max-width: 400px;
+        max-width: 440px;
         width: 90%;
       }
       .logo {
@@ -104,9 +105,16 @@ data:
         font-size: 0.9rem;
         line-height: 1.5;
       }
+      .buttons {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+      }
       .btn {
-        display: inline-block;
-        padding: 0.75rem 2rem;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        padding: 0.75rem 1.5rem;
         border: 1px solid #555;
         border-radius: 8px;
         background: transparent;
@@ -122,8 +130,8 @@ data:
       .btn svg {
         width: 18px;
         height: 18px;
-        vertical-align: middle;
         margin-right: 0.5rem;
+        flex-shrink: 0;
       }
       .footer {
         margin-top: 2rem;
@@ -137,12 +145,20 @@ data:
       <img src="openlogo-debianV2.svg" alt="Debian" class="logo">
       <h1>Sign Out</h1>
       <p>You are signed in with Google. Sign out below to switch accounts or end your session.</p>
-      <a href="#" class="btn" id="signoutBtn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-        </svg>
-        Sign Out
-      </a>
+      <div class="buttons">
+        <a href="#" class="btn" id="signoutBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+          </svg>
+          Sign Out
+        </a>
+        <a href="/" class="btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+          </svg>
+          Cancel
+        </a>
+      </div>
       <div class="footer">Debian Desktop</div>
     </div>
     <script>
@@ -156,6 +172,6 @@ data:
     </body>
     </html>
   logout.svg: |
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff">
       <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
     </svg>
