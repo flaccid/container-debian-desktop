@@ -70,6 +70,44 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gstreamer1.0-plugins-good \
     gstreamer1.0-plugins-bad \
     xfce4-screensaver \
+    apt-utils \
+    bash-completion \
+    bind9-host \
+    build-essential \
+    bwm-ng \
+    bzip2 \
+    cmake \
+    cowsay \
+    dnsutils \
+    file \
+    gnupg2 \
+    htop \
+    iproute2 \
+    iputils-ping \
+    joe \
+    jq \
+    less \
+    locales \
+    lsb-release \
+    man \
+    nano \
+    net-tools \
+    netcat-openbsd \
+    procps \
+    pwgen \
+    python-is-python3 \
+    python3-pip \
+    screen \
+    software-properties-common \
+    telnet \
+    tmux \
+    traceroute \
+    tree \
+    tzdata \
+    vim \
+    xz-utils \
+    zip \
+    zsh \
     && rm -rf /var/lib/apt/lists/*
 
 # Install the Ubuntu font family (not packaged in Trixie)
@@ -97,6 +135,20 @@ RUN curl -fsSL https://get.helm.sh/helm-v3.21.1-linux-amd64.tar.gz | tar xz -C /
     && curl -fsSL -o /tmp/terraform.zip "https://releases.hashicorp.com/terraform/1.15.6/terraform_1.15.6_linux_amd64.zip" \
     && unzip -o /tmp/terraform.zip -d /usr/local/bin \
     && rm /tmp/terraform.zip
+
+# Install Google Cloud SDK (apt repo), taws, tfswitch, yq
+RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" > /etc/apt/sources.list.d/google-cloud-sdk.list \
+    && apt-get update && apt-get install -y --no-install-recommends google-cloud-cli \
+    && rm -rf /var/lib/apt/lists/* \
+    && CGO_ENABLED=0 GOPATH=/tmp/go go install github.com/huseyinbabal/taws@latest \
+    && mv /tmp/go/bin/taws /usr/local/bin/taws \
+    && rm -rf /tmp/go \
+    && curl -fsSL -o /tmp/tfswitch.tar.gz "https://github.com/warrensbox/terraform-switcher/releases/latest/download/terraform-switcher_linux_amd64.tar.gz" \
+    && tar xzf /tmp/tfswitch.tar.gz -C /usr/local/bin tfswitch \
+    && rm /tmp/tfswitch.tar.gz \
+    && curl -fsSL -o /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64" \
+    && chmod +x /usr/local/bin/yq
 
 # Create wrapper scripts for apps that need --no-sandbox in containers
 RUN { \
