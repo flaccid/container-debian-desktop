@@ -140,9 +140,9 @@ RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dea
     && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" > /etc/apt/sources.list.d/google-cloud-sdk.list \
     && apt-get update && apt-get install -y --no-install-recommends google-cloud-cli \
     && rm -rf /var/lib/apt/lists/* \
-    && CGO_ENABLED=0 GOPATH=/tmp/go go install github.com/huseyinbabal/taws@latest \
-    && mv /tmp/go/bin/taws /usr/local/bin/taws \
-    && rm -rf /tmp/go \
+    && curl -fsSL -o /tmp/taws.tar.gz "https://github.com/huseyinbabal/taws/releases/latest/download/taws-x86_64-unknown-linux-musl.tar.gz" \
+    && tar xzf /tmp/taws.tar.gz -C /usr/local/bin taws \
+    && rm /tmp/taws.tar.gz \
     && curl -fsSL -o /tmp/tfswitch.tar.gz "https://github.com/warrensbox/terraform-switcher/releases/latest/download/terraform-switcher_linux_amd64.tar.gz" \
     && tar xzf /tmp/tfswitch.tar.gz -C /usr/local/bin tfswitch \
     && rm /tmp/tfswitch.tar.gz \
