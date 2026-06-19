@@ -143,8 +143,8 @@ RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dea
     && curl -fsSL -o /tmp/taws.tar.gz "https://github.com/huseyinbabal/taws/releases/latest/download/taws-x86_64-unknown-linux-musl.tar.gz" \
     && tar xzf /tmp/taws.tar.gz -C /usr/local/bin taws \
     && rm /tmp/taws.tar.gz \
-    && TF_VERSION=$(curl -fsSL https://api.github.com/repos/warrensbox/terraform-switcher/releases/latest | grep '"tag_name"' | cut -d\" -f4 | sed 's/^v//') \
-    && curl -fsSL -o /tmp/tfswitch.tar.gz "https://github.com/warrensbox/terraform-switcher/releases/download/v${TF_VERSION}/terraform-switcher_${TF_VERSION}_linux_amd64.tar.gz" \
+    && TF_TAG=$(curl -fsSL https://api.github.com/repos/warrensbox/terraform-switcher/releases/latest | grep '"tag_name"' | cut -d\" -f4) \
+    && curl -fsSL -o /tmp/tfswitch.tar.gz "https://github.com/warrensbox/terraform-switcher/releases/download/${TF_TAG}/terraform-switcher_${TF_TAG}_linux_amd64.tar.gz" \
     && tar xzf /tmp/tfswitch.tar.gz -C /usr/local/bin tfswitch \
     && rm /tmp/tfswitch.tar.gz \
     && curl -fsSL -o /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64" \
