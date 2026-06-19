@@ -58,8 +58,14 @@ docker exec "$CONTAINER_NAME" test -f /home/admin/.config/xfce4/xfconf/xfce-perc
 docker exec "$CONTAINER_NAME" test -f /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml \
     || { echo "FAIL: xfce4-panel.xml not found"; exit 1; }
 
-docker exec "$CONTAINER_NAME" test -f /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml \
-    || { echo "FAIL: xfce4-screensaver.xml not found"; exit 1; }
+SCREENSAVER=$(docker exec "$CONTAINER_NAME" cat /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml 2>/dev/null)
+if echo "$SCREENSAVER" | grep -q '"delay" type="int" value="60"'; then
+    echo "xfce4-screensaver idle delay 60: OK"
+else
+    echo "FAIL: xfce4-screensaver idle delay 60 not found"
+    echo "$SCREENSAVER"
+    exit 1
+fi
 
 docker exec "$CONTAINER_NAME" test -f /home/admin/.config/autostart/disable-x11-screensaver.desktop \
     || { echo "FAIL: disable-x11-screensaver.desktop not found"; exit 1; }
