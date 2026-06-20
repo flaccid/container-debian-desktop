@@ -64,14 +64,19 @@ CI flow: build → structure test → bats → smoke test → push. Cache layer 
 ## Key gotchas
 - `librsvg2-common` must be listed explicitly in Dockerfile (it's only a Recommends of `papirus-icon-theme`; `--no-install-recommends` skips it)
 - XFCE autostart `.desktop` files **must be executable** (`chmod +x`) or XFCE ignores them
-- **Lock Screen** (`xfce4-screensaver`) requires a password on the `admin` user. No password is set by default. To enable lock screen, exec into the pod and run `passwd admin` (as root), then restart the session. Without a password, the lock screen "unlocks" automatically after pressing any key.
-  - The `/etc/shadow` file is persisted to `/home/admin/.shadow` on the PVC and restored on pod start, so the password survives container/image replacement. A background sync loop saves it every 2 minutes.
-- **Screensaver idle timeout** defaults to **1 hour** (`/saver/timeout = 3600`). To change it, exec into the pod and run:
-  ```
-  xfconf-query -c xfce4-screensaver -p /saver/timeout -s 7200
-  ```
-  Then restart the session. Resetting from skeleton (`reset-xfce4`) reverts to the 1-hour default.
-  - The X server's built-in screen saver is disabled via an XFCE autostart entry (`disable-x11-screensaver.desktop`) that runs `xset s 3600 3600` after the session is fully initialised, so it doesn't interfere with xfce4-screensaver's timeout. The wrapper script also sets GSettings `org.gnome.desktop.session idle-delay` to 3600 because the preferences GUI reads from GSettings, not xfconf.
+- **Screensaver and lock screen are disabled by default** (`saver/enabled=false`, `lock/enabled=false`). This prevents the user from getting locked out when no password is set (see below). The idle-timeout value is still configured at 1 hour (`/saver/timeout = 3600`) so if the user re-enables via the GUI the timeout is already sensible.
+- **To enable screensaver + lock screen via the GUI:**
+  1. Open the XFCE menu → **Settings** → **Screensaver**
+  2. Check **"Enable Screensaver"** and set your desired idle timeout
+  3. Check **"Lock screen"** (under the Lock tab) to enable automatic locking when the screensaver activates
+  4. Close the dialog — changes take effect immediately
+- **Setting a password** (required for lock screen to actually prevent access):
+  1. Exec into the pod as root: `kubectl exec <pod> -c desktop -- bash -c 'passwd admin'`
+  2. Enter and confirm the password
+  3. The password hash is synced to the PVC-backed `/home/admin/.shadow` every 2 minutes, so it survives pod restarts and image updates
+  4. No need to restart the session — the lock screen uses PAM under the hood and picks up the new password immediately
+  - **Important**: Debian's PAM does NOT permit empty passwords (`nullok` is absent from `pam_unix.so`). Without setting `passwd admin`, any lock screen attempt will be **denied** and the user will be stuck. This is why screensaver + lock are disabled by default.
+- The X server's built-in screen saver is disabled via an XFCE autostart entry (`disable-x11-screensaver.desktop`) that runs `xset s 3600 3600` after the session is fully initialised, so it doesn't interfere with xfce4-screensaver's timeout. The wrapper script also sets GSettings `org.gnome.desktop.session idle-delay` to 3600 because the preferences GUI reads from GSettings, not xfconf.
 - `--no-sandbox` apps (Chrome, Signal, VS Code) use wrapper scripts at `/usr/local/bin/`; menu `.desktop` files are `sed`'d to point at wrappers
 - `--test-type` in Chrome wrapper suppresses the unsupported-flag banner (Chrome 149+ may still show it)
 - Keyboard shortcuts: `xfwm4` requires `override=true` in XML; all conflicting defaults must be masked with empty properties
