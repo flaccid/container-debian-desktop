@@ -1,0 +1,21 @@
+#!/bin/sh
+# Overrides /usr/bin/xflock4 (from xfce4-session).
+# Calls xfce4-screensaver directly instead of going through the session
+# manager, which does not reliably lock in TigerVNC sessions.
+#
+# First ensures the xfce4-screensaver daemon is running (D-Bus activated),
+# then tells it to lock the screen immediately.
+
+# Ensure screensaver daemon is running (the D-Bus service file at
+# /usr/share/dbus-1/services/org.xfce.ScreenSaver.service should auto-start
+# it, but we explicitly start it first to avoid a race on first lock).
+/usr/bin/xfce4-screensaver 2>/dev/null &
+
+for i in 1 2 3 4 5; do
+    if /usr/bin/xfce4-screensaver-command -q >/dev/null 2>&1; then
+        break
+    fi
+    sleep 0.5
+done
+
+exec /usr/bin/xfce4-screensaver-command --lock

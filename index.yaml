@@ -2,8 +2,22 @@ apiVersion: v1
 entries:
   debian-desktop:
   - apiVersion: v2
-    appVersion: 0.11.3
+    appVersion: 0.11.4
     created: "2026-06-20T20:51:44.371903413+10:00"
+    dependencies:
+    - name: oauth2-proxy
+      repository: file://./charts/oauth2-proxy
+      version: 0.1.0
+    description: A Helm chart for a persistent, web-based Linux desktop environment
+    digest: e9e208ff13941f81d3392b59bf3ec5e01849e935a6a2b4be177eeeb3a536f3c6
+    name: debian-desktop
+    type: application
+    urls:
+    - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.3.4.tgz
+    version: 0.3.4
+  - apiVersion: v2
+    appVersion: 0.11.3
+    created: "2026-06-20T20:51:44.371572361+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -17,7 +31,7 @@ entries:
     version: 0.3.3
   - apiVersion: v2
     appVersion: 0.11.2
-    created: "2026-06-20T20:51:44.371572361+10:00"
+    created: "2026-06-20T20:51:44.371194143+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -29,18 +43,4 @@ entries:
     urls:
     - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.3.2.tgz
     version: 0.3.2
-  - apiVersion: v2
-    appVersion: 0.11.1
-    created: "2026-06-20T20:51:44.371194143+10:00"
-    dependencies:
-    - name: oauth2-proxy
-      repository: file://./charts/oauth2-proxy
-      version: 0.1.0
-    description: A Helm chart for a persistent, web-based Linux desktop environment
-    digest: 67c38b7ddc4299712eddfa148c5e11b3d61c61d8d284b02749d7178f3e50f44b
-    name: debian-desktop
-    type: application
-    urls:
-    - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.3.1.tgz
-    version: 0.3.1
 generated: "2026-06-20T20:51:44.367248775+10:00"

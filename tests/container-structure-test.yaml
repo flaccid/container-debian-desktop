@@ -272,6 +272,16 @@ commandTests:
     args: ["-x", "/usr/local/bin/audio-proxy.sh"]
     expectedOutput: []
 
+  - name: "custom xflock4 exists"
+    command: "test"
+    args: ["-f", "/usr/local/bin/xflock4"]
+    expectedOutput: []
+
+  - name: "custom xflock4 is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/xflock4"]
+    expectedOutput: []
+
   - name: "pulse virtual-sink config exists"
     command: "test"
     args: ["-f", "/etc/pulse/default.pa.d/virtual-sink.pa"]

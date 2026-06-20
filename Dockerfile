@@ -270,10 +270,11 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY config/reset-xfce4 /usr/local/bin/reset-xfce4
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/reset-xfce4
 
-# Copy the desktop orchestrator and audio proxy
+# Copy the desktop orchestrator, audio proxy, and custom xflock4
 COPY config/start-desktop.sh /usr/local/bin/start-desktop.sh
 COPY config/audio-proxy.sh /usr/local/bin/audio-proxy.sh
-RUN chmod +x /usr/local/bin/start-desktop.sh /usr/local/bin/audio-proxy.sh
+COPY config/xflock4 /usr/local/bin/xflock4
+RUN chmod +x /usr/local/bin/start-desktop.sh /usr/local/bin/audio-proxy.sh /usr/local/bin/xflock4
 
 # Expose noVNC and audio WebSocket ports
 EXPOSE 6901

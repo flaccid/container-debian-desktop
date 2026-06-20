@@ -91,6 +91,7 @@ CI flow: build → structure test → bats → smoke test → push. Cache layer 
 - `start-desktop.sh` replaces the old inline CMD; it starts PulseAudio → VNC → audio-proxy → websockify×2; failures in audio services are non-fatal (the desktop still works without audio)
 - Browser autoplay policy: audio starts on first user click in the session (handled by the plugin)
 - `pactl` commands may fail on first attempt if PulseAudio hasn't finished initializing; `start-desktop.sh` has a retry loop (up to 10s wait)
+- **Lock screen button** uses a custom `/usr/local/bin/xflock4` (overrides `/usr/bin/xflock4` from `xfce4-session`). The stock `xflock4` calls the session manager's D-Bus `Lock` method, which doesn't reliably lock in TigerVNC sessions. The custom wrapper starts the `xfce4-screensaver` daemon if needed and calls `xfce4-screensaver-command --lock` directly.
 - **Clipboard sync** requires `xclip` and `vncconfig -nowin`:
   - `xclip` is installed in the image and provides the `xclip` binary that programs (including opencode) use to write to the X11 CLIPBOARD selection
   - `vncconfig -nowin` runs from `~/.vnc/xstartup` as a background daemon to relay CLIPBOARD content to the noVNC client's clipboard panel
