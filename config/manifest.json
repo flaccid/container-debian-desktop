@@ -1,0 +1,29 @@
+{
+  "name": "Debian Desktop",
+  "short_name": "Debian Desktop",
+  "description": "Remote Debian desktop in your browser",
+  "start_url": "/vnc.html?resize=remote",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#D70751",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "openlogo-debianV2.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

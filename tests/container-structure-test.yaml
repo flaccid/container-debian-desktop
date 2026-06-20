@@ -31,6 +31,11 @@ commandTests:
     args: ["-c", "dpkg -s librsvg2-common | grep -q 'Status: install ok installed'"]
     expectedOutput: []
 
+  - name: "librsvg2-bin is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s librsvg2-bin | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
   - name: "fonts-ubuntu is installed"
     command: "sh"
     args: ["-c", "dpkg -s fonts-ubuntu | grep -q 'Status: install ok installed'"]
@@ -232,6 +237,21 @@ commandTests:
     args: ["-f", "/usr/share/novnc/audio-plugin.js"]
     expectedOutput: []
 
+  - name: "manifest.json exists"
+    command: "test"
+    args: ["-f", "/usr/share/novnc/manifest.json"]
+    expectedOutput: []
+
+  - name: "PWA icon 192x192 exists"
+    command: "test"
+    args: ["-f", "/usr/share/novnc/icon-192.png"]
+    expectedOutput: []
+
+  - name: "PWA icon 512x512 exists"
+    command: "test"
+    args: ["-f", "/usr/share/novnc/icon-512.png"]
+    expectedOutput: []
+
   - name: "start-desktop.sh is executable"
     command: "test"
     args: ["-x", "/usr/local/bin/start-desktop.sh"]
@@ -269,6 +289,34 @@ fileContentTests:
   - name: "vnc.html sets window.NVUI = UI"
     path: "/usr/share/novnc/vnc.html"
     expectedContents: ['window.NVUI = UI']
+
+  - name: "vnc.html includes favicon link"
+    path: "/usr/share/novnc/vnc.html"
+    expectedContents: ['rel="icon"', 'openlogo-debianV2.svg']
+
+  - name: "vnc.html includes PWA manifest link"
+    path: "/usr/share/novnc/vnc.html"
+    expectedContents: ['rel="manifest"', 'manifest.json']
+
+  - name: "vnc.html includes theme-color meta"
+    path: "/usr/share/novnc/vnc.html"
+    expectedContents: ['theme-color', '#D70751']
+
+  - name: "vnc.html includes apple-touch-icon"
+    path: "/usr/share/novnc/vnc.html"
+    expectedContents: ['apple-touch-icon', 'icon-192.png']
+
+  - name: "vnc_auto.html includes favicon link"
+    path: "/usr/share/novnc/vnc_auto.html"
+    expectedContents: ['rel="icon"', 'openlogo-debianV2.svg']
+
+  - name: "vnc_auto.html includes PWA manifest link"
+    path: "/usr/share/novnc/vnc_auto.html"
+    expectedContents: ['rel="manifest"', 'manifest.json']
+
+  - name: "vnc_auto.html includes theme-color meta"
+    path: "/usr/share/novnc/vnc_auto.html"
+    expectedContents: ['theme-color', '#D70751']
 
   - name: "pulse virtual-sink config is correct"
     path: "/etc/pulse/default.pa.d/virtual-sink.pa"

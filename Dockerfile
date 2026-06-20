@@ -106,6 +106,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim \
     xz-utils \
     zip \
+    librsvg2-bin \
     zsh \
     && rm -rf /var/lib/apt/lists/*
 
@@ -196,6 +197,13 @@ COPY config/openlogo-debianV2.svg /usr/share/novnc/openlogo-debianV2.svg
 COPY config/Debian-OpenLogo.svg /usr/share/novnc/Debian-OpenLogo.svg
 RUN sed -i 's|</head>|<script type="module" src="audio-plugin.js"></script></head>|' /usr/share/novnc/vnc.html && \
     sed -i '/import UI from "\.\/app\/ui\.js";/a\        window.NVUI = UI;' /usr/share/novnc/vnc.html
+
+# Install favicon and PWA manifest
+COPY config/manifest.json /usr/share/novnc/manifest.json
+RUN rsvg-convert -w 192 -h 192 -o /usr/share/novnc/icon-192.png /usr/share/novnc/openlogo-debianV2.svg && \
+    rsvg-convert -w 512 -h 512 -o /usr/share/novnc/icon-512.png /usr/share/novnc/openlogo-debianV2.svg
+RUN sed -i 's|</head>|<link rel="icon" type="image/svg+xml" href="openlogo-debianV2.svg">\n<link rel="manifest" href="manifest.json">\n<meta name="theme-color" content="#D70751">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-title" content="Debian Desktop">\n<link rel="apple-touch-icon" href="icon-192.png"></head>|' /usr/share/novnc/vnc.html && \
+    sed -i 's|</head>|<link rel="icon" type="image/svg+xml" href="openlogo-debianV2.svg">\n<link rel="manifest" href="manifest.json">\n<meta name="theme-color" content="#D70751">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-title" content="Debian Desktop">\n<link rel="apple-touch-icon" href="icon-192.png"></head>|' /usr/share/novnc/vnc_auto.html
 
 # Install dark theme for noVNC
 COPY config/novnc-dark.css /usr/share/novnc/novnc-dark.css

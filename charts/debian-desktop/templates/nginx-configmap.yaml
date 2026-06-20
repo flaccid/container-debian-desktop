@@ -23,6 +23,12 @@ data:
             return 302 /vnc.html?resize=remote;
         }
 
+        # Serve favicon using the Debian swirl SVG
+        location = /favicon.ico {
+            default_type image/svg+xml;
+            try_files /openlogo-debianV2.svg =404;
+        }
+
         location / {
             try_files $uri @proxy;
         }

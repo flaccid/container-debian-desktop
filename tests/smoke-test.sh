@@ -170,7 +170,53 @@ else
     exit 1
 fi
 
-# 9. Verify noVNC redirect
+# 9. Verify favicon and PWA manifest
+echo "--- Checking favicon and PWA ---"
+docker exec "$CONTAINER_NAME" test -f /usr/share/novnc/manifest.json \
+    || { echo "FAIL: manifest.json not found"; exit 1; }
+echo "manifest.json present: OK"
+
+docker exec "$CONTAINER_NAME" test -f /usr/share/novnc/icon-192.png \
+    || { echo "FAIL: icon-192.png not found"; exit 1; }
+echo "PWA icon 192x192 present: OK"
+
+docker exec "$CONTAINER_NAME" test -f /usr/share/novnc/icon-512.png \
+    || { echo "FAIL: icon-512.png not found"; exit 1; }
+echo "PWA icon 512x512 present: OK"
+
+FAVICON_VNC=$(docker exec "$CONTAINER_NAME" grep -c 'rel="icon".*openlogo-debianV2.svg' /usr/share/novnc/vnc.html || true)
+if [ "$FAVICON_VNC" -ge 1 ]; then
+    echo "vnc.html includes favicon link: OK"
+else
+    echo "FAIL: vnc.html does not include favicon link"
+    exit 1
+fi
+
+MANIFEST_VNC=$(docker exec "$CONTAINER_NAME" grep -c 'rel="manifest".*manifest.json' /usr/share/novnc/vnc.html || true)
+if [ "$MANIFEST_VNC" -ge 1 ]; then
+    echo "vnc.html includes manifest link: OK"
+else
+    echo "FAIL: vnc.html does not include manifest link"
+    exit 1
+fi
+
+FAVICON_VNCA=$(docker exec "$CONTAINER_NAME" grep -c 'rel="icon".*openlogo-debianV2.svg' /usr/share/novnc/vnc_auto.html || true)
+if [ "$FAVICON_VNCA" -ge 1 ]; then
+    echo "vnc_auto.html includes favicon link: OK"
+else
+    echo "FAIL: vnc_auto.html does not include favicon link"
+    exit 1
+fi
+
+MANIFEST_VNCA=$(docker exec "$CONTAINER_NAME" grep -c 'rel="manifest".*manifest.json' /usr/share/novnc/vnc_auto.html || true)
+if [ "$MANIFEST_VNCA" -ge 1 ]; then
+    echo "vnc_auto.html includes manifest link: OK"
+else
+    echo "FAIL: vnc_auto.html does not include manifest link"
+    exit 1
+fi
+
+# 10. Verify noVNC redirect
 echo "--- Checking noVNC index.html ---"
 NOVNC_INDEX=$(docker exec "$CONTAINER_NAME" cat /usr/share/novnc/index.html)
 if echo "$NOVNC_INDEX" | grep -q "resize=remote"; then
