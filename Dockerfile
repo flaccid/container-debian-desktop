@@ -141,11 +141,10 @@ RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dea
     && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" > /etc/apt/sources.list.d/google-cloud-sdk.list \
     && apt-get update && apt-get install -y --no-install-recommends google-cloud-cli \
     && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL -o /tmp/taws.tar.gz "https://github.com/huseyinbabal/taws/releases/latest/download/taws-x86_64-unknown-linux-musl.tar.gz" \
+    && curl -fsSL -o /tmp/taws.tar.gz "https://github.com/huseyinbabal/taws/releases/download/v1.3.0-rc.8/taws-x86_64-unknown-linux-musl.tar.gz" \
     && tar xzf /tmp/taws.tar.gz -C /usr/local/bin taws \
     && rm /tmp/taws.tar.gz \
-    && TF_TAG=$(curl -fsSL https://api.github.com/repos/warrensbox/terraform-switcher/releases/latest | grep '"tag_name"' | cut -d\" -f4) \
-    && curl -fsSL -o /tmp/tfswitch.tar.gz "https://github.com/warrensbox/terraform-switcher/releases/download/${TF_TAG}/terraform-switcher_${TF_TAG}_linux_amd64.tar.gz" \
+    && curl -fsSL -o /tmp/tfswitch.tar.gz "https://github.com/warrensbox/terraform-switcher/releases/download/v1.19.0/terraform-switcher_v1.19.0_linux_amd64.tar.gz" \
     && tar xzf /tmp/tfswitch.tar.gz -C /usr/local/bin tfswitch \
     && rm /tmp/tfswitch.tar.gz \
     && curl -fsSL -o /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64" \
