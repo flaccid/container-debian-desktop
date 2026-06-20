@@ -64,7 +64,8 @@ CI flow: build → structure test → bats → smoke test → push. Cache layer 
 ## Key gotchas
 - `librsvg2-common` must be listed explicitly in Dockerfile (it's only a Recommends of `papirus-icon-theme`; `--no-install-recommends` skips it)
 - XFCE autostart `.desktop` files **must be executable** (`chmod +x`) or XFCE ignores them
-- **Screensaver and lock screen are disabled by default** (`saver/enabled=false`, `lock/enabled=false`). This prevents the user from getting locked out when no password is set (see below). The idle-timeout value is still configured at 1 hour (`/saver/timeout = 3600`) so if the user re-enables via the GUI the timeout is already sensible.
+- **Screensaver is disabled by default** (`saver/enabled=false`). This prevents the screen from auto-locking on idle when no password is set (see below). The idle-timeout value is still configured at 1 hour (`/saver/timeout = 3600`) so if the user re-enables via the GUI the timeout is already sensible.
+- **Lock screen is enabled** (`lock/enabled=true`). The lock screen button in the panel tray and `Ctrl+Alt+L` shortcut work (after setting a password). Manual locking is safe to enable — the danger was only auto-lock on idle.
 - **To enable screensaver + lock screen via the GUI:**
   1. Open the XFCE menu → **Settings** → **Screensaver**
   2. Check **"Enable Screensaver"** and set your desired idle timeout

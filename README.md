@@ -211,13 +211,15 @@ This approach means fresh PVCs are populated automatically, while existing PVCs 
 
 ### Screensaver & Lock Screen 🔒
 
-Both the screensaver and lock screen are **disabled by default** to prevent users from getting locked out when no password is set (PAM denies empty passwords). The idle timeout is still pre-configured to **1 hour** so it's ready if you re-enable via the GUI.
+The **screensaver is disabled by default** (`saver/enabled=false`) to prevent auto-lock on idle — the real danger since it can happen when the user walks away. **Lock screen is enabled** (`lock/enabled=true`) — the panel tray button and `Ctrl+Alt+L` work after setting a password. Manual locking is safe to enable; only auto-lock on idle is disabled.
 
-To enable from the desktop:
+The idle timeout is pre-configured to **1 hour** so it's ready if you re-enable the screensaver via the GUI.
+
+To enable the screensaver and/or lock screen from the desktop:
 
 1. Open the XFCE menu → **Settings** → **Screensaver**
-2. Check **"Enable Screensaver"** and set your desired idle timeout
-3. Check **"Lock screen"** (under the Lock tab)
+2. Check **"Enable Screensaver"** (optional) and set your desired idle timeout
+3. Check **"Lock screen"** (under the Lock tab) if you want automatic locking on idle
 4. Close the dialog — changes take effect immediately
 
 Setting a password (required for lock screen to actually prevent access):
@@ -228,7 +230,7 @@ kubectl exec <pod> -c desktop -- bash -c 'passwd admin'
 
 The password hash is synced to the PVC-backed `/home/admin/.shadow` every 2 minutes, so it survives pod restarts. No session restart needed.
 
-> **Important**: Debian's PAM does not permit empty passwords (`nullok` is absent from `pam_unix.so`). Without setting a password, any lock screen attempt will be denied and the user will be stuck — this is why both are disabled by default.
+> **Important**: Debian's PAM does not permit empty passwords (`nullok` is absent from `pam_unix.so`). Without setting a password, any lock screen attempt will be denied and the user will be stuck — this is why the screensaver is disabled by default.
 
 ### Reset Script (`reset-xfce4`)
 

@@ -389,12 +389,12 @@ fileContentTests:
     path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
     expectedContents: ["applicationsmenu"]
 
-  - name: "xfce4-screensaver.xml has screensaver + lock disabled, 1-hour timeout"
+  - name: "xfce4-screensaver.xml has saver disabled, lock enabled, 1-hour timeout"
     path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml"
     expectedContents:
       - '"timeout" type="int" value="3600"'
       - '"delay" type="int" value="60"'
-      - 'value="false"'
+      - 'name="lock" type="empty"'
       - '"mode" type="int" value="0"'
 
 metadataTest:
