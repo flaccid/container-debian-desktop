@@ -56,6 +56,11 @@ The noVNC interface is whitelabelled with Debian branding:
 
 Both logos are SVG files loaded as CSS backgrounds, copied into the container at build time.
 
+The noVNC web interface also includes **Progressive Web App (PWA)** support:
+- **Favicon** — Debian swirl SVG replaces the default noVNC favicon
+- **Web App Manifest** — enables "Install" prompt in Chrome/Edge with Debian-branded icons
+- **Service Worker** — network-first caching strategy for offline resilience
+
 ## Customizations 🎨
 
 - **Dark Theme** — Adwaita-dark set as the default system theme
@@ -65,6 +70,7 @@ Both logos are SVG files loaded as CSS backgrounds, copied into the container at
 - **Keyboard Shortcuts** — custom tiling and system shortcuts (see [keyboard-shortcuts.md](docs/keyboard-shortcuts.md))
 - **Icon Theme** — Papirus-Dark for modern, consistent application icons
 - **Fonts** — Ubuntu font family for UI text, JetBrains Mono for monospace (terminal/code), Cantarell also available
+- **PWA** — Debian-branded favicon, manifest, and service worker for installable desktop experience
 
 ## Quick Start 🚀
 
@@ -203,22 +209,26 @@ On container start, the entrypoint detects whether it is running as `root` or as
 
 This approach means fresh PVCs are populated automatically, while existing PVCs (post first-run) preserve user data across pod restarts.
 
-### Screensaver Idle Timeout 🔒
+### Screensaver & Lock Screen 🔒
 
-The screen automatically locks after **1 hour** of inactivity, managed by `xfce4-screensaver`. To change the timeout:
+Both the screensaver and lock screen are **disabled by default** to prevent users from getting locked out when no password is set (PAM denies empty passwords). The idle timeout is still pre-configured to **1 hour** so it's ready if you re-enable via the GUI.
+
+To enable from the desktop:
+
+1. Open the XFCE menu → **Settings** → **Screensaver**
+2. Check **"Enable Screensaver"** and set your desired idle timeout
+3. Check **"Lock screen"** (under the Lock tab)
+4. Close the dialog — changes take effect immediately
+
+Setting a password (required for lock screen to actually prevent access):
 
 ```bash
-# Change to 2 hours (7200 seconds)
-kubectl exec -n <namespace> <pod> -c desktop -- xfconf-query -c xfce4-screensaver -p /saver/timeout -s 7200
-
-# Disable automatic locking entirely
-kubectl exec -n <namespace> <pod> -c desktop -- xfconf-query -c xfce4-screensaver -p /lock/enabled -s false
-
-# Disable the screensaver entirely
-kubectl exec -n <namespace> <pod> -c desktop -- xfconf-query -c xfce4-screensaver -p /saver/enabled -s false
+kubectl exec <pod> -c desktop -- bash -c 'passwd admin'
 ```
 
-After changing, restart the XFCE session for the new settings to take effect. Running `reset-xfce4` reverts to the 1-hour default.
+The password hash is synced to the PVC-backed `/home/admin/.shadow` every 2 minutes, so it survives pod restarts. No session restart needed.
+
+> **Important**: Debian's PAM does not permit empty passwords (`nullok` is absent from `pam_unix.so`). Without setting a password, any lock screen attempt will be denied and the user will be stuck — this is why both are disabled by default.
 
 ### Reset Script (`reset-xfce4`)
 
@@ -254,8 +264,8 @@ Chart version bumps and `index.yaml` updates are done manually.
 | `make helm-install` | Install from local chart |
 | `make helm-upgrade` | Upgrade deployed release |
 | `make test` | Run all tests |
-| `make test-structure` | Container structure tests (~48 assertions) |
-| `make test-bats` | Shell script unit tests (15 bats tests) |
+| `make test-structure` | Container structure tests (82 assertions) |
+| `make test-bats` | Shell script unit tests (22 bats tests) |
 | `make test-smoke` | Runtime integration smoke test |
 | `make test-helm` | Helm chart lint |
 | `make helm-package` | Package chart into `.tgz` |

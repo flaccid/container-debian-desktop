@@ -40,9 +40,9 @@ Helm repo served via GitHub Pages at `https://flaccid.github.io/container-debian
 
 ## Testing
 Four layers of tests, run in CI after every push:
-- **`make test-structure`** (~55 assertions) — Google `container-structure-test` against the built image. Checks packages, files, permissions, wrapper scripts, config XML values, PulseAudio config, audio plugin files. No container runtime needed.
-- **`make test-bats`** (16 tests) — Bats unit tests for `entrypoint.sh`, `reset-xfce4`, and `start-desktop.sh` logic. Runs in temp directories, no Docker required.
-- **`make test-smoke`** (15 checks) — Runtime integration test. Starts the container, waits for VNC+websockify, reads xsettings.xml/xfce4-panel.xml, verifies audio plugin files and config.
+- **`make test-structure`** (82 assertions) — Google `container-structure-test` against the built image. Checks packages, files, permissions, wrapper scripts, config XML values, PulseAudio config, audio plugin files. No container runtime needed.
+- **`make test-bats`** (22 tests) — Bats unit tests for `entrypoint.sh`, `reset-xfce4`, and `start-desktop.sh` logic. Runs in temp directories, no Docker required.
+- **`make test-smoke`** — Runtime integration test. Starts the container, waits for VNC+websockify, reads xsettings.xml/xfce4-panel.xml, verifies audio plugin files and config.
 - **`make test-helm`** — Helm chart lint.
 
 Run all locally:
