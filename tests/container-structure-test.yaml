@@ -252,6 +252,11 @@ commandTests:
     args: ["-f", "/usr/share/novnc/icon-512.png"]
     expectedOutput: []
 
+  - name: "sw.js exists"
+    command: "test"
+    args: ["-f", "/usr/share/novnc/sw.js"]
+    expectedOutput: []
+
   - name: "start-desktop.sh is executable"
     command: "test"
     args: ["-x", "/usr/local/bin/start-desktop.sh"]
@@ -285,6 +290,14 @@ fileContentTests:
   - name: "vnc.html includes audio-plugin.js"
     path: "/usr/share/novnc/vnc.html"
     expectedContents: ['audio-plugin.js']
+
+  - name: "vnc.html includes service worker registration"
+    path: "/usr/share/novnc/vnc.html"
+    expectedContents: ['serviceWorker.register', 'sw.js']
+
+  - name: "vnc_auto.html includes service worker registration"
+    path: "/usr/share/novnc/vnc_auto.html"
+    expectedContents: ['serviceWorker.register', 'sw.js']
 
   - name: "vnc.html sets window.NVUI = UI"
     path: "/usr/share/novnc/vnc.html"

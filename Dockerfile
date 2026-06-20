@@ -191,24 +191,30 @@ RUN sed -i "s/UI.initSetting('resize', 'off');/UI.initSetting('resize', 'remote'
 # Create a default index.html to redirect to vnc_auto.html with remote resizing enabled
 RUN echo '<meta http-equiv="refresh" content="0; url=vnc_auto.html?resize=remote">' > /usr/share/novnc/index.html
 
-# Install the audio plugin for noVNC (client-side WebM/Opus player)
+# Audio plugin, PWA branding, dark theme, and service worker for noVNC
 COPY config/audio-plugin.js /usr/share/novnc/audio-plugin.js
 COPY config/openlogo-debianV2.svg /usr/share/novnc/openlogo-debianV2.svg
 COPY config/Debian-OpenLogo.svg /usr/share/novnc/Debian-OpenLogo.svg
-RUN sed -i 's|</head>|<script type="module" src="audio-plugin.js"></script></head>|' /usr/share/novnc/vnc.html && \
-    sed -i '/import UI from "\.\/app\/ui\.js";/a\        window.NVUI = UI;' /usr/share/novnc/vnc.html
-
-# Install favicon and PWA manifest
 COPY config/manifest.json /usr/share/novnc/manifest.json
+COPY config/novnc-dark.css /usr/share/novnc/novnc-dark.css
+COPY config/sw.js /usr/share/novnc/sw.js
 RUN rsvg-convert -w 192 -h 192 -o /usr/share/novnc/icon-192.png /usr/share/novnc/openlogo-debianV2.svg && \
     rsvg-convert -w 512 -h 512 -o /usr/share/novnc/icon-512.png /usr/share/novnc/openlogo-debianV2.svg
-RUN sed -i 's|</head>|<link rel="icon" type="image/svg+xml" href="openlogo-debianV2.svg">\n<link rel="manifest" href="manifest.json">\n<meta name="theme-color" content="#D70751">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-title" content="Debian Desktop">\n<link rel="apple-touch-icon" href="icon-192.png"></head>|' /usr/share/novnc/vnc.html && \
-    sed -i 's|</head>|<link rel="icon" type="image/svg+xml" href="openlogo-debianV2.svg">\n<link rel="manifest" href="manifest.json">\n<meta name="theme-color" content="#D70751">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-title" content="Debian Desktop">\n<link rel="apple-touch-icon" href="icon-192.png"></head>|' /usr/share/novnc/vnc_auto.html
-
-# Install dark theme for noVNC
-COPY config/novnc-dark.css /usr/share/novnc/novnc-dark.css
-RUN sed -i 's|</head>|<link rel="stylesheet" href="novnc-dark.css"></head>|' /usr/share/novnc/vnc.html && \
-    sed -i 's|</head>|<link rel="stylesheet" href="novnc-dark.css"></head>|' /usr/share/novnc/vnc_auto.html
+RUN set -e; \
+    \
+    # 1. Replace original novnc.ico favicon with Debian SVG in both files
+    sed -i 's|<link rel="icon" type="image/x-icon" href="app/images/icons/novnc.ico">|<link rel="icon" type="image/svg+xml" href="openlogo-debianV2.svg">|' \
+        /usr/share/novnc/vnc.html /usr/share/novnc/vnc_auto.html; \
+    \
+    # 2. Insert audio plugin before favicon link and NVUI after UI import (vnc.html only)
+    sed -i 's|<link rel="icon" type="image/svg+xml" href="openlogo-debianV2.svg">|<script type="module" src="audio-plugin.js"></script>\n&|' /usr/share/novnc/vnc.html; \
+    sed -i '/import UI from "\.\/app\/ui\.js";/a\        window.NVUI = UI;' /usr/share/novnc/vnc.html; \
+    \
+    # 3. Add all remaining tags before </head> in both files
+    #    (manifest, theme-color, apple-touch-icon, dark CSS, service worker)
+    for f in /usr/share/novnc/vnc.html /usr/share/novnc/vnc_auto.html; do \
+        sed -i 's|</head>|<link rel="manifest" href="manifest.json">\n<meta name="theme-color" content="#D70751">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-title" content="Debian Desktop">\n<link rel="apple-touch-icon" href="icon-192.png">\n<link rel="stylesheet" href="novnc-dark.css">\n<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js")})}</script>\n</head>|' "$f"; \
+    done
 
 # Download wallpaper
 RUN mkdir -p /usr/share/backgrounds && \

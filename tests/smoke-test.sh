@@ -216,6 +216,45 @@ else
     exit 1
 fi
 
+# Verify service worker is present in both files
+SW_VNC=$(docker exec "$CONTAINER_NAME" grep -c 'serviceWorker.register.*sw.js' /usr/share/novnc/vnc.html || true)
+if [ "$SW_VNC" -ge 1 ]; then
+    echo "vnc.html includes service worker registration: OK"
+else
+    echo "FAIL: vnc.html does not include service worker registration"
+    exit 1
+fi
+
+SW_VNCA=$(docker exec "$CONTAINER_NAME" grep -c 'serviceWorker.register.*sw.js' /usr/share/novnc/vnc_auto.html || true)
+if [ "$SW_VNCA" -ge 1 ]; then
+    echo "vnc_auto.html includes service worker registration: OK"
+else
+    echo "FAIL: vnc_auto.html does not include service worker registration"
+    exit 1
+fi
+
+# Verify no duplicate PWA tags (favicon+manifest should each appear exactly once)
+FAVICON_COUNT=$(docker exec "$CONTAINER_NAME" grep -c 'openlogo-debianV2.svg' /usr/share/novnc/vnc_auto.html || true)
+if [ "$FAVICON_COUNT" -eq 1 ]; then
+    echo "vnc_auto.html favicon appears exactly once: OK"
+else
+    echo "FAIL: vnc_auto.html favicon appears $FAVICON_COUNT times (expected 1)"
+    exit 1
+fi
+
+MANIFEST_COUNT=$(docker exec "$CONTAINER_NAME" grep -c 'rel="manifest"' /usr/share/novnc/vnc_auto.html || true)
+if [ "$MANIFEST_COUNT" -eq 1 ]; then
+    echo "vnc_auto.html manifest link appears exactly once: OK"
+else
+    echo "FAIL: vnc_auto.html manifest link appears $MANIFEST_COUNT times (expected 1)"
+    exit 1
+fi
+
+# Verify sw.js file exists
+docker exec "$CONTAINER_NAME" test -f /usr/share/novnc/sw.js \
+    || { echo "FAIL: sw.js not found"; exit 1; }
+echo "sw.js present: OK"
+
 # 10. Verify noVNC redirect
 echo "--- Checking noVNC index.html ---"
 NOVNC_INDEX=$(docker exec "$CONTAINER_NAME" cat /usr/share/novnc/index.html)
