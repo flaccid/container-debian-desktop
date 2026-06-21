@@ -2,6 +2,8 @@
 
 A persistent Debian Trixie XFCE desktop container with TigerVNC, noVNC, and a Helm chart for Kubernetes deployment.
 
+![Out-of-box desktop](screenshots/desktop.png)
+
 ## Overview
 
 This repository packages a lightweight, persistent Linux desktop environment for the browser. It runs as a non-root user (`admin`, UID 1000) and avoids the permission headaches typical of PVC-bound desktop containers.
