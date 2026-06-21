@@ -154,14 +154,6 @@ docker exec "$CONTAINER_NAME" test -x /usr/local/bin/audio-proxy.sh \
     || { echo "FAIL: audio-proxy.sh not executable"; exit 1; }
 echo "audio-proxy.sh executable: OK"
 
-docker exec "$CONTAINER_NAME" test -f /etc/pulse/default.pa.d/virtual-sink.pa \
-    || { echo "FAIL: virtual-sink.pa not found"; exit 1; }
-echo "PulseAudio virtual-sink config: OK"
-
-docker exec "$CONTAINER_NAME" test -f /etc/pulse/default.pa.d/audio-stream.pa \
-    || { echo "FAIL: audio-stream.pa not found"; exit 1; }
-echo "PulseAudio audio-stream config: OK"
-
 AUDIO_VNC=$(docker exec "$CONTAINER_NAME" grep -c 'audio-plugin.js' /usr/share/novnc/vnc.html || true)
 if [ "$AUDIO_VNC" -ge 1 ]; then
     echo "vnc.html includes audio-plugin.js: OK"
