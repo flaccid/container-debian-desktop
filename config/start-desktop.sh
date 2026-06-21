@@ -33,9 +33,6 @@ for i in $(seq 1 10); do
     sleep 1
 done
 
-# The module configs in /etc/pulse/default.pa.d/ should load these
-# automatically on startup, but we ensure they're loaded in case
-# PulseAudio was already running (e.g., from XFCE autostart).
 pactl load-module module-null-sink \
     sink_name=virtual_sink \
     sink_properties=device.description="Virtual_Sink" \

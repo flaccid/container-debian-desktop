@@ -84,14 +84,15 @@ CI flow: build → structure test → bats → smoke test → push. Cache layer 
 - Ubuntu font installed from Debian Bookworm's `non-free` pool (not packaged in Trixie)
 - `docker exec` from outside VNC has no D-Bus session; `xfconf-query` and `xfdesktop --restart` won't affect the running session
 - `--no-install-recommends` means any transitive dep (icon engines, font renderers, etc.) must be listed explicitly
-- nginx sidecar `try_files` serves `index.html` first, then proxies to websockify (handles WebSocket upgrade)
-- Audio streaming uses `module-simple-protocol-tcp` in PulseAudio; the PulseAudio config is at `/etc/pulse/default.pa.d/` and loaded automatically on startup
+- nginx sidecar redirects `/` → `/vnc.html?resize=remote` so the audio plugin is loaded (vnc_auto.html lacks the `<script>` tag). Direct `/index.html` requests also 302 to `vnc.html`.
+- Audio streaming uses `module-simple-protocol-tcp` in PulseAudio; modules are loaded by `start-desktop.sh` via `pactl load-module` (no `/etc/pulse/default.pa.d/` — those caused duplicate sinks)
 - `audio-proxy.sh` requires `socat` and `gstreamer1.0-tools + plugins` — all installed explicitly via Dockerfile
 - The audio plugin (`audio-plugin.js`) is loaded as an ES module in `vnc.html` and defaults to auto-enabled with path `/audio/`
 - The audio WebSocket runs on port `6902` (separate from VNC's `6901`); nginx sidecar routes `/audio/` → `127.0.0.1:6902`
 - `start-desktop.sh` replaces the old inline CMD; it starts PulseAudio → VNC → audio-proxy → websockify×2; failures in audio services are non-fatal (the desktop still works without audio)
 - Browser autoplay policy: audio starts on first user click in the session (handled by the plugin)
 - `pactl` commands may fail on first attempt if PulseAudio hasn't finished initializing; `start-desktop.sh` has a retry loop (up to 10s wait)
+- LoadBalancer service exposes `6902` for direct-access audio; port 6901 users get audio via the nginx sidecar's `/audio/` WebSocket proxy
 - **Lock screen button** uses a custom `/usr/local/bin/xflock4` (overrides `/usr/bin/xflock4` from `xfce4-session`). The stock `xflock4` calls the session manager's D-Bus `Lock` method, which doesn't reliably lock in TigerVNC sessions. The custom wrapper starts the `xfce4-screensaver` daemon if needed and calls `xfce4-screensaver-command --lock` directly.
 - **Clipboard sync** requires `xclip` and `vncconfig -nowin`:
   - `xclip` is installed in the image and provides the `xclip` binary that programs (including opencode) use to write to the X11 CLIPBOARD selection

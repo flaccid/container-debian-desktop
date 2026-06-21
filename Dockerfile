@@ -188,7 +188,7 @@ RUN groupadd --gid $USER_GID $USERNAME \
 RUN sed -i "s/UI.initSetting('resize', 'off');/UI.initSetting('resize', 'remote');/g" /usr/share/novnc/app/ui.js
 
 # Create a default index.html to redirect to vnc_auto.html with remote resizing enabled
-RUN echo '<meta http-equiv="refresh" content="0; url=vnc_auto.html?resize=remote">' > /usr/share/novnc/index.html
+RUN echo '<meta http-equiv="refresh" content="0; url=vnc.html?resize=remote">' > /usr/share/novnc/index.html
 
 # Audio plugin, PWA branding, dark theme, and service worker for noVNC
 COPY config/audio-plugin.js /usr/share/novnc/audio-plugin.js
@@ -223,12 +223,6 @@ RUN mkdir -p /usr/share/backgrounds && \
 # Copy pre-configured XFCE settings into the skeleton directory
 RUN echo "build_id: $(date +%s)" > /etc/config_id
 COPY --chown=admin:admin config/xfce4 /etc/skel/admin/.config/xfce4
-
-# Configure PulseAudio for audio streaming to the browser
-# virtual-sink.pa  — creates a null sink that apps output to
-# audio-stream.pa  — streams raw PCM from the null sink to TCP (port 4711)
-COPY config/pulse/default.pa.d/virtual-sink.pa /etc/pulse/default.pa.d/virtual-sink.pa
-COPY config/pulse/default.pa.d/audio-stream.pa /etc/pulse/default.pa.d/audio-stream.pa
 
 # Setup VNC configuration in the skeleton directory
 RUN mkdir -p /etc/skel/admin/.vnc \

@@ -27,9 +27,13 @@ spec:
     port: {{ .Values.service.loadBalancer.port }}
     targetPort: 8080
     protocol: TCP
-  - name: https
+  - name: novnc
     port: 6901
     targetPort: 6901
+    protocol: TCP
+  - name: audio
+    port: 6902
+    targetPort: 6902
     protocol: TCP
   selector:
     {{- include "debian-desktop.selectorLabels" . | nindent 4 }}

@@ -16,8 +16,13 @@ data:
             try_files $uri $uri/ @proxy;
         }
 
-        # Add cache-bust param to the redirect URL so a stale cached index.html
-        # still forces a fresh fetch of vnc_auto.html
+        # Redirect root to vnc.html so the audio plugin is loaded
+        # (vnc_auto.html lacks the <script type="module" src="audio-plugin.js"> tag)
+        location = / {
+            return 302 /vnc.html?resize=remote;
+        }
+
+        # Same redirect for direct /index.html requests
         location = /index.html {
             expires -1;
             return 302 /vnc.html?resize=remote;
