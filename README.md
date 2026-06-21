@@ -76,6 +76,8 @@ The noVNC web interface also includes **Progressive Web App (PWA)** support:
 
 ## Quick Start 🚀
 
+For a step-by-step guide covering both Kubernetes (Helm) and Docker deployment — including OAuth setup, persistence, audio, and troubleshooting — see [**Getting Started**](docs/getting-started.md).
+
 ### Build the image
 
 ```bash
