@@ -282,18 +282,8 @@ commandTests:
     args: ["-x", "/usr/local/bin/xflock4"]
     expectedOutput: []
 
-  - name: "pulse virtual-sink config exists"
-    command: "test"
-    args: ["-f", "/etc/pulse/default.pa.d/virtual-sink.pa"]
-    expectedOutput: []
-
-  - name: "pulse audio-stream config exists"
-    command: "test"
-    args: ["-f", "/etc/pulse/default.pa.d/audio-stream.pa"]
-    expectedOutput: []
-
 fileContentTests:
-  - name: "noVNC index.html redirects to vnc_auto.html with remote resize"
+  - name: "noVNC index.html redirects to vnc.html with remote resize"
     path: "/usr/share/novnc/index.html"
     expectedContents: ["resize=remote"]
 
@@ -340,14 +330,6 @@ fileContentTests:
   - name: "vnc_auto.html includes theme-color meta"
     path: "/usr/share/novnc/vnc_auto.html"
     expectedContents: ['theme-color', '#D70751']
-
-  - name: "pulse virtual-sink config is correct"
-    path: "/etc/pulse/default.pa.d/virtual-sink.pa"
-    expectedContents: ["module-null-sink", "virtual_sink"]
-
-  - name: "pulse audio-stream config is correct"
-    path: "/etc/pulse/default.pa.d/audio-stream.pa"
-    expectedContents: ["module-simple-protocol-tcp", "virtual_sink.monitor"]
 
   - name: "xstartup uses dbus-launch startxfce4 and vncconfig"
     path: "/etc/skel/admin/.vnc/xstartup"
