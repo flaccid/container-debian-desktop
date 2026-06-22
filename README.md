@@ -2,6 +2,12 @@
 
 A persistent Debian Trixie XFCE desktop container with TigerVNC, noVNC, and a Helm chart for Kubernetes deployment.
 
+[![CI](https://github.com/flaccid/container-debian-desktop/actions/workflows/container_image.yml/badge.svg)](https://github.com/flaccid/container-debian-desktop/actions/workflows/container_image.yml)
+[![Docker Pulls](https://img.shields.io/docker/pulls/flaccid/debian-desktop)](https://hub.docker.com/r/flaccid/debian-desktop)
+[![Docker Image Version](https://img.shields.io/docker/v/flaccid/debian-desktop?label=docker%20image)](https://hub.docker.com/r/flaccid/debian-desktop/tags)
+[![GitHub Release](https://img.shields.io/github/v/release/flaccid/container-debian-desktop)](https://github.com/flaccid/container-debian-desktop/releases)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
 ![Out-of-box desktop](screenshots/desktop.png)
 
 ## Overview
