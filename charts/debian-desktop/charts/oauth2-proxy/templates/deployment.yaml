@@ -33,7 +33,6 @@ spec:
         - --pass-basic-auth={{ .Values.config.passBasicAuth }}
         - --basic-auth-password={{ .Values.config.basicAuthPassword }}
         - --reverse-proxy={{ .Values.config.reverseProxy }}
-        - --ssl-redirect={{ .Values.config.sslRedirect }}
         env:
         - name: CLIENT_ID
           valueFrom:

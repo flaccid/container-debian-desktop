@@ -27,4 +27,3 @@ config:
   clientSecret: ""
   cookieSecret: ""
   reverseProxy: true
-  sslRedirect: false
