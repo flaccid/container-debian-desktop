@@ -8,6 +8,7 @@ data:
   default.conf: |
     server {
         listen 8080;
+        absolute_redirect off;
         root /usr/share/novnc;
 
         # Force fresh page loads — never cache the HTML/JS that loads the audio plugin
