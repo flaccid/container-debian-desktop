@@ -27,7 +27,7 @@ teardown() {
         websockify() { echo "websockify $*"; }
 
         # Simulate start-desktop.sh logic with real function calls
-        vncserver :1 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes None --I-KNOW-THIS-IS-INSECURE
+        vncserver :1 -geometry 1920x1080 -depth 24 -localhost no -SecurityTypes None -alwaysshared --I-KNOW-THIS-IS-INSECURE
         pulseaudio --start --exit-idle-time=-1 --disallow-exit
         pactl load-module module-null-sink sink_name=virtual_sink sink_properties=device.description=Virtual_Sink
         pactl load-module module-simple-protocol-tcp listen=127.0.0.1 format=s16le channels=2 rate=48000 record=true playback=false source=virtual_sink.monitor

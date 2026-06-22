@@ -19,7 +19,8 @@ pulseaudio --start --exit-idle-time=-1 --disallow-exit 2>/dev/null || true
 # ------------------------------------------------------------------
 echo "Starting TigerVNC on :1 (1920x1080, 24bpp)..."
 vncserver :1 -geometry 1920x1080 -depth 24 -localhost no \
-    -SecurityTypes None --I-KNOW-THIS-IS-INSECURE
+    -SecurityTypes None -alwaysshared \
+    --I-KNOW-THIS-IS-INSECURE
 
 # ------------------------------------------------------------------
 # 3. Wait for PulseAudio, then load null-sink and TCP stream modules
