@@ -50,7 +50,11 @@ spec:
         - name: TZ
           value: {{ .Values.env.tz | quote }}
         securityContext:
-          privileged: true
+          privileged: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         ports:
         - containerPort: 6901
           name: https

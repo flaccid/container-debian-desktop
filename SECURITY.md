@@ -9,7 +9,7 @@ This project provides a full Linux desktop environment accessible via a web brow
 - The user's home directory and any files on the PVC
 - Cloud credentials that the user has configured (AWS CLI, gcloud, kubectl, etc.)
 - The ability to run commands as `admin` with passwordless `sudo` (full root escalation)
-- The container's `privileged` security context (potential host escape)
+- ~~The container's `privileged` security context (potential host escape)~~ **FIXED** — container now runs with `privileged: false` and all capabilities dropped
 
 ## Current Security Posture
 
@@ -17,18 +17,20 @@ This project provides a full Linux desktop environment accessible via a web brow
 
 | Severity | Count |
 |----------|-------|
-| CRITICAL | 3 |
+| CRITICAL | 2 |
 | HIGH     | 4 |
 | MEDIUM   | 18 |
 | LOW      | 11 |
 
 ### Critical Findings
 
-#### 1. Privileged container (statefulset.yaml:53)
+#### 1. Privileged container (statefulset.yaml:53) — **FIXED**
 
-The desktop container runs with `privileged: true`, granting all Linux capabilities and unrestricted host device access. An attacker who escapes the `admin` user can use this to escape the container to the host node.
+~~The desktop container runs with `privileged: true`, granting all Linux capabilities and unrestricted host device access. An attacker who escapes the `admin` user can use this to escape the container to the host node.~~
 
-**Mitigation**: Restrict to only the capabilities that VNC, PulseAudio, and Chrome actually need (e.g., `CAP_SYS_ADMIN`, `CAP_DAC_OVERRIDE`, `CAP_NET_ADMIN`). Most desktop containers can function with `privileged: false` and specific capability additions.
+**Remediation**: Changed to `privileged: false` with `allowPrivilegeEscalation: false` and all capabilities dropped. The container no longer has access to the host cgroup tree, devices, or kernel capabilities. All core functionality (VNC, noVNC, PulseAudio, audio proxy, Chrome, XFCE) operates correctly without privileged mode.
+
+If PulseAudio real-time scheduling warnings are observed, explicit `SYS_NICE` and `SYS_RESOURCE` capabilities can be added.
 
 #### 2. VNC authentication disabled (start-desktop.sh:22)
 
@@ -126,16 +128,7 @@ Chrome, Signal, and VS Code all run with `--no-sandbox`. The browser sandbox is 
 
 ### Recommended
 
-1. **Drop `privileged: true`** and add only the specific capabilities needed:
-   ```yaml
-   securityContext:
-     privileged: false
-     capabilities:
-       add:
-         - SYS_ADMIN
-         - DAC_OVERRIDE
-         - NET_ADMIN
-   ```
+1. **Drop `privileged: true`** — **IMPLEMENTED** (see finding #1). The default chart now sets `privileged: false` with `allowPrivilegeEscalation: false` and all capabilities dropped.
 
 2. **Add a PodSecurityContext**:
    ```yaml

@@ -71,6 +71,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gstreamer1.0-plugins-bad \
     xfce4-genmon-plugin \
     xfce4-screensaver \
+    htop \
     apt-utils \
     bash-completion \
     bind9-host \
@@ -274,7 +275,8 @@ COPY config/fix-audio /usr/local/bin/fix-audio
 COPY config/test-audio /usr/local/bin/test-audio
 COPY config/session-timer.sh /usr/local/bin/session-timer.sh
 COPY config/xflock4 /usr/local/bin/xflock4
-RUN chmod +x /usr/local/bin/start-desktop.sh /usr/local/bin/audio-proxy.sh /usr/local/bin/fix-audio /usr/local/bin/test-audio /usr/local/bin/session-timer.sh /usr/local/bin/xflock4
+COPY config/free-wrapper.sh /usr/local/bin/free
+RUN chmod +x /usr/local/bin/start-desktop.sh /usr/local/bin/audio-proxy.sh /usr/local/bin/fix-audio /usr/local/bin/test-audio /usr/local/bin/session-timer.sh /usr/local/bin/xflock4 /usr/local/bin/free
 
 # Expose noVNC and audio WebSocket ports
 EXPOSE 6901

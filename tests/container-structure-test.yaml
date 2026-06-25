@@ -217,6 +217,21 @@ commandTests:
     args: ["-c", "dpkg -s xfce4-genmon-plugin | grep -q 'Status: install ok installed'"]
     expectedOutput: []
 
+  - name: "htop is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s htop | grep -q 'Status: install ok installed'"]
+    expectedOutput: []
+
+  - name: "free wrapper is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/free"]
+    expectedOutput: []
+
+  - name: "real free is still available"
+    command: "test"
+    args: ["-x", "/bin/free"]
+    expectedOutput: []
+
   - name: "xstartup tigervnc symlink exists"
     command: "test"
     args: ["-L", "/etc/skel/admin/.config/tigervnc/xstartup"]
