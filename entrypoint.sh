@@ -43,6 +43,13 @@ ensure_config() {
     cp /etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml \
        /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml 2>/dev/null || true
 
+    # Copy genmon-12.rc so the session timer panel plugin works on
+    # existing PVCs (genmon uses its own flat-config .rc files, not
+    # xfconf).
+    mkdir -p /home/admin/.config/xfce4/panel
+    cp /etc/skel/admin/.config/xfce4/panel/genmon-12.rc \
+       /home/admin/.config/xfce4/panel/genmon-12.rc 2>/dev/null || true
+
     # Copy xfce4-screensaver.xml to pick up default idle/lock timeout.
     cp /etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml \
        /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml 2>/dev/null || true
