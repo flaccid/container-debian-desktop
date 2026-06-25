@@ -3,7 +3,7 @@ name: debian-desktop
 description: A Helm chart for a persistent, web-based Linux desktop environment
 type: application
 version: 0.6.1
-appVersion: "0.14.0"
+appVersion: "0.14.2"
 
 dependencies:
   - name: oauth2-proxy
