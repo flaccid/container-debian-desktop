@@ -26,7 +26,12 @@ ensure_config() {
        /home/admin/.config/autostart/disable-x11-screensaver.desktop 2>/dev/null || true
     chmod +x /home/admin/.config/autostart/disable-x11-screensaver.desktop 2>/dev/null || true
 
-    # Copy the wrapper script used by autostart.
+    # Copy session-timer.desktop so the panel timer works on existing PVCs.
+    cp /etc/skel/admin/.config/autostart/session-timer.desktop \
+       /home/admin/.config/autostart/session-timer.desktop 2>/dev/null || true
+    chmod +x /home/admin/.config/autostart/session-timer.desktop 2>/dev/null || true
+
+    # Copy the wrapper scripts used by autostart entries.
     cp /usr/local/bin/disable-x11-screensaver.sh /usr/local/bin/disable-x11-screensaver.sh 2>/dev/null || true
 
     # Copy xfce4-panel.xml to pick up new plugin definitions

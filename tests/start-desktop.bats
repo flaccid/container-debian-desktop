@@ -115,6 +115,49 @@ teardown() {
     [ "$status" -eq 0 ]
 }
 
+@test "session-timer.sh is valid bash" {
+    run bash -n "$BATS_TEST_DIRNAME/../config/session-timer.sh"
+    [ "$status" -eq 0 ]
+}
+
+@test "session-timer.sh --init creates state file" {
+    run bash -c '
+        set -e
+        export HOME="'"$TEST_DIR"'"
+        export XDG_CACHE_HOME="$HOME/.cache"
+        bash "'"$BATS_TEST_DIRNAME"'/../config/session-timer.sh" --init
+        [ -f "$XDG_CACHE_HOME/session-start" ]
+    '
+    [ "$status" -eq 0 ]
+}
+
+@test "session-timer.sh displays elapsed time" {
+    run bash -c '
+        set -e
+        export HOME="'"$TEST_DIR"'"
+        export XDG_CACHE_HOME="$HOME/.cache"
+        mkdir -p "$XDG_CACHE_HOME"
+        date +%s > "$XDG_CACHE_HOME/session-start"
+        bash "'"$BATS_TEST_DIRNAME"'/../config/session-timer.sh"
+    '
+    [[ "$output" == *"⏱"* ]]
+}
+
+@test "test-audio is valid bash" {
+    run bash -n "$BATS_TEST_DIRNAME/../config/test-audio"
+    [ "$status" -eq 0 ]
+}
+
+@test "test-audio detects missing PulseAudio" {
+    run bash -c '
+        BATS_TEST_DIR="'"$BATS_TEST_DIRNAME"'"
+        pactl() { return 1; }
+        export -f pactl
+        bash "$BATS_TEST_DIR/../config/test-audio" 2>/dev/null
+    '
+    [ "$status" -eq 1 ]
+}
+
 @test "start-desktop.sh handles missing audio gracefully" {
     run bash -c '
         set -e

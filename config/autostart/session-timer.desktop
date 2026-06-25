@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Session Timer
+Comment=Record session start time for the panel timer
+Exec=/usr/local/bin/session-timer.sh --init
+StartupNotify=false
+NoDisplay=true

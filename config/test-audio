@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# test-audio — Play a test sound through PulseAudio.
+# Uses gst-launch-1.0 to generate a brief 440 Hz tone.
+
+set -euo pipefail
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+info()  { echo -e "${GREEN}[test-audio]${NC} $*"; }
+err()   { echo -e "${RED}[test-audio]${NC} $*" >&2; }
+
+if ! pactl info >/dev/null 2>&1; then
+    err "PulseAudio is not running — run fix-audio first"
+    exit 1
+fi
+
+info "Playing 440 Hz test tone for 2 seconds..."
+gst-launch-1.0 audiotestsrc freq=440 volume=0.15 ! pulsesink 2>/dev/null || {
+    err "Playback failed — audio chain may be broken"
+    exit 1
+}
+
+info "Test complete — did you hear the tone?"

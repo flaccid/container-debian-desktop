@@ -182,9 +182,39 @@ commandTests:
     args: ["-f", "/etc/skel/admin/.config/autostart/disable-x11-screensaver.desktop"]
     expectedOutput: []
 
+  - name: "session-timer autostart exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.config/autostart/session-timer.desktop"]
+    expectedOutput: []
+
   - name: "disable-x11-screensaver.sh exists"
     command: "test"
     args: ["-f", "/usr/local/bin/disable-x11-screensaver.sh"]
+    expectedOutput: []
+
+  - name: "session-timer.sh exists"
+    command: "test"
+    args: ["-f", "/usr/local/bin/session-timer.sh"]
+    expectedOutput: []
+
+  - name: "session-timer.sh is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/session-timer.sh"]
+    expectedOutput: []
+
+  - name: "test-audio exists"
+    command: "test"
+    args: ["-f", "/usr/local/bin/test-audio"]
+    expectedOutput: []
+
+  - name: "test-audio is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/test-audio"]
+    expectedOutput: []
+
+  - name: "xfce4-genmon-plugin is installed"
+    command: "sh"
+    args: ["-c", "dpkg -s xfce4-genmon-plugin | grep -q 'Status: install ok installed'"]
     expectedOutput: []
 
   - name: "xstartup tigervnc symlink exists"
@@ -370,6 +400,10 @@ fileContentTests:
   - name: "xfce4-panel.xml uses applicationsmenu"
     path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
     expectedContents: ["applicationsmenu"]
+
+  - name: "xfce4-panel.xml has genmon plugin for session timer"
+    path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+    expectedContents: ["genmon", "session-timer.sh"]
 
   - name: "xfce4-screensaver.xml has saver disabled, lock enabled, 1-hour timeout"
     path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml"

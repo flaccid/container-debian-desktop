@@ -69,6 +69,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gstreamer1.0-plugins-base \
     gstreamer1.0-plugins-good \
     gstreamer1.0-plugins-bad \
+    xfce4-genmon-plugin \
     xfce4-screensaver \
     apt-utils \
     bash-completion \
@@ -230,15 +231,17 @@ RUN mkdir -p /etc/skel/admin/.vnc \
     && openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/skel/admin/.vnc/self.pem -out /etc/skel/admin/.vnc/self.pem -days 3650 -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost" \
     && chown -R admin:admin /etc/skel/admin/.vnc /etc/skel/admin/.config/tigervnc
 
-# Provide the XFCE autostart entry that disables the X server built-in
-# screen saver (runs after the session is fully initialised).
+# Provide XFCE autostart entries: disable X11 screensaver, session timer
 COPY --chown=admin:admin config/autostart/disable-x11-screensaver.desktop /etc/skel/admin/.config/autostart/disable-x11-screensaver.desktop
+COPY --chown=admin:admin config/autostart/session-timer.desktop /etc/skel/admin/.config/autostart/session-timer.desktop
 COPY config/disable-x11-screensaver.sh /usr/local/bin/disable-x11-screensaver.sh
+COPY config/session-timer.sh /usr/local/bin/session-timer.sh
 
 # Provide an xstartup script in both traditional and XDG locations
 COPY --chown=admin:admin config/xstartup /etc/skel/admin/.vnc/xstartup
 RUN chmod +x /etc/skel/admin/.vnc/xstartup \
     && chmod +x /usr/local/bin/disable-x11-screensaver.sh \
+    && chmod +x /usr/local/bin/session-timer.sh \
     && ln -sf /home/admin/.vnc/xstartup /etc/skel/admin/.config/tigervnc/xstartup
 
 # Create Desktop icons and autostart for the applications in the skeleton directory
@@ -249,7 +252,6 @@ RUN mkdir -p /etc/skel/admin/Desktop /etc/skel/admin/.config/autostart \
     && cp /usr/share/applications/guake.desktop /etc/skel/admin/.config/autostart/ \
     && chmod +x /etc/skel/admin/Desktop/*.desktop \
     && chmod +x /etc/skel/admin/.config/autostart/*.desktop \
-    && chmod +x /etc/skel/admin/.config/autostart/disable-x11-screensaver.desktop \
     && chown -R admin:admin /etc/skel/admin/Desktop /etc/skel/admin/.config/autostart
 
 # Create required X11 session files in the skeleton directory
@@ -264,12 +266,15 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY config/reset-xfce4 /usr/local/bin/reset-xfce4
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/reset-xfce4
 
-# Copy the desktop orchestrator, audio proxy, audio fixer, and custom xflock4
+# Copy the desktop orchestrator, audio proxy, audio fixer, audio tester,
+# session timer, and custom xflock4
 COPY config/start-desktop.sh /usr/local/bin/start-desktop.sh
 COPY config/audio-proxy.sh /usr/local/bin/audio-proxy.sh
 COPY config/fix-audio /usr/local/bin/fix-audio
+COPY config/test-audio /usr/local/bin/test-audio
+COPY config/session-timer.sh /usr/local/bin/session-timer.sh
 COPY config/xflock4 /usr/local/bin/xflock4
-RUN chmod +x /usr/local/bin/start-desktop.sh /usr/local/bin/audio-proxy.sh /usr/local/bin/fix-audio /usr/local/bin/xflock4
+RUN chmod +x /usr/local/bin/start-desktop.sh /usr/local/bin/audio-proxy.sh /usr/local/bin/fix-audio /usr/local/bin/test-audio /usr/local/bin/session-timer.sh /usr/local/bin/xflock4
 
 # Expose noVNC and audio WebSocket ports
 EXPOSE 6901
