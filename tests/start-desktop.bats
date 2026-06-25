@@ -120,6 +120,11 @@ teardown() {
     [ "$status" -eq 0 ]
 }
 
+@test "memmon.sh is valid bash" {
+    run bash -n "$BATS_TEST_DIRNAME/../config/memmon.sh"
+    [ "$status" -eq 0 ]
+}
+
 @test "session-timer.sh --init creates state file" {
     run bash -c '
         set -e

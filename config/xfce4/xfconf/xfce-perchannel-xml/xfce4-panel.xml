@@ -21,6 +21,7 @@
         <value type="int" value="7"/>
         <value type="int" value="9"/>
         <value type="int" value="12"/>
+        <value type="int" value="14"/>
         <value type="int" value="13"/>
         <value type="int" value="10"/>
         <value type="int" value="11"/>
@@ -69,6 +70,10 @@
     </property>
     <property name="plugin-13" type="string" value="separator">
       <property name="style" type="uint" value="0"/>
+    </property>
+    <property name="plugin-14" type="string" value="genmon">
+      <property name="command" type="string" value="/usr/local/bin/memmon.sh"/>
+      <property name="update-period" type="uint" value="10"/>
     </property>
   </property>
 </channel>

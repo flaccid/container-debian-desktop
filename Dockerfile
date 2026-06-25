@@ -224,7 +224,7 @@ RUN mkdir -p /usr/share/backgrounds && \
     "https://images.unsplash.com/photo-1483982258113-b72862e6cff6?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&dl=rosie-sun-1L71sPT5XKc-unsplash.jpg"
 
 # Copy pre-configured XFCE settings into the skeleton directory
-RUN echo "build_id: 1782385504
+RUN echo "build_id: $(date +%s)"
 COPY --chown=admin:admin config/xfce4 /etc/skel/admin/.config/xfce4
 
 # Setup VNC configuration in the skeleton directory
@@ -238,6 +238,7 @@ COPY --chown=admin:admin config/autostart/disable-x11-screensaver.desktop /etc/s
 COPY --chown=admin:admin config/autostart/session-timer.desktop /etc/skel/admin/.config/autostart/session-timer.desktop
 COPY config/disable-x11-screensaver.sh /usr/local/bin/disable-x11-screensaver.sh
 COPY config/session-timer.sh /usr/local/bin/session-timer.sh
+COPY config/memmon.sh /usr/local/bin/memmon.sh
 
 # Provide an xstartup script in both traditional and XDG locations
 COPY --chown=admin:admin config/xstartup /etc/skel/admin/.vnc/xstartup

@@ -202,6 +202,16 @@ commandTests:
     args: ["-x", "/usr/local/bin/session-timer.sh"]
     expectedOutput: []
 
+  - name: "memmon.sh exists"
+    command: "test"
+    args: ["-f", "/usr/local/bin/memmon.sh"]
+    expectedOutput: []
+
+  - name: "memmon.sh is executable"
+    command: "test"
+    args: ["-x", "/usr/local/bin/memmon.sh"]
+    expectedOutput: []
+
   - name: "test-audio exists"
     command: "test"
     args: ["-f", "/usr/local/bin/test-audio"]
@@ -418,7 +428,7 @@ fileContentTests:
 
   - name: "xfce4-panel.xml has genmon plugin for session timer"
     path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
-    expectedContents: ["genmon", "session-timer.sh"]
+    expectedContents: ["genmon", "session-timer.sh", "memmon.sh"]
 
   - name: "xfce4-screensaver.xml has saver disabled, lock enabled, 1-hour timeout"
     path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml"
