@@ -1,0 +1,273 @@
+#!/bin/bash
+#
+# fix-audio — Diagnose and repair the audio chain in the desktop container.
+#
+# The audio pipeline is:
+#   PulseAudio (module-simple-protocol-tcp on :4711) →
+#     audio-proxy (socat → gst-launch on :5711) →
+#       websockify (:6902 → :5711)
+#
+# PulseAudio sometimes crashes, taking the PCM stream module with it.
+# This script detects what's broken and restarts only the necessary
+# components so the user doesn't have to restart their session.
+
+set -euo pipefail
+
+# Colours for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+info()  { echo -e "${GREEN}[fix-audio]${NC} $*"; }
+warn()  { echo -e "${YELLOW}[fix-audio]${NC} $*"; }
+err()   { echo -e "${RED}[fix-audio]${NC} $*" >&2; }
+
+# ── Diagnostics ──────────────────────────────────────────────────────
+
+check_pa() {
+    if pactl info >/dev/null 2>&1; then
+        info "PulseAudio is running"
+        return 0
+    fi
+    err "PulseAudio is NOT responding"
+    return 1
+}
+
+check_pa_module() {
+    local name="$1"
+    if pactl list short modules 2>/dev/null | grep -q "$name"; then
+        info "PulseAudio module '$name' loaded"
+        return 0
+    fi
+    warn "PulseAudio module '$name' is missing"
+    return 1
+}
+
+check_port() {
+    local port="$1" desc="$2"
+    if ss -tlnp 2>/dev/null | grep -q ":$port "; then
+        info "$desc listening on port $port"
+        return 0
+    fi
+    warn "$desc is NOT listening on port $port"
+    return 1
+}
+
+check_proc() {
+    local pattern="$1" desc="$2"
+    if pgrep -f "$pattern" >/dev/null 2>&1; then
+        info "$desc is running"
+        return 0
+    fi
+    warn "$desc is NOT running"
+    return 1
+}
+
+# ── Repair actions ───────────────────────────────────────────────────
+
+restart_pulseaudio() {
+    warn "Restarting PulseAudio..."
+
+    # Kill any running PulseAudio (including zombies)
+    pulseaudio --kill 2>/dev/null || true
+    # Wait for the process to fully exit
+    sleep 1
+
+    # Clean up stale socket/pid files
+    local pulse_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/pulse"
+    rm -f "$pulse_dir/native" "$pulse_dir/pid"
+
+    # Start PulseAudio fresh
+    pulseaudio --start --exit-idle-time=-1 --disallow-exit 2>/dev/null || true
+
+    # Wait for it to become ready
+    for i in $(seq 1 10); do
+        if pactl info >/dev/null 2>&1; then
+            info "PulseAudio started successfully"
+            return 0
+        fi
+        sleep 1
+    done
+
+    err "PulseAudio failed to start"
+    return 1
+}
+
+load_modules() {
+    info "Loading PulseAudio modules..."
+
+    # virtual_sink — captures all desktop audio
+    pactl load-module module-null-sink \
+        sink_name=virtual_sink \
+        sink_properties=device.description="Virtual_Sink" \
+        2>/dev/null || true
+
+    # module-simple-protocol-tcp — streams PCM from the sink to :4711
+    pactl load-module module-simple-protocol-tcp \
+        port=4711 \
+        listen=127.0.0.1 format=s16le channels=2 rate=48000 \
+        record=true playback=false \
+        source=virtual_sink.monitor \
+        2>/dev/null || true
+
+    # Set virtual_sink as the default so all apps route through it
+    pactl set-default-sink virtual_sink 2>/dev/null || true
+
+    # dummy_mic — separate sink so the PulseAudio panel plugin has a
+    # non-monitor source for its mic tab. Muted by default.
+    pactl load-module module-null-sink \
+        sink_name=dummy_mic \
+        sink_properties=device.description="Dummy_Mic" \
+        2>/dev/null || true
+    pactl set-default-source dummy_mic.monitor 2>/dev/null || true
+    pactl set-source-mute dummy_mic.monitor 1 2>/dev/null || true
+
+    info "Modules loaded"
+}
+
+restart_audio_proxy() {
+    warn "Restarting audio proxy..."
+
+    # Kill existing socat
+    pkill -f "socat.*tcp-listen:5711" 2>/dev/null || true
+    sleep 1
+
+    # Start a new audio proxy
+    /usr/local/bin/audio-proxy.sh -l 5711 &
+    local ap_pid=$!
+    sleep 1
+    if kill -0 "$ap_pid" 2>/dev/null; then
+        info "Audio proxy started (PID $ap_pid)"
+        return 0
+    fi
+    err "Audio proxy failed to start"
+    return 1
+}
+
+restart_audio_websockify() {
+    warn "Restarting audio websockify..."
+
+    # Kill existing audio websockify
+    pkill -f "websockify 6902 localhost:5711" 2>/dev/null || true
+    sleep 1
+
+    # Start a new one
+    websockify 6902 localhost:5711 &
+    local aw_pid=$!
+    sleep 1
+    if kill -0 "$aw_pid" 2>/dev/null; then
+        info "Audio websockify started (PID $aw_pid)"
+        return 0
+    fi
+    err "Audio websockify failed to start"
+    return 1
+}
+
+# ── Main ─────────────────────────────────────────────────────────────
+
+main() {
+    echo ""
+    echo "╔══════════════════════════════════════════╗"
+    echo "║     Desktop Audio Diagnostic & Repair    ║"
+    echo "╚══════════════════════════════════════════╝"
+    echo ""
+
+    # If "-c" / "--check" is passed, only diagnose, don't fix
+    local check_only=false
+    for arg in "$@"; do
+        case "$arg" in
+            -c|--check) check_only=true ;;
+        esac
+    done
+
+    local pa_ok=false
+    local modules_ok=true
+    local proxy_ok=false
+    local ws_ok=false
+
+    # ── 1. Check PulseAudio ──
+    info "Checking PulseAudio..."
+    if check_pa; then
+        pa_ok=true
+        # Check the critical modules
+        check_pa_module "module-null-sink.*virtual_sink" || modules_ok=false
+        check_pa_module "module-simple-protocol-tcp" || modules_ok=false
+        check_pa_module "module-null-sink.*dummy_mic" || modules_ok=false
+    else
+        modules_ok=false
+    fi
+
+    # ── 2. Check audio proxy (socat on :5711) ──
+    echo ""
+    info "Checking audio proxy..."
+    proxy_ok=true
+    check_port 5711 "Audio proxy (socat)" || proxy_ok=false
+    check_proc "socat" "socat" || proxy_ok=false
+
+    # ── 3. Check audio websockify (:6902) ──
+    echo ""
+    info "Checking audio websockify..."
+    ws_ok=true
+    check_port 6902 "Audio websockify" || ws_ok=false
+    check_proc "websockify 6902" "Audio websockify" || ws_ok=false
+
+    # ── 4. Check VNC websockify (:6901) — optional but good to know ──
+    echo ""
+    info "Checking VNC websockify..."
+    check_port 6901 "VNC websockify" || warn "VNC websockify is down — desktop may not be accessible"
+
+    echo ""
+
+    # If everything is OK, exit early
+    if $pa_ok && $modules_ok && $proxy_ok && $ws_ok; then
+        info "=== All audio components OK ==="
+        exit 0
+    fi
+
+    if $check_only; then
+        err "=== Audio issues detected (check-only mode, not fixing) ==="
+        exit 1
+    fi
+
+    # ── Repair ────────────────────────────────────────────────────────
+    info "=== Repairing audio ==="
+
+    if ! $pa_ok; then
+        restart_pulseaudio
+        load_modules
+        pa_ok=true
+        modules_ok=true
+    elif ! $modules_ok; then
+        load_modules
+        modules_ok=true
+    fi
+
+    if ! $proxy_ok; then
+        restart_audio_proxy || true
+    fi
+
+    if ! $ws_ok; then
+        restart_audio_websockify || true
+    fi
+
+    # ── Re-check ──
+    echo ""
+    info "=== Verifying repair ==="
+    local all_fixed=true
+    check_pa || all_fixed=false
+    check_pa_module "module-null-sink.*virtual_sink" || all_fixed=false
+    check_pa_module "module-simple-protocol-tcp" || all_fixed=false
+    check_port 5711 "Audio proxy" || all_fixed=false
+    check_port 6902 "Audio websockify" || all_fixed=false
+
+    echo ""
+    if $all_fixed; then
+        info "=== Audio fully restored ==="
+    else
+        err "=== Some audio components still have issues ==="
+        exit 1
+    fi
+}
+
+main "$@"
