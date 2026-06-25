@@ -34,7 +34,7 @@ teardown() {
         pactl set-default-sink virtual_sink
         # audio-proxy and audio websockify run in background — skip for test
         # Foreground VNC websockify
-        websockify --web /usr/share/novnc --cert /home/admin/.vnc/self.pem 6901 localhost:5901
+        websockify --web /usr/share/novnc 6901 localhost:5901
     '
     [[ "$output" == *"vncserver :1"* ]]
     [[ "$output" == *"pulseaudio --start"* ]]
@@ -173,7 +173,7 @@ teardown() {
         pactl load-module module-null-sink 2>/dev/null || true
         true  # audio-proxy would start here; simulate failure
         true  # audio websockify would start here; simulate failure
-        websockify --web /usr/share/novnc --cert /home/admin/.vnc/self.pem 6901 localhost:5901
+        websockify --web /usr/share/novnc 6901 localhost:5901
     '
     [[ "$output" == *"vncserver"* ]]
     [[ "$output" == *"websockify --web /usr/share/novnc"* ]]

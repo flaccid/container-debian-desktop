@@ -92,5 +92,5 @@ fi
 # 6. Start VNC websockify (foreground — keeps container alive)
 # ------------------------------------------------------------------
 echo "Starting VNC websockify on port 6901..."
-exec websockify --web /usr/share/novnc --cert /home/admin/.vnc/self.pem \
+exec websockify --web /usr/share/novnc \
     6901 localhost:5901

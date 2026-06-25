@@ -16,6 +16,9 @@ ensure_config() {
     cp /etc/skel/admin/.vnc/xstartup /home/admin/.vnc/xstartup 2>/dev/null || true
     chmod +x /home/admin/.vnc/xstartup 2>/dev/null || true
 
+    # Copy self.pem so websockify can start with TLS support.
+    cp /etc/skel/admin/.vnc/self.pem /home/admin/.vnc/self.pem 2>/dev/null || true
+
     # Copy the skeleton's guake.desktop so it survives pod replacement.
     cp /etc/skel/admin/.config/autostart/guake.desktop /home/admin/.config/autostart/guake.desktop 2>/dev/null || true
     chmod +x /home/admin/.config/autostart/guake.desktop 2>/dev/null || true
