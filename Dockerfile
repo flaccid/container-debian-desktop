@@ -74,6 +74,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     htop \
     apt-utils \
     bash-completion \
+    bc \
     bind9-host \
     build-essential \
     bwm-ng \
@@ -223,7 +224,7 @@ RUN mkdir -p /usr/share/backgrounds && \
     "https://images.unsplash.com/photo-1483982258113-b72862e6cff6?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&dl=rosie-sun-1L71sPT5XKc-unsplash.jpg"
 
 # Copy pre-configured XFCE settings into the skeleton directory
-RUN echo "build_id: $(date +%s)" > /etc/config_id
+RUN echo "build_id: 1782385504
 COPY --chown=admin:admin config/xfce4 /etc/skel/admin/.config/xfce4
 
 # Setup VNC configuration in the skeleton directory
