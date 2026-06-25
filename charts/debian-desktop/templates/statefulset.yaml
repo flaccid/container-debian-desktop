@@ -53,8 +53,11 @@ spec:
           privileged: false
           allowPrivilegeEscalation: false
           capabilities:
-            drop:
-              - ALL
+            add:
+              - CHOWN
+              - DAC_OVERRIDE
+              - SETUID
+              - SETGID
         ports:
         - containerPort: 6901
           name: https
