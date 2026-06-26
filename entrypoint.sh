@@ -50,6 +50,10 @@ ensure_config() {
     cp /etc/skel/admin/.config/xfce4/panel/genmon-12.rc \
        /home/admin/.config/xfce4/panel/genmon-12.rc 2>/dev/null || true
 
+    # Copy genmon-14.rc so the memmon panel plugin works on existing PVCs.
+    cp /etc/skel/admin/.config/xfce4/panel/genmon-14.rc \
+       /home/admin/.config/xfce4/panel/genmon-14.rc 2>/dev/null || true
+
     # Copy xfce4-screensaver.xml to pick up default idle/lock timeout.
     cp /etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml \
        /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml 2>/dev/null || true

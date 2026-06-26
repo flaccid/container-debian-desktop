@@ -1,10 +1,12 @@
 setup() {
     export TEST_SKEL="/tmp/bats-skel"
     export TEST_HOME="/tmp/bats-home"
-    mkdir -p "$TEST_SKEL/.config/xfce4"
+    mkdir -p "$TEST_SKEL/.config/xfce4/panel"
     mkdir -p "$TEST_SKEL/.config/autostart"
     mkdir -p "$TEST_SKEL/.vnc"
     echo "config" > "$TEST_SKEL/.config/xfce4/settings.xml"
+    echo "genmon config" > "$TEST_SKEL/.config/xfce4/panel/genmon-12.rc"
+    echo "genmon config" > "$TEST_SKEL/.config/xfce4/panel/genmon-14.rc"
     echo "guake.desktop" > "$TEST_SKEL/.config/autostart/guake.desktop"
     echo "other.desktop" > "$TEST_SKEL/.config/autostart/other.desktop"
     echo "vnc" > "$TEST_SKEL/.vnc/xstartup"
@@ -65,6 +67,14 @@ teardown() {
     [ -x "$TEST_HOME/.config/autostart/guake.desktop" ]
     [ -f "$TEST_HOME/.vnc/xstartup" ]
     [ -x "$TEST_HOME/.vnc/xstartup" ]
+}
+
+@test "ensure_config copies genmon-14.rc" {
+    mkdir -p "$TEST_HOME/.config/xfce4/panel"
+    cp "$TEST_SKEL/.config/xfce4/panel/genmon-14.rc" "$TEST_HOME/.config/xfce4/panel/genmon-14.rc" 2>/dev/null || true
+    [ -f "$TEST_HOME/.config/xfce4/panel/genmon-14.rc" ]
+    read -r content < "$TEST_HOME/.config/xfce4/panel/genmon-14.rc"
+    [ "$content" = "genmon config" ]
 }
 
 @test "main logic: root, xfce4 exists, skips populate, runs ensure_config" {

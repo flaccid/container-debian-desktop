@@ -212,6 +212,11 @@ commandTests:
     args: ["-x", "/usr/local/bin/memmon.sh"]
     expectedOutput: []
 
+  - name: "genmon-14.rc exists"
+    command: "test"
+    args: ["-f", "/etc/skel/admin/.config/xfce4/panel/genmon-14.rc"]
+    expectedOutput: []
+
   - name: "test-audio exists"
     command: "test"
     args: ["-f", "/usr/local/bin/test-audio"]
