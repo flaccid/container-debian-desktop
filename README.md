@@ -23,8 +23,7 @@ This repository packages a lightweight, persistent Linux desktop environment for
 - **Automatic Scaling** — patched to default to "Remote resizing" mode
 - **Persistence-ready** — uses a skeleton directory and entrypoint script to populate fresh PVCs at `/home/admin`
 - **Non-root user** — runs strictly as `admin` (UID 1000) with passwordless `sudo` (uses `gosu` for clean privilege dropping)
-- **Self-signed HTTPS** — noVNC served over HTTPS/WSS on port 6901
-- **Audio Streaming** — desktop audio captured via PulseAudio null-sink, encoded to WebM/Opus by GStreamer, streamed to the browser via a separate WebSocket (port 6902) through nginx sidecar at `/audio/`
+- **Audio Streaming** — desktop audio captured via PulseAudio null-sink, encoded to WebM/Opus by GStreamer, streamed to the browser via a separate WebSocket (port 6902). In Helm deployments the nginx sidecar proxies `/audio/` to the audio WebSocket.
 
 ## Pre-installed Applications 📦
 
@@ -96,17 +95,17 @@ make docker-build
 make docker-run
 ```
 
-Then open **https://localhost:6901** in a browser (accept the self-signed cert warning).
+Then open **http://localhost:6901** in a browser.
 
 > If you get TTY issues, use `make docker-run OPTS=""` or run without `-it`:
 > ```bash
-> docker run --rm -p 6901:6901 flaccid/debian-desktop:latest
+> docker run --rm -p 6901:6901 -p 6902:6902 flaccid/debian-desktop:latest
 > ```
 
 ### Run with a persistent volume
 
 ```bash
-docker run -p 6901:6901 -v desktop_data:/home/admin flaccid/debian-desktop:latest
+docker run -p 6901:6901 -p 6902:6902 -v desktop_data:/home/admin flaccid/debian-desktop:latest
 ```
 
 No password is required — VNC authentication is disabled.
@@ -145,13 +144,13 @@ Controls in the Audio Plugin settings:
 
 The chart at `charts/debian-desktop/` deploys everything:
 
-- **StatefulSet** — desktop container + nginx sidecar
+- **StatefulSet** — desktop container + nginx sidecar + `fix-permissions` initContainer
   - `entrypoint.sh` — populates fresh PVCs from `/etc/skel/admin` on first boot
   - `fix-permissions` initContainer — `chown -R 1000:1000 /home/admin` on PVC mount
-  - nginx sidecar — proxies `http://localhost:6901` on port 8080 (handles WebSocket upgrade and serves `index.html`)
+  - nginx sidecar — proxies `http://localhost:6901` on port 8080 (handles WebSocket upgrade). Redirects `/` → `/vnc.html?resize=remote` (vnc_auto.html lacks the audio plugin `<script>` tag).
   - desktop container — runs `vncserver` + `websockify` as `admin` (via `gosu`)
 - **PersistentVolumeClaim** — 5Gi default (upgradable), mounted at `/home/admin`
-- **Service** — exposes port 8080 (nginx)
+- **Service** — ClusterIP on port 8080 (nginx). Optional LoadBalancer also exposes ports 6901 (VNC WebSocket) and 6902 (audio WebSocket).
 - **Ingress** — nginx ingress controller with oauth2-proxy auth
 - **oauth2-proxy** — optional SSO subchart
 
@@ -189,7 +188,7 @@ Browser ──HTTPS──> Ingress ──HTTP──> nginx sidecar (:8080)
   /audio/ ────────────────────────────> websockify (:6902) ──TCP──> audio-proxy (:5711) ──TCP──> PulseAudio (:4711)
 ```
 
-The nginx sidecar sits inside the pod, serves the custom `index.html`, and proxies `/` to websockify on `localhost:6901` (plain HTTP — TLS is handled by the Ingress). The `/audio/` path is proxied to a second websockify on `6902`, which connects to the audio proxy (GStreamer encoding PulseAudio raw PCM to WebM/Opus). WebSocket upgrades for both noVNC and audio are passed through transparently. The Ingress terminates external HTTPS and delegates auth to oauth2-proxy.
+The nginx sidecar sits inside the pod, serves `vnc.html` (via redirect from `/`), and proxies `/` to websockify on `localhost:6901` (plain HTTP — TLS is handled by the Ingress). The `/audio/` path is proxied to a second websockify on `6902`, which connects to the audio proxy (GStreamer encoding PulseAudio raw PCM to WebM/Opus). WebSocket upgrades for both noVNC and audio are passed through transparently. The Ingress terminates external HTTPS and delegates auth to oauth2-proxy.
 
 ### Signing Out 🔒
 
@@ -215,7 +214,7 @@ On container start, the entrypoint detects whether it is running as `root` or as
 
 1. **First-run detection** — checks if `~/.config/xfce4` exists. If missing, it copies the entire skeleton (`/etc/skel/admin/`) into `/home/admin`, making autostart `.desktop` files executable.
 2. **Privilege drop** — when running as `root`, it uses `gosu` to re-execute the container command as `admin`.
-3. **Pass-through** — already running as `admin`, it executes the command directly.
+3. **Non-root path** — already running as `admin`, it still runs populate/ensure_config, then execs the command.
 
 This approach means fresh PVCs are populated automatically, while existing PVCs (post first-run) preserve user data across pod restarts.
 
@@ -272,12 +271,15 @@ Chart version bumps and `index.yaml` updates are done manually.
 | `make docker-run` | Run container locally |
 | `make docker-push` | Push to Docker Hub |
 | `make docker-exec-shell` | Open a shell in running container |
-| `make helm-lint` | Validate the chart |
+| `make helm-validate` | Validate the chart (helm lint) |
+| `make helm-render` | Render chart templates (dry-run) |
+| `make helm-uninstall` | Uninstall the Helm release |
+| `make helm-flush` | Remove local .tgz packages and index.yaml |
 | `make helm-install` | Install from local chart |
 | `make helm-upgrade` | Upgrade deployed release |
 | `make test` | Run all tests |
-| `make test-structure` | Container structure tests (82 assertions) |
-| `make test-bats` | Shell script unit tests (22 bats tests) |
+| `make test-structure` | Container structure tests (92 assertions) |
+| `make test-bats` | Shell script unit tests (32 bats tests across 3 files) |
 | `make test-smoke` | Runtime integration smoke test |
 | `make test-helm` | Helm chart lint |
 | `make helm-package` | Package chart into `.tgz` |
