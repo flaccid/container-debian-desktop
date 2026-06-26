@@ -2,4 +2,5 @@ Command=/usr/local/bin/memmon.sh
 UseLabel=0
 Text=
 UpdatePeriod=10000
+UseMarkup=true
 Font=Ubuntu 11
