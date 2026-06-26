@@ -2,8 +2,22 @@ apiVersion: v1
 entries:
   debian-desktop:
   - apiVersion: v2
+    appVersion: v0.14.6
+    created: "2026-06-26T16:44:28.595772883+10:00"
+    dependencies:
+    - name: oauth2-proxy
+      repository: file://./charts/oauth2-proxy
+      version: 0.1.0
+    description: A Helm chart for a persistent, web-based Linux desktop environment
+    digest: 33d842f027e6ed6d33b10029f018f3ae4ef49c4dea725b31473ff22a8b05af08
+    name: debian-desktop
+    type: application
+    urls:
+    - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.6.5.tgz
+    version: 0.6.5
+  - apiVersion: v2
     appVersion: v0.14.4
-    created: "2026-06-26T15:37:44.907456486+10:00"
+    created: "2026-06-26T16:44:28.59539628+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -17,7 +31,7 @@ entries:
     version: 0.6.3
   - apiVersion: v2
     appVersion: v0.14.3
-    created: "2026-06-26T15:37:44.906950849+10:00"
+    created: "2026-06-26T16:44:28.594483183+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -31,7 +45,7 @@ entries:
     version: 0.6.2
   - apiVersion: v2
     appVersion: 0.14.0
-    created: "2026-06-26T15:37:44.906448453+10:00"
+    created: "2026-06-26T16:44:28.593894746+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -45,7 +59,7 @@ entries:
     version: 0.6.1
   - apiVersion: v2
     appVersion: 0.14.0
-    created: "2026-06-26T15:37:44.905980531+10:00"
+    created: "2026-06-26T16:44:28.593300302+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -59,7 +73,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: 0.13.0
-    created: "2026-06-26T15:37:44.905552573+10:00"
+    created: "2026-06-26T16:44:28.592726145+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -73,7 +87,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 0.12.3
-    created: "2026-06-26T15:37:44.905072026+10:00"
+    created: "2026-06-26T16:44:28.592035143+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -87,7 +101,7 @@ entries:
     version: 0.4.3
   - apiVersion: v2
     appVersion: 0.12.2
-    created: "2026-06-26T15:37:44.904585439+10:00"
+    created: "2026-06-26T16:44:28.591346799+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -101,7 +115,7 @@ entries:
     version: 0.4.2
   - apiVersion: v2
     appVersion: 0.12.1
-    created: "2026-06-26T15:37:44.904176492+10:00"
+    created: "2026-06-26T16:44:28.590646096+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -115,7 +129,7 @@ entries:
     version: 0.4.1
   - apiVersion: v2
     appVersion: 0.12.0
-    created: "2026-06-26T15:37:44.903680632+10:00"
+    created: "2026-06-26T16:44:28.589817388+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -129,7 +143,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: 0.11.5
-    created: "2026-06-26T15:37:44.902726879+10:00"
+    created: "2026-06-26T16:44:28.589110569+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -143,7 +157,7 @@ entries:
     version: 0.3.5
   - apiVersion: v2
     appVersion: 0.11.4
-    created: "2026-06-26T15:37:44.902249798+10:00"
+    created: "2026-06-26T16:44:28.58771701+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -157,7 +171,7 @@ entries:
     version: 0.3.4
   - apiVersion: v2
     appVersion: 0.11.3
-    created: "2026-06-26T15:37:44.901701794+10:00"
+    created: "2026-06-26T16:44:28.587016898+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -169,4 +183,4 @@ entries:
     urls:
     - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.3.3.tgz
     version: 0.3.3
-generated: "2026-06-26T15:37:44.901051897+10:00"
+generated: "2026-06-26T16:44:28.585784978+10:00"
