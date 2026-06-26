@@ -33,11 +33,11 @@ used=$(fmt_gib "$mem_current")
 total=$(fmt_gib "$mem_limit")
 
 if [ "$pct" -lt 50 ]; then
-    color="#8ae234"
+    indicator="🟢"
 elif [ "$pct" -lt 80 ]; then
-    color="#fce94f"
+    indicator="🟡"
 else
-    color="#ef2929"
+    indicator="🔴"
 fi
 
-printf '<span color="%s">🖥 %s/%s</span>\n' "$color" "$used" "$total"
+printf '%s🖥 %s/%s\n' "$indicator" "$used" "$total"
