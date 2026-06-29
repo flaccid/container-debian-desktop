@@ -81,3 +81,7 @@ teardown() {
     run bash -n "$BATS_TEST_DIRNAME/../config/reset-xfce4"
     [ "$status" -eq 0 ]
 }
+
+@test "reset-xfce4 calls xfdesktop --arrange after restart" {
+    grep -q 'xfdesktop --arrange' "$BATS_TEST_DIRNAME/../config/reset-xfce4"
+}

@@ -69,6 +69,24 @@ teardown() {
     [ -x "$TEST_HOME/.vnc/xstartup" ]
 }
 
+@test "ensure_config copies xfce4-desktop.xml" {
+    mkdir -p "$TEST_HOME/.config/xfce4/xfconf/xfce-perchannel-xml"
+    mkdir -p "$TEST_SKEL/.config/xfce4/xfconf/xfce-perchannel-xml"
+    echo "desktop-icons config" > "$TEST_SKEL/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+    cp "$TEST_SKEL/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml" \
+       "$TEST_HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml" 2>/dev/null || true
+    [ -f "$TEST_HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml" ]
+    read -r content < "$TEST_HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+    [ "$content" = "desktop-icons config" ]
+}
+
+@test "ensure_config clears cached icon positions" {
+    mkdir -p "$TEST_HOME/.config/xfce4/desktop"
+    echo "cached" > "$TEST_HOME/.config/xfce4/desktop/icons-1-1.yaml"
+    rm -rf "$TEST_HOME/.config/xfce4/desktop" 2>/dev/null || true
+    [ ! -d "$TEST_HOME/.config/xfce4/desktop" ]
+}
+
 @test "ensure_config copies genmon-14.rc" {
     mkdir -p "$TEST_HOME/.config/xfce4/panel"
     cp "$TEST_SKEL/.config/xfce4/panel/genmon-14.rc" "$TEST_HOME/.config/xfce4/panel/genmon-14.rc" 2>/dev/null || true
@@ -92,6 +110,9 @@ teardown() {
             chmod +x "$HOME/.vnc/xstartup" 2>/dev/null || true
             cp '"$TEST_SKEL"'/.config/autostart/guake.desktop "$HOME/.config/autostart/guake.desktop" 2>/dev/null || true
             chmod +x "$HOME/.config/autostart/guake.desktop" 2>/dev/null || true
+            cp '"$TEST_SKEL"'/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml \
+               "$HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml" 2>/dev/null || true
+            rm -rf "$HOME/.config/xfce4/desktop" 2>/dev/null || true
         fi
         echo "would exec gosu admin \"\$@\""
     '
@@ -132,6 +153,9 @@ teardown() {
             chmod +x "$HOME/.vnc/xstartup" 2>/dev/null || true
             cp '"$TEST_SKEL"'/.config/autostart/guake.desktop "$HOME/.config/autostart/guake.desktop" 2>/dev/null || true
             chmod +x "$HOME/.config/autostart/guake.desktop" 2>/dev/null || true
+            cp '"$TEST_SKEL"'/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml \
+               "$HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml" 2>/dev/null || true
+            rm -rf "$HOME/.config/xfce4/desktop" 2>/dev/null || true
         fi
         echo "would exec \"\$@\""
     '

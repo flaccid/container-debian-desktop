@@ -54,6 +54,15 @@ ensure_config() {
     cp /etc/skel/admin/.config/xfce4/panel/genmon-14.rc \
        /home/admin/.config/xfce4/panel/genmon-14.rc 2>/dev/null || true
 
+    # Copy xfce4-desktop.xml to pick up desktop icon arrangement settings
+    # (gravity, icon-size, etc.).
+    cp /etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml \
+       /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml 2>/dev/null || true
+
+    # Clear cached icon positions so xfdesktop re-arranges from scratch
+    # using the updated gravity setting next time the session starts.
+    rm -rf /home/admin/.config/xfce4/desktop 2>/dev/null || true
+
     # Copy xfce4-screensaver.xml to pick up default idle/lock timeout.
     cp /etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml \
        /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml 2>/dev/null || true

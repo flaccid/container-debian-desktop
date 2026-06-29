@@ -28,5 +28,7 @@ sleep 1
 xfwm4 --replace &
 xfce4-panel &
 xfdesktop &
+sleep 2
+xfdesktop --arrange 2>/dev/null || true
 
 echo "Reset complete. UI should be ready."
