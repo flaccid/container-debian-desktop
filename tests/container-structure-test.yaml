@@ -172,14 +172,6 @@ commandTests:
     args: ["-f", "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml"]
     expectedOutput: []
 
-  - name: "xfce4-desktop.xml has desktop-icons gravity 0 (vertical top-left)"
-    path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
-    expectedContents:
-      - '"gravity" type="int" value="0"'
-      - '"sort-folders-before-files" type="bool" value="true"'
-      - '"confirm-sorting" type="bool" value="false"'
-      - '"icon-size" type="uint" value="64"'
-
   - name: "guake autostart exists"
     command: "test"
     args: ["-f", "/etc/skel/admin/.config/autostart/guake.desktop"]
@@ -450,6 +442,14 @@ fileContentTests:
       - '"delay" type="int" value="60"'
       - 'name="lock" type="empty"'
       - '"mode" type="int" value="0"'
+
+  - name: "xfce4-desktop.xml has desktop-icons gravity 0 (vertical top-left)"
+    path: "/etc/skel/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+    expectedContents:
+      - '"gravity" type="int" value="0"'
+      - '"sort-folders-before-files" type="bool" value="true"'
+      - '"confirm-sorting" type="bool" value="false"'
+      - '"icon-size" type="uint" value="64"'
 
 metadataTest:
   entrypoint: ["/usr/local/bin/entrypoint.sh"]
