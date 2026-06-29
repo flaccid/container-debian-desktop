@@ -70,6 +70,15 @@ fi
 docker exec "$CONTAINER_NAME" test -f /home/admin/.config/autostart/disable-x11-screensaver.desktop \
     || { echo "FAIL: disable-x11-screensaver.desktop not found"; exit 1; }
 
+DESKTOP=$(docker exec "$CONTAINER_NAME" cat /home/admin/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml 2>/dev/null)
+if echo "$DESKTOP" | grep -q '"gravity" type="int" value="0"'; then
+    echo "xfce4-desktop gravity 0 (vertical top-left): OK"
+else
+    echo "FAIL: xfce4-desktop gravity 0 not found"
+    echo "$DESKTOP"
+    exit 1
+fi
+
 echo "Config files present: OK"
 
 # 5. Verify xsettings.xml values
