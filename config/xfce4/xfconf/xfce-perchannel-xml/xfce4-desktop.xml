@@ -19,6 +19,6 @@
     <property name="gravity" type="int" value="0"/>
     <property name="sort-folders-before-files" type="bool" value="true"/>
     <property name="confirm-sorting" type="bool" value="false"/>
-    <property name="icon-size" type="uint" value="64"/>
+    <property name="icon-size" type="uint" value="48"/>
   </property>
 </channel>
