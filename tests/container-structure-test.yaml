@@ -449,7 +449,7 @@ fileContentTests:
       - '"gravity" type="int" value="0"'
       - '"sort-folders-before-files" type="bool" value="true"'
       - '"confirm-sorting" type="bool" value="false"'
-      - '"icon-size" type="uint" value="64"'
+      - '"icon-size" type="uint" value="48"'
 
 metadataTest:
   entrypoint: ["/usr/local/bin/entrypoint.sh"]
