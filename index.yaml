@@ -3,7 +3,21 @@ entries:
   debian-desktop:
   - apiVersion: v2
     appVersion: v0.14.8
-    created: "2026-06-29T13:40:01.683236783+10:00"
+    created: "2026-08-12T13:55:26.874897034+10:00"
+    dependencies:
+    - name: oauth2-proxy
+      repository: file://./charts/oauth2-proxy
+      version: 0.1.0
+    description: A Helm chart for a persistent, web-based Linux desktop environment
+    digest: 9a98c5f2c22cf6a97979cc776375fc52eda7e25cec917f9d7c13fab50e776f25
+    name: debian-desktop
+    type: application
+    urls:
+    - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.7.0.tgz
+    version: 0.7.0
+  - apiVersion: v2
+    appVersion: v0.14.8
+    created: "2026-08-12T13:55:26.874293576+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -17,7 +31,7 @@ entries:
     version: 0.6.7
   - apiVersion: v2
     appVersion: v0.14.7
-    created: "2026-06-29T13:40:01.681318544+10:00"
+    created: "2026-08-12T13:55:26.87384579+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -31,7 +45,7 @@ entries:
     version: 0.6.6
   - apiVersion: v2
     appVersion: v0.14.6
-    created: "2026-06-29T13:40:01.679156818+10:00"
+    created: "2026-08-12T13:55:26.873278626+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -45,7 +59,7 @@ entries:
     version: 0.6.5
   - apiVersion: v2
     appVersion: v0.14.4
-    created: "2026-06-29T13:40:01.676931383+10:00"
+    created: "2026-08-12T13:55:26.872596197+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -59,7 +73,7 @@ entries:
     version: 0.6.3
   - apiVersion: v2
     appVersion: v0.14.3
-    created: "2026-06-29T13:40:01.674983256+10:00"
+    created: "2026-08-12T13:55:26.871849164+10:00"
     dependencies:
     - name: oauth2-proxy
       repository: file://./charts/oauth2-proxy
@@ -71,4 +85,4 @@ entries:
     urls:
     - https://flaccid.github.io/container-debian-desktop/debian-desktop-0.6.2.tgz
     version: 0.6.2
-generated: "2026-06-29T13:40:01.672311926+10:00"
+generated: "2026-08-12T13:55:26.870922002+10:00"

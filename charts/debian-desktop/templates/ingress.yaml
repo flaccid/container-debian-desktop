@@ -5,6 +5,7 @@ metadata:
   name: {{ include "debian-desktop.fullname" . }}
   labels:
     {{- include "debian-desktop.labels" . | nindent 4 }}
+  {{- if eq .Values.ingress.className "nginx" }}
   annotations:
     kubernetes.io/ingress.class: {{ .Values.ingress.className | quote }}
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
@@ -13,7 +14,14 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "10800"
     nginx.ingress.kubernetes.io/auth-url: {{ tpl .Values.ingress.authUrl . | quote }}
     nginx.ingress.kubernetes.io/auth-signin: {{ tpl .Values.ingress.authSignin . | quote }}
+  {{- else if eq .Values.ingress.className "traefik" }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: {{ .Release.Namespace }}-{{ include "debian-desktop.fullname" . }}-oauth2-auth@kubernetescrd
+  {{- end }}
 spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
   rules:
   - host: {{ .Values.ingress.host | quote }}
     http:
@@ -34,10 +42,15 @@ metadata:
   name: {{ include "debian-desktop.fullname" . }}-oauth2
   labels:
     {{- include "debian-desktop.labels" . | nindent 4 }}
+  {{- if eq .Values.ingress.className "nginx" }}
   annotations:
     kubernetes.io/ingress.class: {{ .Values.ingress.className | quote }}
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+  {{- end }}
 spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
   rules:
   - host: {{ .Values.oauth2Proxy.ingress.host | quote }}
     http:

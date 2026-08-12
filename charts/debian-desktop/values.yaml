@@ -36,6 +36,9 @@ service:
 
 ingress:
   enabled: true
+  # "nginx" renders nginx controller annotations (backend-protocol, timeouts,
+  # oauth2 auth-url/auth-signin). "traefik" renders a Traefik ForwardAuth
+  # Middleware CR (see templates/middleware.yaml) referenced by the ingress.
   className: "nginx"
   host: desktop.domain.com
   # The internal URL to your oauth2-proxy service
