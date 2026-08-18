@@ -29,5 +29,5 @@ spec:
       port: 80
     query: "/oauth2/sign_in?rd={url}"
     statusRewrites:
-      "401": "302"
+      "401": 302
 {{- end }}
