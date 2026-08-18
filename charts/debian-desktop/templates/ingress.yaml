@@ -16,7 +16,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-signin: {{ tpl .Values.ingress.authSignin . | quote }}
   {{- else if eq .Values.ingress.className "traefik" }}
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: {{ .Release.Namespace }}-{{ include "debian-desktop.fullname" . }}-oauth2-auth@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: {{ .Release.Namespace }}-{{ include "debian-desktop.fullname" . }}-oauth2-errors@kubernetescrd,{{ .Release.Namespace }}-{{ include "debian-desktop.fullname" . }}-oauth2-auth@kubernetescrd
   {{- end }}
 spec:
   {{- if .Values.ingress.className }}
