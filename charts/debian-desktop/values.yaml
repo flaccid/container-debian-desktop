@@ -59,3 +59,4 @@ oauth2-proxy:
     clientSecret: ""
     cookieSecret: ""
     authenticatedEmails: []
+    whitelistDomain: ""
