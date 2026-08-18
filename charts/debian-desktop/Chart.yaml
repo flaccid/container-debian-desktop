@@ -2,7 +2,7 @@ apiVersion: v2
 name: debian-desktop
 description: A Helm chart for a persistent, web-based Linux desktop environment
 type: application
-version: 0.8.3
+version: 0.8.4
 appVersion: "v0.14.8"
 
 dependencies:
