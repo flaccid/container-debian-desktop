@@ -28,6 +28,9 @@ spec:
 # The sign-in page only renders a login button and does not touch the CSRF
 # cookie, so a single user-initiated login flow is the only thing that starts
 # an OAuth flow.
+#
+# Note: no `statusRewrites` here. Rewriting 401 -> 302 would turn the 200
+# sign-in page into a Location-less redirect that browsers can't follow.
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
@@ -43,6 +46,4 @@ spec:
       name: oauth2-proxy
       port: 80
     query: "/oauth2/sign_in?rd={url}"
-    statusRewrites:
-      "401": 302
 {{- end }}
