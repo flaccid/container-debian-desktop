@@ -35,6 +35,35 @@ spec:
               number: {{ .Values.service.clusterIP.port }}
 {{- end }}
 ---
+# Skip-auth ingresses: serve `ingress.skipAuthPaths` WITHOUT the forwardAuth
+# middleware so background auto-fetches from the desktop page (service worker,
+# favicon) never start an OAuth flow and never clobber oauth2-proxy's single
+# CSRF cookie (see middleware.yaml). Traefik prefers the longer path match, so
+# these rules win over the catch-all "/" auth ingress above.
+{{- if and .Values.ingress.enabled (eq .Values.ingress.className "traefik") .Values.ingress.skipAuthPaths }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "debian-desktop.fullname" . }}-skip-auth
+  labels:
+    {{- include "debian-desktop.labels" . | nindent 4 }}
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: {{ .Values.ingress.host | quote }}
+    http:
+      paths:
+      {{- range .Values.ingress.skipAuthPaths }}
+      - path: {{ . | quote }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "debian-desktop.fullname" $ }}
+            port:
+              number: {{ $.Values.service.clusterIP.port }}
+      {{- end }}
+{{- end }}
+---
 {{- if .Values.oauth2Proxy.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress

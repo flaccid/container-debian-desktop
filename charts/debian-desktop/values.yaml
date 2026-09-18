@@ -44,6 +44,13 @@ ingress:
   # The internal URL to your oauth2-proxy service
   authUrl: "http://oauth2-proxy.{{ .Release.Namespace }}.svc.cluster.local/oauth2/auth"
   authSignin: "https://{{ .Values.ingress.host }}/oauth2/start?rd=$escaped_request_uri"
+  # Paths served without oauth2 auth (traefik only). The desktop page
+  # auto-fetches these while logged out; giving each its own OAuth flow
+  # overwrites oauth2-proxy's single CSRF cookie and breaks login (see
+  # templates/middleware.yaml). These are static, non-sensitive resources.
+  skipAuthPaths:
+  - "/sw.js"
+  - "/favicon.ico"
 
 oauth2Proxy:
   ingress:

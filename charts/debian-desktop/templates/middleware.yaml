@@ -13,6 +13,21 @@ spec:
       - X-Auth-Request-User
       - X-Auth-Request-Email
 ---
+# Error middleware: redirect unauthenticated requests to the oauth2-proxy
+# sign-in page, NOT straight to /oauth2/start.
+#
+# Why: redirecting every unauthenticated request straight to /oauth2/start
+# (added in v0.8.2) triggers a CSRF race. oauth2-proxy keeps a single
+# `_oauth2_proxy_csrf` cookie, and every background request the desktop page
+# auto-fetches while logged out (e.g. /sw.js, /favicon.ico - see also
+# `ingress.skipAuthPaths`) gets its own /oauth2/start redirect that overwrites
+# that cookie. By the time Google returns to /oauth2/callback, the state no
+# longer matches the current cookie and login fails intermittently with
+# "Unable to find a valid CSRF token" (403).
+#
+# The sign-in page only renders a login button and does not touch the CSRF
+# cookie, so a single user-initiated login flow is the only thing that starts
+# an OAuth flow.
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
@@ -27,7 +42,7 @@ spec:
     service:
       name: oauth2-proxy
       port: 80
-    query: "/oauth2/start?rd={url}"
+    query: "/oauth2/sign_in?rd={url}"
     statusRewrites:
       "401": 302
 {{- end }}
